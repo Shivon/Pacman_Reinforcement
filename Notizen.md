@@ -15,6 +15,5 @@
 
 
 ## Software für Grundverständnis anschauen:
-
 	* RL Sim: Simulations-Software für Value Iteration & Q-Learning
 	* RL Glue: Kommunikations-Schnittstelle für Verteilte Systeme (?) - hier aber nur Dokumentation interessant, weil Lernen gut erklärt wird
