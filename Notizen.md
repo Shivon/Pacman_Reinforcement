@@ -14,6 +14,6 @@
 * Zu Klären: Wie wird umgegangen mit großen Punkten/ wie sieht die Umsetzung dazu aus? Ggf Zustandsraum erweitern oä
 
 
-## Software für Grundverständnis anschauen:
+## Software für Grundverständnis anschauen:    
 	* RL Sim: Simulations-Software für Value Iteration & Q-Learning
 	* RL Glue: Kommunikations-Schnittstelle für Verteilte Systeme (?) - hier aber nur Dokumentation interessant, weil Lernen gut erklärt wird
