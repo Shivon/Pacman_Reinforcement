@@ -11,6 +11,8 @@
 		* __Fressen__ (Geister brauchen Zustände, ob fressbar oder nicht! Initial alle Geister auf fressbar setzen, wenn großes Pellet gefressen, wenn Geist das erste Mal gefressen wurde, wird er wieder nicht-fressbar)    
 	=> ca 2^22 Zustände für 4 Geister, pro Geist erhöht sich die Anzahl an Zuständen um 2^5 (2 Bit Gefahrenzone, 2 Bit Richtung, 1 Bit fressbar/ nicht fressbar)
 
+* Zu Klären: Wie wird umgegangen mit großen Punkten/ wie sieht die Umsetzung dazu aus? Ggf Zustandsraum erweitern oä
+
 
 ## Software für Grundverständnis anschauen:
 	* RL Sim: Simulations-Software für Value Iteration & Q-Learning
