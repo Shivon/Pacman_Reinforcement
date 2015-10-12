@@ -8,7 +8,7 @@
 		_Umsetzung_: Entfernung zu Geistern mit Shortest-path feststellen und an Pacman weitergeben    
 		Gefahrenzonen definieren, Entfernung zu ihm gm Shortest Path in verschiedene Bereiche unterteilen, z.B. 2 Felder entfernt => Gefahrenzone = nah; 7 Felder entfernt => Gefahrenzone = mittel    
 		Speicherung in Gefahrenmatrix: Jede Zeile = 1 Geist, Spalten = Gefahrenzone & Richtung
-		* Fressen (Geister brauchen Zustände, ob fressbar oder nicht! Initial alle Geister auf fressbar setzen, wenn großes Pellet gefressen, wenn Geist das erste Mal gefressen wurde, wird er wieder nicht-fressbar)
+		* __Fressen__ (Geister brauchen Zustände, ob fressbar oder nicht! Initial alle Geister auf fressbar setzen, wenn großes Pellet gefressen, wenn Geist das erste Mal gefressen wurde, wird er wieder nicht-fressbar)
 
 
 ## Software für Grundverständnis anschauen:
