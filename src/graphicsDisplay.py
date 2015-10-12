@@ -79,6 +79,11 @@ CAPSULE_SIZE = 0.25
 # Drawing walls
 WALL_RADIUS = 0.15
 
+# Speed settings
+MIN_SPEED = 0.0
+MAX_SPEED = 1.0
+SPEED_MODIFICATION_FACTOR = 1.5
+
 class InfoPane:
     def __init__(self, layout, gridSize):
         self.gridSize = gridSize
@@ -97,13 +102,22 @@ class InfoPane:
             x,y = pos
         else:
             x = pos
-
-        x = self.gridSize + x # Margin
-        y = self.base + y
+        
+        if (x>=0):
+            x = self.gridSize + x # Margin
+        else:
+            x = self.gridSize + x + self.width
+        
+        if (y>=0):
+            y = self.base + y
+        else:
+            y = self.base + y + self.height
+        
         return x,y
 
     def drawPane(self):
         self.scoreText = text( self.toScreen(0, 0  ), self.textColor, "SCORE:    0", "Times", self.fontSize, "bold")
+        self.speedText = text( self.toScreen(-250, 0  ), self.textColor, "SPEED:    0", "Times", self.fontSize, "bold")
 
     def initializeGhostDistances(self, distances):
         self.ghostDistanceText = []
@@ -120,6 +134,9 @@ class InfoPane:
 
     def updateScore(self, score):
         changeText(self.scoreText, "SCORE: % 4d" % score)
+    
+    def updateSpeed(self, speed):
+        changeText(self.speedText, "SPEED: % .2f" % speed)
 
     def setTeam(self, isBlue):
         text = "RED TEAM"
@@ -153,6 +170,10 @@ class InfoPane:
 
 
 class PacmanGraphics:
+    SPEED_DEC_KEY = 'w'
+    SPEED_INC_KEY = 'e'
+    SPEED_RESET_KEY = 'q'
+    
     def __init__(self, zoom=1.0, frameTime=0.0, capture=False):
         self.have_window = 0
         self.currentGhostImages = {}
@@ -185,6 +206,7 @@ class PacmanGraphics:
         self.make_window(self.width, self.height)
         self.infoPane = InfoPane(layout, self.gridSize)
         self.currentState = layout
+        self.infoPane.updateSpeed(self.frameTime)
 
     def drawDistributions(self, state):
         walls = state.layout.walls
@@ -232,8 +254,25 @@ class PacmanGraphics:
             image = self.drawGhost(newState, agentIndex)
             self.agentImages[agentIndex] = (newState, image )
         refresh()
-
+    
+    def handleKeys(self):
+        from graphicsUtils import keys_pressed
+        keys = keys_waiting() + keys_pressed()
+        if keys != []:
+            if self.SPEED_INC_KEY in keys:
+                self.frameTime *= SPEED_MODIFICATION_FACTOR
+                if (self.frameTime > MAX_SPEED):
+                    self.frameTime = MAX_SPEED
+                self.infoPane.updateSpeed(self.frameTime)
+            if self.SPEED_DEC_KEY in keys:
+                self.frameTime /= SPEED_MODIFICATION_FACTOR
+                if (self.frameTime < MIN_SPEED):
+                    self.frameTime = MIN_SPEED
+                self.infoPane.updateSpeed(self.frameTime)
+    
     def update(self, newState):
+        self.handleKeys()
+        
         agentIndex = newState._agentMoved
         agentState = newState.agentStates[agentIndex]
 
@@ -310,7 +349,7 @@ class PacmanGraphics:
         if self.frameTime < 0:
             print 'Press any key to step forward, "q" to play'
             keys = wait_for_keys()
-            if 'q' in keys:
+            if self.SPEED_RESET_KEY in keys:
                 self.frameTime = 0.1
         if self.frameTime > 0.01 or self.frameTime < 0:
             start = time.time()
