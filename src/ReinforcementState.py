@@ -42,12 +42,13 @@ class Threat(object):
 
 class GhostState(object):
 	"""docstring for ClassName"""
-	def __init__(self, direction, threat):
+	def __init__(self, direction, threat, isEatable):
 		self.direction = ReinforcementDirection.fromGameDirection(direction)
 		self.threat = threat
+		self.isEatable = isEatable
 
 	def __repr__(self):
-		return ('GhostState[direction=' + str(self.direction) + ',threat=' + str(self.threat) + ']')
+		return ('GhostState[direction=' + str(self.direction) + ',threat=' + str(self.threat) + ',isEatable=' + str(self.isEatable) + ']')
 
 class ReinforcementState(object):
 	"""docstring for ClassName"""
@@ -61,9 +62,9 @@ class ReinforcementState(object):
 		ghostStrings = ghostStrings[:-1] + ']'
 		return ('GhostState[direction=' + str(self.direction) + ',ghosts=' + ghostStrings + ']')
 
-print GhostState(Directions.NORTH, Threat.DANGER)
+#print GhostState(Directions.NORTH, Threat.DANGER)
 
-print ReinforcementState(Directions.WEST, [GhostState(Directions.NORTH, Threat.DANGER),GhostState(Directions.NORTH, Threat.DANGER),GhostState(Directions.SOUTH, Threat.FAR_AWAY),GhostState(Directions.NORTH, Threat.DANGER)])
+#print ReinforcementState(Directions.WEST, [GhostState(Directions.NORTH, Threat.DANGER),GhostState(Directions.NORTH, Threat.DANGER),GhostState(Directions.SOUTH, Threat.FAR_AWAY),GhostState(Directions.NORTH, Threat.DANGER)])
 
 
 		
