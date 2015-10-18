@@ -8,16 +8,15 @@ WINDOW_BORDER = 20
 WINDOW_SPACING = 5
 WINDOW_TEXTBOX_WIDTH = 20
 WINDOW_LABEL_WIDTH = 20
-WINDOW_BUTTON_PADDING_LEFT = 15
 
 import Tkinter
 import tkFont
+from launcherController import LauncherController
 
-class Launcher(Tkinter.Tk):
+class LauncherView(Tkinter.Tk):
     def __init__(self,parent):
         Tkinter.Tk.__init__(self,parent)
         self.parent = parent
-        self.nextRow = 0
         self.initialize()
 
     # Align the window
@@ -78,6 +77,7 @@ class Launcher(Tkinter.Tk):
     
     # Initialize the window
     def initialize(self):
+        self.nextRow = 0
         self.grid()
 
         # Labels and textboxes for different attributes
@@ -111,20 +111,51 @@ class Launcher(Tkinter.Tk):
         self.quietTextGraphicsVar = self.createTextbox("False", self.nextRow)
         self.finishRow()
         
+        # Button to apply default settings
+        defaultSettingsButton = Tkinter.Button(self,
+            text=u"Standard-Einstellungen laden",
+            command=self.OnDefaultSettingsButtonClick)
+        defaultSettingsButton.grid(column=0, row=self.nextRow, sticky='NE',
+            padx=(WINDOW_BORDER, WINDOW_SPACING), pady=(WINDOW_SPACING, WINDOW_SPACING))
+        
+        loadSettingsButton = Tkinter.Button(self,
+            text=u"  Einstellungen laden  ",
+            command=self.OnLoadSettingsButtonClick)
+        loadSettingsButton.grid(column=1, row=self.nextRow, sticky='NW',
+            padx=(WINDOW_SPACING, WINDOW_BORDER), pady=(WINDOW_SPACING, WINDOW_SPACING))
+        self.finishRow()
+        
+        saveSettingsButton = Tkinter.Button(self,
+            text=u"     Einstellungen speichern     ",
+            command=self.OnSaveSettingsButtonClick)
+        saveSettingsButton.grid(column=0, row=self.nextRow, sticky='NE',
+            padx=(WINDOW_BORDER, WINDOW_SPACING), pady=(WINDOW_SPACING, WINDOW_SPACING))
+            
+        boldFont = tkFont.nametofont("TkDefaultFont")
+        boldFont = boldFont.copy()
+        boldFont.config(weight='bold')
+        
         # Exit button
         exitButton = Tkinter.Button(self,
             text=u"Beenden",
             command=self.OnExitButtonClick)
+        exitButton['font'] = boldFont
         exitButton.grid(column=1, row=self.nextRow, sticky='NW',
-            padx=(WINDOW_BUTTON_PADDING_LEFT, 0), pady=(WINDOW_SPACING, WINDOW_BORDER))
+            padx=(WINDOW_SPACING, WINDOW_SPACING), pady=(WINDOW_SPACING, WINDOW_BORDER))
         
         # Start button
         startButton = Tkinter.Button(self,
             text=u"Starten",
             command=self.OnStartButtonClick)
+        startButton['font'] = boldFont
         startButton.grid(column=1, row=self.nextRow, sticky='NE',
-            padx=(0, WINDOW_BORDER), pady=(WINDOW_SPACING, WINDOW_BORDER))
-
+            padx=(WINDOW_SPACING, WINDOW_BORDER), pady=(WINDOW_SPACING, WINDOW_BORDER))
+            
+        # Create controller
+        self.launcherController = LauncherController(
+            self.numGamesVar, self.numGhostsVar, self.pacmanVar,
+            self.frameTimeVar, self.textGraphicsVar, self.quietTextGraphicsVar)
+        
         # Disable resizing
         self.resizable(False,False)
         
@@ -136,9 +167,22 @@ class Launcher(Tkinter.Tk):
         self.quit()
         
     def OnStartButtonClick(self):
-        print "NotImplementedError!"
+        if (self.launcherController is not None):
+            self.launcherController.startApplication()
+        
+    def OnDefaultSettingsButtonClick(self):
+        if (self.launcherController is not None):
+            self.launcherController.loadDefaultSettings()
+        
+    def OnLoadSettingsButtonClick(self):
+        if (self.launcherController is not None):
+            self.launcherController.loadSettingsFromConfigFile()
+        
+    def OnSaveSettingsButtonClick(self):
+        if (self.launcherController is not None):
+            self.launcherController.saveSettingsToConfigFile()
 
 if __name__ == "__main__":
-    app = Launcher(None)
+    app = LauncherView(None)
     app.title(WINDOW_TITLE)
     app.mainloop()
