@@ -4,34 +4,41 @@ class DatatypeUtils:
         return isinstance(string, basestring)
     
     @staticmethod
-    def stringToBoolean(string):
+    def isBooleanString(string):
         if (not DatatypeUtils.isString(string)):
-            raise ValueError('Parameter is not a String!')
-            
-        if (string.lower() in ("yes", "y", "true", "t", "1")):
-            return True;
-        if (string.lower() in ("no", "n", "false", "f", "0")):
-            return False;
-        raise ValueError(string + ' is not a Boolean value!')
-        
+            raise ValueError("Argument is no a String!")
+        return (string.lower() in ['true', 'false'])
+    
     @staticmethod
-    def stringToFloat(string):
-        if (not DatatypeUtils.isString(string)):
-            raise ValueError('Parameter is not a String!')
-            
+    def isIntegerString(string):
         try:
-            value = float(string)
-            return value
+            int(string)
+            return True
         except:
-            raise ValueError(string + ' is not a Float value!')
+            return False
+    
+    @staticmethod
+    def isFloatString(string):
+        try:
+            float(string)
+            return True
+        except:
+            return False
+    
+    @staticmethod
+    def stringToBoolean(string):
+        if (not DatatypeUtils.isBooleanString(string)):
+            raise ValueError("'" + string + "' is no a Boolean!")
+        return (string.lower() in ['true'])
     
     @staticmethod
     def stringToInteger(string):
-        if (not DatatypeUtils.isString(string)):
-            raise ValueError('Parameter is not a String!')
-            
-        try:
-            value = int(string)
-            return value
-        except:
-            raise ValueError(string + ' is not a Integer value!')
+        if (not DatatypeUtils.isIntegerString(string)):
+            raise ValueError("'" + string + "' is no a Integer!")
+        return int(string)
+    
+    @staticmethod
+    def stringToFloat(string):
+        if (not DatatypeUtils.isFloatString(string)):
+            raise ValueError("'" + string + "' is no a Float!")
+        return float(string)
