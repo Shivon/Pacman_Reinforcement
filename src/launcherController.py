@@ -1,9 +1,12 @@
 import ConfigParser
 import tkMessageBox
+import subprocess
+from datatypeUtils import DatatypeUtils
 
 CONFIGURATION_FILE = "settings.ini"
 
 class LauncherController:
+    view = None
     numGamesVar = None
     numGhostsVar = None
     pacmanVar = None
@@ -11,7 +14,8 @@ class LauncherController:
     textGraphicsVar = None
     quietTextGraphicsVar = None
     
-    def __init__(self, numGamesVar, numGhostsVar, pacmanVar, frameTimeVar, textGraphicsVar, quietTextGraphicsVar):
+    def __init__(self, view, numGamesVar, numGhostsVar, pacmanVar, frameTimeVar, textGraphicsVar, quietTextGraphicsVar):
+        self.view = view
         self.numGamesVar = numGamesVar
         self.numGhostsVar = numGhostsVar
         self.pacmanVar = pacmanVar
@@ -19,12 +23,19 @@ class LauncherController:
         self.frameTimeVar = frameTimeVar
         self.textGraphicsVar = textGraphicsVar
         self.quietTextGraphicsVar = quietTextGraphicsVar
-        
+    
+    def getArgumentString(self):
+        print "NotImplementedError: LauncherController.getArgumentString()!"
+        return ""
+    
     def startApplication(self):
         if (not self.validateData('Error! Invalid settings!', 'Some values are not valid: ')):
             return
         
-        print "NotImplementedError: LauncherController.startApplication()!"
+        arguments = self.getArgumentString()
+        
+        self.view.destroy()
+        subprocess.call("pacman.py" + arguments, shell=True)
     
     def getInvalidFields(self):
         print "NotImplementedError: LauncherController.getInvalidFields()!"

@@ -158,7 +158,7 @@ class LauncherView(Tkinter.Tk):
         self.align()
         
         # Create controller
-        self.launcherController = LauncherController(
+        self.launcherController = LauncherController(self,
             self.numGamesVar, self.numGhostsVar, self.pacmanVar,
             self.frameTimeVar, self.textGraphicsVar, self.quietTextGraphicsVar)
             
