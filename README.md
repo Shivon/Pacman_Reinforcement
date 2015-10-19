@@ -21,6 +21,11 @@ Often used:
 	* `-l`: set map which shall be used
 
 
+### Launcher Usage
+
+For ease of use, you could start our programm via launcher.
+This works both with double-click on the file launcher.py or by executing the following terminal command: `python launcher.py`. The prerequisite is that [Python](https://www.python.org/downloads/) is installed on the target computer and Python is registered in the PATH environment variable.
+
 ### Implementation details
 
 * Positions are represented by (x,y) Cartesian coordinates and any arrays are indexed by [x][y] 
