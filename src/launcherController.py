@@ -95,18 +95,25 @@ class LauncherController:
         self.validateData('Error! Invalid settings!', 'Some values are not valid: ')
         
     def loadSettingsFromConfigFile(self):
-        Config = ConfigParser.ConfigParser()
-        Config.read(CONFIGURATION_FILE)
+        try:
+            Config = ConfigParser.ConfigParser()
+            Config.read(CONFIGURATION_FILE)
+            
+            self.numGamesVar.set(Config.get('GameSettings', 'numGames'))
+            self.numGhostsVar.set(Config.get('GameSettings', 'numGhosts'))
+            self.pacmanVar.set(Config.get('GameSettings', 'pacman'))
+            
+            self.frameTimeVar.set(Config.get('DisplaySettings', 'frameTime'))
+            self.textGraphicsVar.set(Config.get('DisplaySettings', 'textGraphics'))
+            self.quietTextGraphicsVar.set(Config.get('DisplaySettings', 'quietTextGraphics'))
+            
+            self.validateData('Error! Invalid settings!', 'Some values are not valid: ')
+        except:
+            self.handleMissingConfigFile();
         
-        self.numGamesVar.set(Config.get('GameSettings', 'numGames'))
-        self.numGhostsVar.set(Config.get('GameSettings', 'numGhosts'))
-        self.pacmanVar.set(Config.get('GameSettings', 'pacman'))
-        
-        self.frameTimeVar.set(Config.get('DisplaySettings', 'frameTime'))
-        self.textGraphicsVar.set(Config.get('DisplaySettings', 'textGraphics'))
-        self.quietTextGraphicsVar.set(Config.get('DisplaySettings', 'quietTextGraphics'))
-        
-        self.validateData('Error! Invalid settings!', 'Some values are not valid: ')
+    def handleMissingConfigFile(self):
+        self.loadDefaultSettings()
+        self.saveSettingsToConfigFile()
         
     def saveSettingsToConfigFile(self):
         if (not self.validateData('Error! Invalid settings!', 'Some values are not valid: ')):

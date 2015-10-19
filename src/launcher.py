@@ -163,7 +163,7 @@ class LauncherView(Tkinter.Tk):
             self.frameTimeVar, self.textGraphicsVar, self.quietTextGraphicsVar)
             
         # Load settings
-        self.launcherController.loadDefaultSettings()
+        self.launcherController.loadSettingsFromConfigFile()
 
     # Button events
     def OnExitButtonClick(self):
