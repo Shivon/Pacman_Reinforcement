@@ -1,3 +1,8 @@
+import ConfigParser
+import tkMessageBox
+
+CONFIGURATION_FILE = "settings.ini"
+
 class LauncherController:
     numGamesVar = None
     numGhostsVar = None
@@ -10,18 +15,72 @@ class LauncherController:
         self.numGamesVar = numGamesVar
         self.numGhostsVar = numGhostsVar
         self.pacmanVar = pacmanVar
+        
         self.frameTimeVar = frameTimeVar
         self.textGraphicsVar = textGraphicsVar
         self.quietTextGraphicsVar = quietTextGraphicsVar
         
     def startApplication(self):
-        print "NotImplementedError: LauncherController.OnStartButtonClick!"
+        if (not self.validateData('Error! Invalid settings!', 'Some values are not valid: ')):
+            return
         
+        print "NotImplementedError: LauncherController.startApplication()!"
+    
+    def getInvalidFields(self):
+        print "NotImplementedError: LauncherController.getInvalidFields()!"
+        return []
+        
+    def validateData(self, errorTitle, errorMessage):
+        invalidFields = self.getInvalidFields()
+        if (len(invalidFields) > 0):
+            tkMessageBox.showerror(
+                title = errorTitle,
+                message = errorMessage + '\n- ' + '\n- '.join(invalidFields))
+            return False
+        else:
+            return True
+    
     def loadDefaultSettings(self):
-        print "NotImplementedError: LauncherController.OnDefaultSettingsButtonClick!"
+        self.numGamesVar.set("1")
+        self.numGhostsVar.set("4")
+        self.pacmanVar.set("KeyboardAgent")
+        
+        self.frameTimeVar.set("0.1")
+        self.textGraphicsVar.set("False")
+        self.quietTextGraphicsVar.set("False")
+        
+        self.validateData('Error! Invalid settings!', 'Some values are not valid: ')
         
     def loadSettingsFromConfigFile(self):
-        print "NotImplementedError: LauncherController.OnLoadSettingsButtonClick!"
+        Config = ConfigParser.ConfigParser()
+        Config.read(CONFIGURATION_FILE)
+        
+        self.numGamesVar.set(Config.get('GameSettings', 'numGames'))
+        self.numGhostsVar.set(Config.get('GameSettings', 'numGhosts'))
+        self.pacmanVar.set(Config.get('GameSettings', 'pacman'))
+        
+        self.frameTimeVar.set(Config.get('DisplaySettings', 'frameTime'))
+        self.textGraphicsVar.set(Config.get('DisplaySettings', 'textGraphics'))
+        self.quietTextGraphicsVar.set(Config.get('DisplaySettings', 'quietTextGraphics'))
+        
+        self.validateData('Error! Invalid settings!', 'Some values are not valid: ')
         
     def saveSettingsToConfigFile(self):
-        print "NotImplementedError: LauncherController.OnSaveSettingsButtonClick!"
+        if (not self.validateData('Error! Invalid settings!', 'Some values are not valid: ')):
+            return
+            
+        Config = ConfigParser.ConfigParser()
+        cfgfile = open(CONFIGURATION_FILE, 'w')
+        
+        Config.add_section('GameSettings')
+        Config.set('GameSettings', 'numGames', self.numGamesVar.get())
+        Config.set('GameSettings', 'numGhosts', self.numGhostsVar.get())
+        Config.set('GameSettings', 'pacman', self.pacmanVar.get())
+        
+        Config.add_section('DisplaySettings')
+        Config.set('DisplaySettings', 'frameTime', self.frameTimeVar.get())
+        Config.set('DisplaySettings', 'textGraphics', self.textGraphicsVar.get())
+        Config.set('DisplaySettings', 'quietTextGraphics', self.quietTextGraphicsVar.get())
+        Config.write(cfgfile)
+        
+        cfgfile.close()

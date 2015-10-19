@@ -60,7 +60,7 @@ class LauncherView(Tkinter.Tk):
             
     # Create textbox
     # Returns a StringVar to access the input
-    def createTextbox(self, text, row):
+    def createTextbox(self, row):
         paddingRight = WINDOW_BORDER
         paddingTop = WINDOW_BORDER if (row == 0) else 0
     
@@ -69,7 +69,7 @@ class LauncherView(Tkinter.Tk):
             textvariable=textboxVariable, width=WINDOW_TEXTBOX_WIDTH)
         textbox.grid(column=1, row=row, sticky='NW',
             padx=(WINDOW_SPACING, paddingRight), pady=(paddingTop, WINDOW_SPACING))
-        textboxVariable.set(text)
+        textboxVariable.set("")
         return textboxVariable
     
     def finishRow(self):
@@ -85,30 +85,30 @@ class LauncherView(Tkinter.Tk):
         self.finishRow()
         
         self.createLabel("Anzahl der Spiele", self.nextRow)
-        self.numGamesVar = self.createTextbox("1", self.nextRow)
+        self.numGamesVar = self.createTextbox(self.nextRow)
         self.finishRow()
         
         self.createLabel("Anzahl der Geister", self.nextRow)
-        self.numGhostsVar = self.createTextbox("4", self.nextRow)
+        self.numGhostsVar = self.createTextbox(self.nextRow)
         self.finishRow()
         
         self.createLabel("Pacman-Agent", self.nextRow)
-        self.pacmanVar = self.createTextbox("KeyboardAgent", self.nextRow)
+        self.pacmanVar = self.createTextbox(self.nextRow)
         self.finishRow()
         
         self.createHeader("Anzeigeeinstellungen", self.nextRow)
         self.finishRow()
         
         self.createLabel("Spielgeschwindigkeit", self.nextRow)
-        self.frameTimeVar = self.createTextbox("0.1", self.nextRow)
+        self.frameTimeVar = self.createTextbox(self.nextRow)
         self.finishRow()
         
         self.createLabel("Ausgabe als Text", self.nextRow)
-        self.textGraphicsVar = self.createTextbox("False", self.nextRow)
+        self.textGraphicsVar = self.createTextbox(self.nextRow)
         self.finishRow()
         
         self.createLabel("Minimale Ausgabe", self.nextRow)
-        self.quietTextGraphicsVar = self.createTextbox("False", self.nextRow)
+        self.quietTextGraphicsVar = self.createTextbox(self.nextRow)
         self.finishRow()
         
         # Button to apply default settings
@@ -118,17 +118,17 @@ class LauncherView(Tkinter.Tk):
         defaultSettingsButton.grid(column=0, row=self.nextRow, sticky='NE',
             padx=(WINDOW_BORDER, WINDOW_SPACING), pady=(WINDOW_SPACING, WINDOW_SPACING))
         
-        loadSettingsButton = Tkinter.Button(self,
-            text=u"  Einstellungen laden  ",
-            command=self.OnLoadSettingsButtonClick)
-        loadSettingsButton.grid(column=1, row=self.nextRow, sticky='NW',
+        saveSettingsButton = Tkinter.Button(self,
+            text=u"Einstellungen speichern",
+            command=self.OnSaveSettingsButtonClick)
+        saveSettingsButton.grid(column=1, row=self.nextRow, sticky='NW',
             padx=(WINDOW_SPACING, WINDOW_BORDER), pady=(WINDOW_SPACING, WINDOW_SPACING))
         self.finishRow()
         
-        saveSettingsButton = Tkinter.Button(self,
-            text=u"     Einstellungen speichern     ",
-            command=self.OnSaveSettingsButtonClick)
-        saveSettingsButton.grid(column=0, row=self.nextRow, sticky='NE',
+        loadSettingsButton = Tkinter.Button(self,
+            text=u"         Einstellungen laden        ",
+            command=self.OnLoadSettingsButtonClick)
+        loadSettingsButton.grid(column=0, row=self.nextRow, sticky='NE',
             padx=(WINDOW_BORDER, WINDOW_SPACING), pady=(WINDOW_SPACING, WINDOW_SPACING))
             
         boldFont = tkFont.nametofont("TkDefaultFont")
@@ -137,7 +137,7 @@ class LauncherView(Tkinter.Tk):
         
         # Exit button
         exitButton = Tkinter.Button(self,
-            text=u"Beenden",
+            text=u" Beenden ",
             command=self.OnExitButtonClick)
         exitButton['font'] = boldFont
         exitButton.grid(column=1, row=self.nextRow, sticky='NW',
@@ -145,22 +145,25 @@ class LauncherView(Tkinter.Tk):
         
         # Start button
         startButton = Tkinter.Button(self,
-            text=u"Starten",
+            text=u" Starten ",
             command=self.OnStartButtonClick)
         startButton['font'] = boldFont
         startButton.grid(column=1, row=self.nextRow, sticky='NE',
             padx=(WINDOW_SPACING, WINDOW_BORDER), pady=(WINDOW_SPACING, WINDOW_BORDER))
-            
-        # Create controller
-        self.launcherController = LauncherController(
-            self.numGamesVar, self.numGhostsVar, self.pacmanVar,
-            self.frameTimeVar, self.textGraphicsVar, self.quietTextGraphicsVar)
         
         # Disable resizing
         self.resizable(False,False)
         
         # Align the window
         self.align()
+        
+        # Create controller
+        self.launcherController = LauncherController(
+            self.numGamesVar, self.numGhostsVar, self.pacmanVar,
+            self.frameTimeVar, self.textGraphicsVar, self.quietTextGraphicsVar)
+            
+        # Load settings
+        self.launcherController.loadDefaultSettings()
 
     # Button events
     def OnExitButtonClick(self):
