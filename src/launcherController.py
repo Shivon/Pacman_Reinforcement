@@ -2,6 +2,7 @@ import ConfigParser
 import tkMessageBox
 import subprocess
 from datatypeUtils import DatatypeUtils
+from graphicsDisplay import *
 
 CONFIGURATION_FILE = "settings.ini"
 
@@ -45,9 +46,10 @@ class LauncherController:
             return ""
     
     def startApplication(self):
-        if (not self.validateData('Error! Invalid settings!', 'Some values are not valid: ')):
+        if (not self.validateData('Fehlerhafte Einstellungen!', 'Einige Einstellungswerte sind ungueltig: ')):
             return
         
+        self.saveSettingsToConfigFile()
         arguments = self.getArgumentString()
         
         self.view.destroy()
@@ -57,19 +59,29 @@ class LauncherController:
         print "NotImplementedError: LauncherController.getInvalidFields()!"
         
         invalidFields = []
+        
+        # Datatype checking
         if (not DatatypeUtils.isIntegerString(self.numGamesVar.get())):
-            invalidFields.append("numGames is not a Integer!")
+            invalidFields.append("'Anzahl der Spiele' muss eine Ganzzahl sein (zum Beispiel: 1)!")
         if (not DatatypeUtils.isIntegerString(self.numGhostsVar.get())):
-            invalidFields.append("numGhosts is not a Integer!")
+            invalidFields.append("'Anzahl der Geister' muss eine Ganzzahl sein (zum Beispiel: 4)!")
         if (not DatatypeUtils.isString(self.pacmanVar.get())):
-            invalidFields.append("pacman is not a String!")
+            invalidFields.append("'Pacman-Agent' muss eine Zeichenkette sein (zum Beispiel: KeyboardAgent)!")
             
         if (not DatatypeUtils.isFloatString(self.frameTimeVar.get())):
-            invalidFields.append("frameTime is not a Float!")
+            invalidFields.append("'Spielgeschwindigkeit' muss eine Kommazahl sein (zum Beispiel: 0.1)!")
         if (not DatatypeUtils.isBooleanString(self.textGraphicsVar.get())):
-            invalidFields.append("textGraphics is not a Boolean!")
+            invalidFields.append("'Ausgabe als Text' muss ein Wahrheitswert sein (True oder False)!")
         if (not DatatypeUtils.isBooleanString(self.quietTextGraphicsVar.get())):
-            invalidFields.append("quietTextGraphics is not a Boolean!")
+            invalidFields.append("'Minimale Ausgabe' muss ein Wahrheitswert sein (True oder False)!")
+            
+        # Value checking
+        if (DatatypeUtils.isFloatString(self.frameTimeVar.get())):
+            frameTimeValue = DatatypeUtils.stringToFloat(self.frameTimeVar.get())
+            if (frameTimeValue > MAX_SPEED):
+                invalidFields.append("'Spielgeschwindigkeit' muss kleiner oder gleich " + str(MAX_SPEED) + " sein!")
+            if (frameTimeValue < MIN_SPEED):
+                invalidFields.append("'Spielgeschwindigkeit' muss groesser oder gleich " + str(MIN_SPEED) + " sein!")
         
         return invalidFields
         
@@ -92,7 +104,7 @@ class LauncherController:
         self.textGraphicsVar.set("False")
         self.quietTextGraphicsVar.set("False")
         
-        self.validateData('Error! Invalid settings!', 'Some values are not valid: ')
+        self.validateData('Fehlerhafte Einstellungen!', 'Einige Standard-Einstellungswerte sind ungueltig: ')
         
     def loadSettingsFromConfigFile(self):
         try:
@@ -107,7 +119,7 @@ class LauncherController:
             self.textGraphicsVar.set(Config.get('DisplaySettings', 'textGraphics'))
             self.quietTextGraphicsVar.set(Config.get('DisplaySettings', 'quietTextGraphics'))
             
-            self.validateData('Error! Invalid settings!', 'Some values are not valid: ')
+            self.validateData('Fehlerhafte Einstellungen!', 'Einige Einstellungswerte sind ungueltig: ')
         except:
             self.handleMissingConfigFile();
         
@@ -116,7 +128,7 @@ class LauncherController:
         self.saveSettingsToConfigFile()
         
     def saveSettingsToConfigFile(self):
-        if (not self.validateData('Error! Invalid settings!', 'Some values are not valid: ')):
+        if (not self.validateData('Fehlerhafte Einstellungen!', 'Einige Einstellungswerte sind ungueltig: ')):
             return
             
         Config = ConfigParser.ConfigParser()
