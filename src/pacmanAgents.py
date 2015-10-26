@@ -33,7 +33,7 @@ class LeftTurnAgent(game.Agent):
         if Directions.LEFT[left] in legal: return Directions.LEFT[left]
         return Directions.STOP
 
-class GreedyAgent(Agent):
+class GreedyAgent(game.Agent):
     def __init__(self, evalFn="scoreEvaluation"):
         self.evaluationFunction = util.lookup(evalFn, globals())
         assert self.evaluationFunction != None
@@ -49,7 +49,7 @@ class GreedyAgent(Agent):
         bestActions = [pair[1] for pair in scored if pair[0] == bestScore]
         return random.choice(bestActions)
 
-class BfsAgent(Agent):
+class BfsAgent(game.Agent):
     def __init__(self, evalFn="scoreEvaluation"):
         assert True
     
@@ -128,3 +128,12 @@ class BfsAgent(Agent):
 
 def scoreEvaluation(state):
     return state.getScore()
+
+# def sarsa(state):
+#     # qState = 0
+#     steps = 4
+#     gammar = 0.2
+#     delta = 0
+#     for num in range(steps):
+#
+
