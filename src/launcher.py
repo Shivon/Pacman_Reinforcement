@@ -6,7 +6,7 @@ WINDOW_ALIGN_TO_LEFT_FACTOR = 2
 WINDOW_ALIGN_TO_TOP_FACTOR = 2
 WINDOW_BORDER = 20
 WINDOW_SPACING = 5
-WINDOW_TEXTBOX_WIDTH = 20
+WINDOW_TEXTBOX_WIDTH = 30
 WINDOW_LABEL_WIDTH = 20
 
 import Tkinter
@@ -81,7 +81,7 @@ class LauncherView(Tkinter.Tk):
         textboxVariable = Tkinter.StringVar()
         textbox = Tkinter.OptionMenu(self,
             textboxVariable, *values)
-        textbox.grid(column=1, row=row, sticky='NW',
+        textbox.grid(column=1, row=row, sticky="ew",
             padx=(WINDOW_SPACING, paddingRight), pady=(paddingTop, WINDOW_SPACING))
         textboxVariable.set(values[0])
         return textboxVariable
@@ -174,10 +174,10 @@ class LauncherView(Tkinter.Tk):
             padx=(WINDOW_BORDER, WINDOW_SPACING), pady=(WINDOW_SPACING, WINDOW_SPACING))
         
         saveSettingsButton = Tkinter.Button(self,
-            text=u"Einstellungen speichern",
+            text=u"   Einstellungen speichern   ",
             command=self.OnSaveSettingsButtonClick)
         saveSettingsButton.grid(column=1, row=self.nextRow, sticky='NW',
-            padx=(WINDOW_SPACING, WINDOW_BORDER), pady=(WINDOW_SPACING, WINDOW_SPACING))
+            padx=(WINDOW_TEXTBOX_WIDTH*0.7, WINDOW_BORDER), pady=(WINDOW_SPACING, WINDOW_SPACING))
         self.finishRow()
         
         loadSettingsButton = Tkinter.Button(self,
@@ -196,7 +196,7 @@ class LauncherView(Tkinter.Tk):
             command=self.OnExitButtonClick)
         exitButton['font'] = boldFont
         exitButton.grid(column=1, row=self.nextRow, sticky='NW',
-            padx=(WINDOW_SPACING, WINDOW_SPACING), pady=(WINDOW_SPACING, WINDOW_BORDER))
+            padx=(WINDOW_TEXTBOX_WIDTH*0.7, WINDOW_SPACING), pady=(WINDOW_SPACING, WINDOW_BORDER))
         
         # Start button
         startButton = Tkinter.Button(self,
@@ -204,7 +204,7 @@ class LauncherView(Tkinter.Tk):
             command=self.OnStartButtonClick)
         startButton['font'] = boldFont
         startButton.grid(column=1, row=self.nextRow, sticky='NE',
-            padx=(WINDOW_SPACING, WINDOW_BORDER), pady=(WINDOW_SPACING, WINDOW_BORDER))
+            padx=(WINDOW_SPACING, WINDOW_TEXTBOX_WIDTH*1.1), pady=(WINDOW_SPACING, WINDOW_BORDER))
         
         # Disable resizing
         self.resizable(False,False)
