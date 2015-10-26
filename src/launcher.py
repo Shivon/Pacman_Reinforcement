@@ -85,6 +85,20 @@ class LauncherView(Tkinter.Tk):
             padx=(WINDOW_SPACING, paddingRight), pady=(paddingTop, WINDOW_SPACING))
         textboxVariable.set(values[0])
         return textboxVariable
+        
+    def createCheckBox(self, row):
+        paddingRight = WINDOW_BORDER
+        paddingTop = WINDOW_BORDER if (row == 0) else 0
+    
+        textboxVariable = Tkinter.StringVar()
+        textbox = Tkinter.Checkbutton(
+            self, variable=textboxVariable,
+            onvalue="True", offvalue="False"
+            )
+        textbox.grid(column=1, row=row, sticky='NW',
+            padx=(WINDOW_TEXTBOX_WIDTH*3, paddingRight), pady=(paddingTop, WINDOW_SPACING))
+        textboxVariable.set("False")
+        return textboxVariable
     
     def finishRow(self):
         self.nextRow = self.nextRow + 1
@@ -145,11 +159,11 @@ class LauncherView(Tkinter.Tk):
         self.finishRow()
         
         self.createLabel("Ausgabe als Text", self.nextRow)
-        self.textGraphicsVar = self.createTextbox(self.nextRow)
+        self.textGraphicsVar = self.createCheckBox(self.nextRow)
         self.finishRow()
         
         self.createLabel("Minimale Ausgabe", self.nextRow)
-        self.quietTextGraphicsVar = self.createTextbox(self.nextRow)
+        self.quietTextGraphicsVar = self.createCheckBox(self.nextRow)
         self.finishRow()
         
         # Button to apply default settings
