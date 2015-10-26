@@ -11,12 +11,13 @@
 # Student side autograding was added by Brad Miller, Nick Hay, and
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
-
+from bfsSearch import NearestObjectSearch
 from pacman import Directions
 from game import Agent
 import random
 import game
 import util
+import Queue
 
 class LeftTurnAgent(game.Agent):
     "An agent that turns left at every opportunity"
@@ -47,6 +48,83 @@ class GreedyAgent(Agent):
         bestScore = max(scored)[0]
         bestActions = [pair[1] for pair in scored if pair[0] == bestScore]
         return random.choice(bestActions)
+
+class BfsAgent(Agent):
+    def __init__(self, evalFn="scoreEvaluation"):
+        assert True
+    
+    def evade(self, direction, state):
+        legal = state.getLegalPacmanActions()
+        if Directions.STOP in legal: legal.remove(Directions.STOP)
+        if direction in legal: legal.remove(direction)
+        if (not legal):
+            return Directions.STOP
+        else:
+            return random.choice(legal)
+        
+    def goTo(self, direction, state):
+        legal = state.getLegalPacmanActions()
+        if direction in legal: return direction
+        if (not legal):
+            return Directions.STOP
+        else:
+            return random.choice(legal)
+    
+    def getNearestEnermy(self, state, bfsResult):
+        nearestEnermy = None
+        lastDistance = 99999
+        
+        index = 1
+        while index < state.getNumAgents():
+            for loc in bfsResult.getGhostsLocData():
+                if (not loc.isEatable()):
+                    if (lastDistance > loc.getDistance()):
+                        lastDistance = loc.getDistance()
+                        nearestEnermy = loc
+            index += 1
+            
+        return nearestEnermy
+        
+    def getNearestEatable(self, state, bfsResult):
+        nearestEnermy = None
+        lastDistance = 99999
+        
+        index = 1
+        while index < state.getNumAgents():
+            for loc in bfsResult.getGhostsLocData():
+                if (loc.isEatable()):
+                    if (lastDistance > loc.getDistance()):
+                        lastDistance = loc.getDistance()
+                        nearestEnermy = loc
+            index += 1
+            
+        return nearestEnermy
+        
+    def getNearestEatableOrNearestFood(self, state, bfsResult):
+        eatable = self.getNearestEatable(state, bfsResult)
+        food = bfsResult.getNextFoodLocData()
+        if (eatable == None):
+            return food
+            
+        if (eatable.getDistance() < food.getDistance()):
+            return eatable
+        else:
+            return food
+    
+    def getAction(self, state):
+        huntDistance = 3
+        evadeDistance = 3
+        
+        bfsResult = NearestObjectSearch(state).getResult()
+        
+        # EVADE UNEATABLE GHOST
+        nearestEnermy = self.getNearestEnermy(state, bfsResult)
+        if (nearestEnermy != None):
+            if (nearestEnermy.getDistance() < evadeDistance):
+                return self.evade(nearestEnermy.getDirection(), state)
+
+        # GET NEAREST FOOD OR NEAREST EATABLE GHOST
+        return self.getNearestEatableOrNearestFood(state, bfsResult).getDirection()
 
 def scoreEvaluation(state):
     return state.getScore()

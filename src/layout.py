@@ -37,6 +37,12 @@ class Layout:
         self.totalFood = len(self.food.asList())
         # self.initializeVisibilityMatrix()
 
+    def getWidth(self):
+        return self.width
+    
+    def getHeight(self):
+        return self.height
+    
     def getNumGhosts(self):
         return self.numGhosts
 
