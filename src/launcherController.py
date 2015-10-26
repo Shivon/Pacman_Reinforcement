@@ -53,7 +53,7 @@ class LauncherController:
         arguments = self.getArgumentString()
         
         self.view.destroy()
-        subprocess.call("pacman.py " + arguments, shell=True)
+        subprocess.call("python pacman.py " + arguments, shell=True)
     
     def getInvalidFields(self):        
         invalidFields = []
