@@ -1,17 +1,3 @@
-# pacmanAgents.py
-# ---------------
-# Licensing Information:  You are free to use or extend these projects for
-# educational purposes provided that (1) you do not distribute or publish
-# solutions, (2) you retain this notice, and (3) you provide clear
-# attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
-# Attribution Information: The Pacman AI projects were developed at UC Berkeley.
-# The core projects and autograders were primarily created by John DeNero
-# (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
-# Student side autograding was added by Brad Miller, Nick Hay, and
-# Pieter Abbeel (pabbeel@cs.berkeley.edu).
-
-
 from pacman import Directions
 from game import Agent
 import random
@@ -19,32 +5,42 @@ import game
 import util
 import Queue
 
-class NearestObjectSearchData:
+# search result for one specific object (ghost or nearest food)
+class ObjectSearchData:
     def __init__(self, direction, distance, eatable):
         self.direction = direction
         self.distance = distance
         self.eatable = eatable
     
+    # returns the direction (Game.Directions) for the nearest step towards the object.
     def getDirection(self):
         return self.direction
-        
+    
+    # returns the distance (in fields) to the object.
     def getDistance(self):
         return self.distance
     
+    # returns if the object is eatable or not.
+    # if the object is food isEatable always returns True.
+    # if the object is a ghost isEatable returns only True if the ghost is scared
     def isEatable(self):
         return self.eatable
 
+# result of the NearestObjectSearch
 class NearestObjectSearchResult:
     def __init__(self, nextFoodLocData, ghostsLocData):
         self.nextFoodLocData = nextFoodLocData
         self.ghostsLocData = ghostsLocData
     
+    # returns the ObjectSearchData of the nearest food
     def getNextFoodLocData(self):
         return self.nextFoodLocData
-        
+    
+    # returns the ObjectSearchData of all ghosts as a list
     def getGhostsLocData(self):
         return self.ghostsLocData
 
+# BFS algorithm to get information about nearest way to ghosts and nearest food
 class NearestObjectSearch:
     def __init__(self, state):
         self.state = state
@@ -115,9 +111,10 @@ class NearestObjectSearch:
         direction = self.getDirection(path[-1], path[-2])
         length = len(path)-1
         
-        result = NearestObjectSearchData(direction, length, eatable)
+        result = ObjectSearchData(direction, length, eatable)
         return result
 
+    # executes the BFS algorithm and returns a NearestObjectSearchResult
     def getResult(self):
         root = self.state.getPacmanPosition()
         foodPositions = self.state.getFood().asList() + []
@@ -138,7 +135,9 @@ class NearestObjectSearch:
                 nextFood = node
             
             childs = self.getChilds(node)
-            random.shuffle(childs) # Shuffle position of elements
+            # Shuffle position of elements
+            # NOTE: Maybe remove
+            random.shuffle(childs)
             
             for child in childs:
                 if (not (child in visited)):
