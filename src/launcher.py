@@ -13,6 +13,7 @@ import Tkinter
 import tkFont
 from launcherController import LauncherController
 import glob
+import re
 
 class LauncherView(Tkinter.Tk):
     def __init__(self,parent):
@@ -99,17 +100,15 @@ class LauncherView(Tkinter.Tk):
         values = []
         files = glob.glob("*Agents.py")
         for filename in files:
-            if (("ghost" in filename) or ("Ghost" in filename)):
+            if ("ghost" in filename.lower()):
                 continue
             
             with open(filename) as file:
                 content = file.readlines()
                 for line in content:
-                    if (("class" in line) and ("Agent" in line)):
-                        string = line
-                        string = string.replace("class", "")
-                        string = string.split("(")[0].strip()
-                        values.append(string)
+                    if (("class" in line) and ("agent" in line.lower())):
+                        match = re.search('class (.*?)\(', line)
+                        values.append(match.group(1).strip())
                     
         return values
     
