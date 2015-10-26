@@ -116,7 +116,7 @@ class BfsAgent(game.Agent):
         evadeDistance = 3
         
         bfsResult = NearestObjectSearch(state).getResult()
-        
+        # SarsaAgent.sarsaAlgo(bfsResult)
         # EVADE UNEATABLE GHOST
         nearestEnermy = self.getNearestEnermy(state, bfsResult)
         if (nearestEnermy != None):
@@ -129,11 +129,25 @@ class BfsAgent(game.Agent):
 def scoreEvaluation(state):
     return state.getScore()
 
-# def sarsa(state):
-#     # qState = 0
-#     steps = 4
-#     gammar = 0.2
-#     delta = 0
-#     for num in range(steps):
+# class SarsaAgenet(game.Agent):
 #
+#     def __init__(self, evalFn="scoreEvaluation"):
+#         assert True
+#
+#     def getAction(self, state):
+#         return SarsaAgent.sarsaAlgo(self, state)
+#
+#
+#     def sarsaAlgo(state):
+#         # qState = 0
+#         steps = 4
+#         # gammar = 0.2
+#         # delta = 0
+#         # randomNum = random.randint(0, 3)
+#         for num in range(steps):
+#             direction = Directions.NORTH
+#             legal = state.getLegalPacmanActions()
+#             if direction in legal:
+#                 print direction
+#                 return direction
 
