@@ -15,12 +15,11 @@ class LauncherController:
     textGraphicsVar = None
     quietTextGraphicsVar = None
     
-    def __init__(self, view, numGamesVar, numGhostsVar, pacmanVar, frameTimeVar, textGraphicsVar, quietTextGraphicsVar):
-        print DatatypeUtils.isBooleanString("False")
-        
+    def __init__(self, view, numGamesVar, numGhostsVar, layoutVar, pacmanVar, frameTimeVar, textGraphicsVar, quietTextGraphicsVar):
         self.view = view
         self.numGamesVar = numGamesVar
         self.numGhostsVar = numGhostsVar
+        self.layoutVar = layoutVar
         self.pacmanVar = pacmanVar
         
         self.frameTimeVar = frameTimeVar
@@ -32,6 +31,7 @@ class LauncherController:
         
         argumentValues.append("--numGames=" + self.numGamesVar.get())
         argumentValues.append("--numghosts=" + self.numGhostsVar.get())
+        argumentValues.append("--layout=" + self.layoutVar.get())
         argumentValues.append("--pacman=" + self.pacmanVar.get())
         
         argumentValues.append("--frameTime=" + self.frameTimeVar.get())
@@ -55,9 +55,7 @@ class LauncherController:
         self.view.destroy()
         subprocess.call("pacman.py " + arguments, shell=True)
     
-    def getInvalidFields(self):
-        print "NotImplementedError: LauncherController.getInvalidFields()!"
-        
+    def getInvalidFields(self):        
         invalidFields = []
         
         # Datatype checking
@@ -65,6 +63,8 @@ class LauncherController:
             invalidFields.append("'Anzahl der Spiele' muss eine Ganzzahl sein (zum Beispiel: 1)!")
         if (not DatatypeUtils.isIntegerString(self.numGhostsVar.get())):
             invalidFields.append("'Anzahl der Geister' muss eine Ganzzahl sein (zum Beispiel: 4)!")
+        if (not DatatypeUtils.isString(self.layoutVar.get())):
+            invalidFields.append("'Spielfeld' muss eine Zeichenkette sein (zum Beispiel: mediumClassic)!")
         if (not DatatypeUtils.isString(self.pacmanVar.get())):
             invalidFields.append("'Pacman-Agent' muss eine Zeichenkette sein (zum Beispiel: KeyboardAgent)!")
             
@@ -98,6 +98,7 @@ class LauncherController:
     def loadDefaultSettings(self):
         self.numGamesVar.set("1")
         self.numGhostsVar.set("4")
+        self.layoutVar.set("mediumClassic")
         self.pacmanVar.set("KeyboardAgent")
         
         self.frameTimeVar.set("0.1")
@@ -113,6 +114,7 @@ class LauncherController:
             
             self.numGamesVar.set(Config.get('GameSettings', 'numGames'))
             self.numGhostsVar.set(Config.get('GameSettings', 'numGhosts'))
+            self.layoutVar.set(Config.get('GameSettings', 'layout'))
             self.pacmanVar.set(Config.get('GameSettings', 'pacman'))
             
             self.frameTimeVar.set(Config.get('DisplaySettings', 'frameTime'))
@@ -137,6 +139,7 @@ class LauncherController:
         Config.add_section('GameSettings')
         Config.set('GameSettings', 'numGames', self.numGamesVar.get())
         Config.set('GameSettings', 'numGhosts', self.numGhostsVar.get())
+        Config.set('GameSettings', 'layout', self.layoutVar.get())
         Config.set('GameSettings', 'pacman', self.pacmanVar.get())
         
         Config.add_section('DisplaySettings')

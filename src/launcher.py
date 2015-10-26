@@ -92,6 +92,10 @@ class LauncherView(Tkinter.Tk):
         self.numGhostsVar = self.createTextbox(self.nextRow)
         self.finishRow()
         
+        self.createLabel("Spielfeld", self.nextRow)
+        self.layoutVar = self.createTextbox(self.nextRow)
+        self.finishRow()
+        
         self.createLabel("Pacman-Agent", self.nextRow)
         self.pacmanVar = self.createTextbox(self.nextRow)
         self.finishRow()
@@ -159,7 +163,7 @@ class LauncherView(Tkinter.Tk):
         
         # Create controller
         self.launcherController = LauncherController(self,
-            self.numGamesVar, self.numGhostsVar, self.pacmanVar,
+            self.numGamesVar, self.numGhostsVar, self.layoutVar, self.pacmanVar,
             self.frameTimeVar, self.textGraphicsVar, self.quietTextGraphicsVar)
             
         # Load settings
