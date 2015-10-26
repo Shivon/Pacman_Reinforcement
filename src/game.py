@@ -158,6 +158,9 @@ class AgentState:
 
     def getDirection(self):
         return self.configuration.getDirection()
+        
+    def isScared(self):
+        return self.scaredTimer > 0
 
 class Grid:
     """
