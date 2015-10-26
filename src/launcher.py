@@ -12,6 +12,7 @@ WINDOW_LABEL_WIDTH = 20
 import Tkinter
 import tkFont
 from launcherController import LauncherController
+import glob
 
 class LauncherView(Tkinter.Tk):
     def __init__(self,parent):
@@ -71,6 +72,18 @@ class LauncherView(Tkinter.Tk):
             padx=(WINDOW_SPACING, paddingRight), pady=(paddingTop, WINDOW_SPACING))
         textboxVariable.set("")
         return textboxVariable
+        
+    def createDropDown(self, row, values):
+        paddingRight = WINDOW_BORDER
+        paddingTop = WINDOW_BORDER if (row == 0) else 0
+    
+        textboxVariable = Tkinter.StringVar()
+        textbox = Tkinter.OptionMenu(self,
+            textboxVariable, *values)
+        textbox.grid(column=1, row=row, sticky='NW',
+            padx=(WINDOW_SPACING, paddingRight), pady=(paddingTop, WINDOW_SPACING))
+        textboxVariable.set(values[0])
+        return textboxVariable
     
     def finishRow(self):
         self.nextRow = self.nextRow + 1
@@ -93,7 +106,10 @@ class LauncherView(Tkinter.Tk):
         self.finishRow()
         
         self.createLabel("Spielfeld", self.nextRow)
-        self.layoutVar = self.createTextbox(self.nextRow)
+        values = []
+        for layout in glob.glob("layouts/*.lay"):
+            values.append(layout.replace("layouts", "")[1:].replace(".lay", ""))
+        self.layoutVar = self.createDropDown(self.nextRow, values)
         self.finishRow()
         
         self.createLabel("Pacman-Agent", self.nextRow)
