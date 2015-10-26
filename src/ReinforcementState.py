@@ -18,7 +18,7 @@ class ReinforcementDirection(object):
         elif direction == Directions.WEST:
             return self.WEST
         else:
-            raise ValueError('Direction Unknown')
+            raise ValueError('Direction Unknown: ' + str(direction))
 
     @classmethod
     def toGameDirection(self, direction):
@@ -40,6 +40,18 @@ class Threat(object):
     NEXT = 1
     NEAR = 2
     FAR_AWAY = 3
+
+    @classmethod
+    def fromDistance(self, distance):
+        if distance <=1:
+            return self.DANGER
+        elif distance <= 3:
+            return self.NEXT
+        elif distance <= 5:
+            return self.NEAR
+        else:
+            return self.FAR_AWAY
+
 
 class GhostState(object):
     """docstring for ClassName"""
@@ -78,5 +90,3 @@ class ReinforcementState(object):
 #print bin(GhostState(Directions.WEST, Threat.DANGER, True).toBin())
 
 #print bin(ReinforcementState(Directions.WEST, [GhostState(Directions.NORTH, Threat.DANGER, True),GhostState(Directions.NORTH, Threat.DANGER, True),GhostState(Directions.SOUTH, Threat.FAR_AWAY, True),GhostState(Directions.NORTH, Threat.DANGER, True)]).toBin())
-
-

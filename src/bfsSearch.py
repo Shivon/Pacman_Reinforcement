@@ -1,5 +1,6 @@
 from pacman import Directions
 from game import Agent
+from ReinforcementState import *
 import random
 import game
 import util
@@ -11,15 +12,15 @@ class ObjectSearchData:
         self.direction = direction
         self.distance = distance
         self.eatable = eatable
-    
+
     # returns the direction (Game.Directions) for the nearest step towards the object.
     def getDirection(self):
         return self.direction
-    
+
     # returns the distance (in fields) to the object.
     def getDistance(self):
         return self.distance
-    
+
     # returns if the object is eatable or not.
     # if the object is food isEatable always returns True.
     # if the object is a ghost isEatable returns only True if the ghost is scared
@@ -31,11 +32,11 @@ class NearestObjectSearchResult:
     def __init__(self, nextFoodLocData, ghostsLocData):
         self.nextFoodLocData = nextFoodLocData
         self.ghostsLocData = ghostsLocData
-    
+
     # returns the ObjectSearchData of the nearest food
     def getNextFoodLocData(self):
         return self.nextFoodLocData
-    
+
     # returns the ObjectSearchData of all ghosts as a list
     def getGhostsLocData(self):
         return self.ghostsLocData
@@ -44,14 +45,14 @@ class NearestObjectSearchResult:
 class NearestObjectSearch:
     def __init__(self, state):
         self.state = state
-        
+
     def isUnblocked(self, position):
         wallPositions = self.state.data.layout.walls.asList()
         minPosX = 0
         maxPosX = self.state.data.layout.getWidth()-1
         minPosY = 0
         maxPosY = self.state.data.layout.getHeight()-1
-        
+
         if (position in wallPositions):
             return False
         if (position[0] < minPosX):
@@ -62,55 +63,55 @@ class NearestObjectSearch:
             return False
         if (position[1] > maxPosY):
             return False
-        
+
         return True
-        
+
     def getChildren(self, position):
         children = []
-            
+
         top = (position[0], position[1]-1)
         if (self.isUnblocked(top)):
             children.append(top)
-        
+
         right = (position[0]+1, position[1])
         if (self.isUnblocked(right)):
             children.append(right)
-        
+
         bottom = (position[0], position[1]+1)
         if (self.isUnblocked(bottom)):
             children.append(bottom)
-            
+
         left = (position[0]-1, position[1])
         if (self.isUnblocked(left)):
             children.append(left)
-        
+
         return children
-    
+
     def getDirection(self, positionFrom, positionTo):
         if (positionFrom[1] > positionTo[1]):
             return Directions.SOUTH
-            
+
         if (positionFrom[0] < positionTo[0]):
             return Directions.EAST
-            
+
         if (positionFrom[1] < positionTo[1]):
             return Directions.NORTH
-            
+
         if (positionFrom[0] > positionTo[0]):
             return Directions.WEST
-            
+
         return Directions.STOP
-    
+
     def getObjectData(self, position, previousNodes, eatable):
         node = (int(position[0]), int(position[1]))
         path = []
         while (node != None):
             path.append(node)
             node = previousNodes[node]
-        
+
         direction = self.getDirection(path[-1], path[-2])
         length = len(path)-1
-        
+
         result = ObjectSearchData(direction, length, eatable)
         return result
 
@@ -118,33 +119,33 @@ class NearestObjectSearch:
     def getResult(self):
         root = self.state.getPacmanPosition()
         foodPositions = self.state.getFood().asList() + []
-        
+
         queue = Queue.Queue()
         visited = []
         queue.put(root)
         visited.append(root)
-        
+
         previousNodes = {}
         previousNodes[root] = None
-        
+
         nextFood = None
-        
+
         while (not queue.empty()):
             node = queue.get()
             if ((nextFood == None) and (node in foodPositions)):
                 nextFood = node
-            
+
             children = self.getChildren(node)
             # Shuffle position of elements
             # NOTE: Maybe remove
             random.shuffle(children)
-            
+
             for child in children:
                 if (not (child in visited)):
                     previousNodes[child] = node
                     queue.put(child)
                     visited.append(child)
-        
+
         nextFoodLoc = self.getObjectData(nextFood, previousNodes, True)
         ghostsLoc = []
         index = 1
@@ -153,5 +154,12 @@ class NearestObjectSearch:
             ghostEatable = self.state.getGhostState(index).isScared()
             ghostsLoc.append(self.getObjectData(ghostPosition, previousNodes, ghostEatable))
             index += 1
-        
+
         return NearestObjectSearchResult(nextFoodLoc, ghostsLoc)
+
+    def getReinforcmentResult(self):
+        bfsState = self.getResult()
+        ghostStates = []
+        for ghost in bfsState.getGhostsLocData():
+            ghostStates.append(GhostState(ghost.getDirection(), Threat.fromDistance(ghost.getDistance()), ghost.isEatable()))
+        return ReinforcementState(bfsState.getNextFoodLocData().getDirection(),ghostStates)
