@@ -65,26 +65,26 @@ class NearestObjectSearch:
         
         return True
         
-    def getChilds(self, position):
-        childs = []
+    def getChildren(self, position):
+        children = []
             
         top = (position[0], position[1]-1)
         if (self.isUnblocked(top)):
-            childs.append(top)
+            children.append(top)
         
         right = (position[0]+1, position[1])
         if (self.isUnblocked(right)):
-            childs.append(right)
+            children.append(right)
         
         bottom = (position[0], position[1]+1)
         if (self.isUnblocked(bottom)):
-            childs.append(bottom)
+            children.append(bottom)
             
         left = (position[0]-1, position[1])
         if (self.isUnblocked(left)):
-            childs.append(left)
+            children.append(left)
         
-        return childs
+        return children
     
     def getDirection(self, positionFrom, positionTo):
         if (positionFrom[1] > positionTo[1]):
@@ -134,12 +134,12 @@ class NearestObjectSearch:
             if ((nextFood == None) and (node in foodPositions)):
                 nextFood = node
             
-            childs = self.getChilds(node)
+            children = self.getChildren(node)
             # Shuffle position of elements
             # NOTE: Maybe remove
-            random.shuffle(childs)
+            random.shuffle(children)
             
-            for child in childs:
+            for child in children:
                 if (not (child in visited)):
                     previousNodes[child] = node
                     queue.put(child)
