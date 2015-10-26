@@ -1,76 +1,77 @@
-from game import Directions 
+from game import Directions
+
 
 class ReinforcementDirection(object):
-	NORTH = 0
-	EAST = 1
-	SOUTH = 2
-	WEST = 3
+    NORTH = 0
+    EAST = 1
+    SOUTH = 2
+    WEST = 3
 
-	@classmethod
-	def fromGameDirection(self, direction):
-		if direction == Directions.NORTH:
-			return self.NORTH
-		elif direction == Directions.EAST:
-			return self.EAST
-		elif direction == Directions.SOUTH:
-			return self.SOUTH
-		elif direction == Directions.WEST:
-			return self.WEST
-		else:
-			raise ValueError('Direction Unknown')
+    @classmethod
+    def fromGameDirection(self, direction):
+        if direction == Directions.NORTH:
+            return self.NORTH
+        elif direction == Directions.EAST:
+            return self.EAST
+        elif direction == Directions.SOUTH:
+            return self.SOUTH
+        elif direction == Directions.WEST:
+            return self.WEST
+        else:
+            raise ValueError('Direction Unknown')
 
-	@classmethod
-	def toGameDirection(self, direction):
-		if direction == self.NORTH:
-			return Directions.NORTH
-		elif direction == self.EAST:
-			return Directions.EAST
-		elif direction == self.SOUTH:
-			return Directions.SOUTH
-		elif direction == self.WEST:
-			return Directions.WEST
-		else:
-			raise ValueError('Direction Unknown')
+    @classmethod
+    def toGameDirection(self, direction):
+        if direction == self.NORTH:
+            return Directions.NORTH
+        elif direction == self.EAST:
+            return Directions.EAST
+        elif direction == self.SOUTH:
+            return Directions.SOUTH
+        elif direction == self.WEST:
+            return Directions.WEST
+        else:
+            raise ValueError('Direction Unknown')
 
 
 class Threat(object):
-	"""docstring for ClassName"""
-	DANGER = 0
-	NEXT = 1
-	NEAR = 2
-	FAR_AWAY = 3
+    """docstring for ClassName"""
+    DANGER = 0
+    NEXT = 1
+    NEAR = 2
+    FAR_AWAY = 3
 
 class GhostState(object):
-	"""docstring for ClassName"""
-	def __init__(self, direction, threat, isEatable):
-		self.direction = ReinforcementDirection.fromGameDirection(direction)
-		self.threat = threat
-		self.isEatable = 1 if isEatable else 0
+    """docstring for ClassName"""
+    def __init__(self, direction, threat, isEatable):
+        self.direction = ReinforcementDirection.fromGameDirection(direction)
+        self.threat = threat
+        self.isEatable = 1 if isEatable else 0
 
-	def __repr__(self):
-		return ('GhostState[direction=' + str(self.direction) + ',threat=' + str(self.threat) + ',isEatable=' + str(self.isEatable) + ']')
+    def __repr__(self):
+        return ('GhostState[direction=' + str(self.direction) + ',threat=' + str(self.threat) + ',isEatable=' + str(self.isEatable) + ']')
 
-	def toBin(self):
-		return self.direction << 3 | self.threat << 1 | self.isEatable
+    def toBin(self):
+        return self.direction << 3 | self.threat << 1 | self.isEatable
 
 class ReinforcementState(object):
-	"""docstring for ClassName"""
-	def __init__(self, bestDirection, ghosts):
-		self.ghosts = ghosts
-		self.bestDirection = ReinforcementDirection.fromGameDirection(bestDirection)
+    """docstring for ClassName"""
+    def __init__(self, bestDirection, ghosts):
+        self.ghosts = ghosts
+        self.bestDirection = ReinforcementDirection.fromGameDirection(bestDirection)
 
-	def __repr__(self):
-		ghostStrings = '['
-		for ghost in self.ghosts:
-			ghostStrings += str(ghost) + ','
-		ghostStrings = ghostStrings[:-1] + ']'
-		return ('GhostState[direction=' + str(self.bestDirection) + ',ghosts=' + ghostStrings + ']')
+    def __repr__(self):
+        ghostStrings = '['
+        for ghost in self.ghosts:
+            ghostStrings += str(ghost) + ','
+        ghostStrings = ghostStrings[:-1] + ']'
+        return ('GhostState[direction=' + str(self.bestDirection) + ',ghosts=' + ghostStrings + ']')
 
-	def toBin(self):
-		binVal = 0
-		for ghost in self.ghosts:
-			binVal = binVal << 5 | ghost.toBin()
-		return binVal << 2 | self.bestDirection
+    def toBin(self):
+        binVal = 0
+        for ghost in self.ghosts:
+            binVal = binVal << 5 | ghost.toBin()
+        return binVal << 2 | self.bestDirection
 
 
 
@@ -79,4 +80,3 @@ class ReinforcementState(object):
 #print bin(ReinforcementState(Directions.WEST, [GhostState(Directions.NORTH, Threat.DANGER, True),GhostState(Directions.NORTH, Threat.DANGER, True),GhostState(Directions.SOUTH, Threat.FAR_AWAY, True),GhostState(Directions.NORTH, Threat.DANGER, True)]).toBin())
 
 
-		
