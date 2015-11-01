@@ -52,7 +52,7 @@ class GreedyAgent(game.Agent):
 
 class BfsAgent(game.Agent):
     def __init__(self, evalFn="scoreEvaluation"):
-        assert True
+        self.rand = random.Random()
     
     def evade(self, direction, state):
         legal = state.getLegalPacmanActions()
@@ -61,7 +61,7 @@ class BfsAgent(game.Agent):
         if (not legal):
             return Directions.STOP
         else:
-            return random.choice(legal)
+            return self.rand.choice(legal)
         
     def goTo(self, direction, state):
         legal = state.getLegalPacmanActions()
@@ -69,7 +69,7 @@ class BfsAgent(game.Agent):
         if (not legal):
             return Directions.STOP
         else:
-            return random.choice(legal)
+            return self.rand.choice(legal)
     
     def getNearestEnermy(self, state, bfsResult):
         nearestEnermy = None
@@ -132,7 +132,7 @@ def scoreEvaluation(state):
 #         steps = 4
 #         # gammar = 0.2
 #         # delta = 0
-#         # randomNum = random.randint(0, 3)
+#         # randomNum = self.rand.randint(0, 3)
 #         for num in range(steps):
 #             direction = Directions.NORTH
 #             legal = state.getLegalPacmanActions()
