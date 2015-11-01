@@ -190,6 +190,7 @@ class RuntimeSettingsView(Tkinter.Tk):
     # Button events
     def OnExitButtonClick(self):
         self.quit()
+        self.destroy()
         
     def OnStartButtonClick(self):
         if (self.runtimeSettingsController is not None):

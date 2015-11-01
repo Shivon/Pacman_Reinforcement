@@ -118,7 +118,7 @@ class BfsAgent(game.Agent):
 def scoreEvaluation(state):
     return state.getScore()
 
-# class SarsaAgenet(game.Agent):
+# class SarsaAgent(game.Agent):
 #
 #     def __init__(self, evalFn="scoreEvaluation"):
 #         assert True

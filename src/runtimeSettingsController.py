@@ -21,6 +21,7 @@ class RuntimeSettingsController:
         
         self.saveSettingsToConfigFile()
         
+        self.view.quit()
         self.view.destroy()
         
         print "TODO: IMPLEMENT APPLYING SETTINGS!"
