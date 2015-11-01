@@ -8,22 +8,13 @@ from graphicsDisplay import *
 CONFIGURATION_FILE = "settings.ini"
 
 class LauncherController:
-    view = None
-    numGamesVar = None
-    numGhostsVar = None
-    layoutVar = None
-    pacmanVar = None
-    zoomVar = None
-    frameTimeVar = None
-    textGraphicsVar = None
-    quietTextGraphicsVar = None
-    
-    def __init__(self, view, numGamesVar, numGhostsVar, layoutVar, pacmanVar, zoomVar, frameTimeVar, textGraphicsVar, quietTextGraphicsVar):
+    def __init__(self, view, numGamesVar, numGhostsVar, layoutVar, pacmanVar, fixRandomSeedVar, zoomVar, frameTimeVar, textGraphicsVar, quietTextGraphicsVar):
         self.view = view
         self.numGamesVar = numGamesVar
         self.numGhostsVar = numGhostsVar
         self.layoutVar = layoutVar
         self.pacmanVar = pacmanVar
+        self.fixRandomSeedVar = fixRandomSeedVar
         
         self.zoomVar = zoomVar
         self.frameTimeVar = frameTimeVar
@@ -38,6 +29,8 @@ class LauncherController:
         argumentValues.append("--numghosts=" + self.numGhostsVar.get())
         argumentValues.append("--layout=" + self.layoutVar.get())
         argumentValues.append("--pacman=" + self.pacmanVar.get())
+        if (DatatypeUtils.stringToBoolean(self.fixRandomSeedVar.get())):
+            argumentValues.append("--fixRandomSeed")
         
         argumentValues.append("--zoom=" + self.zoomVar.get())
         argumentValues.append("--frameTime=" + self.frameTimeVar.get())
@@ -97,6 +90,8 @@ class LauncherController:
             invalidFields.append("'Spielfeld' muss eine Zeichenkette sein (zum Beispiel: mediumClassic)!")
         if (not DatatypeUtils.isString(self.pacmanVar.get())):
             invalidFields.append("'Pacman-Agent' muss eine Zeichenkette sein (zum Beispiel: KeyboardAgent)!")
+        if (not DatatypeUtils.isBooleanString(self.fixRandomSeedVar.get())):
+            invalidFields.append("'Feste Random-Seed' muss ein Wahrheitswert sein (True oder False)!")
         
         if (not DatatypeUtils.isFloatString(self.zoomVar.get())):
             invalidFields.append("'Zoomfaktor' muss eine Kommazahl sein (zum Beispiel: 1.0)!")
@@ -126,7 +121,7 @@ class LauncherController:
             
             if (numGhostsValue > mapNumGhosts):
                 invalidFields.append("'Anzahl der Geister' muss fuer Spielfeld '" + layout + "' kleiner oder gleich " + str(mapNumGhosts) + " sein!")
-        
+
         # Value checking (zoom)
         if (DatatypeUtils.isFloatString(self.zoomVar.get())):
             zoomValue = DatatypeUtils.stringToFloat(self.zoomVar.get())
@@ -160,6 +155,7 @@ class LauncherController:
         self.numGhostsVar.set("2")
         self.layoutVar.set("mediumClassic")
         self.pacmanVar.set("KeyboardAgent")
+        self.fixRandomSeedVar.set("False")
         
         self.zoomVar.set("1.0")
         self.frameTimeVar.set("0.1")
@@ -177,6 +173,7 @@ class LauncherController:
             self.numGhostsVar.set(Config.get('GameSettings', 'numGhosts'))
             self.layoutVar.set(Config.get('GameSettings', 'layout'))
             self.pacmanVar.set(Config.get('GameSettings', 'pacman'))
+            self.fixRandomSeedVar.set(Config.get('GameSettings', 'fixRandomSeed'))
             
             self.zoomVar.set(Config.get('DisplaySettings', 'zoom'))
             self.frameTimeVar.set(Config.get('DisplaySettings', 'frameTime'))
@@ -203,6 +200,7 @@ class LauncherController:
         Config.set('GameSettings', 'numGhosts', self.numGhostsVar.get())
         Config.set('GameSettings', 'layout', self.layoutVar.get())
         Config.set('GameSettings', 'pacman', self.pacmanVar.get())
+        Config.set('GameSettings', 'fixRandomSeed', self.fixRandomSeedVar.get())
         
         Config.add_section('DisplaySettings')
         Config.set('DisplaySettings', 'zoom', self.zoomVar.get())
