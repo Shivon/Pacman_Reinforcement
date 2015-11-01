@@ -79,10 +79,12 @@ class NearestObjectSearch:
         if (self.getRow(position) == self.getRow(right)):
             if (not(right in self.wallPostitions)):
                 childs.append(right)
-                
+        
+        # Shuffle position of elements
+        # Purpose: Choosing random food, if multiple food in same distance but with different directions
+        random.shuffle(childs)
         return childs
-                
-    
+        
     def executeBFS(self):
         INFINITY = 9223372036854775807
         
