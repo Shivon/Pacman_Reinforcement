@@ -12,6 +12,7 @@
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
 from bfsSearch import NearestObjectSearch
+from ReinforcementState import ReinforcementDirection
 from pacman import Directions
 from game import Agent
 import random
@@ -76,10 +77,10 @@ class BfsAgent(game.Agent):
         
         index = 1
         while index < state.getNumAgents():
-            for loc in bfsResult.getGhostsLocData():
-                if (not loc.isEatable()):
-                    if (lastDistance > loc.getDistance()):
-                        lastDistance = loc.getDistance()
+            for loc in bfsResult.ghosts:
+                if (not loc.isEatable):
+                    if (lastDistance > loc.threat):
+                        lastDistance = loc.threat
                         nearestEnermy = loc
             index += 1
             
@@ -91,40 +92,28 @@ class BfsAgent(game.Agent):
         
         index = 1
         while index < state.getNumAgents():
-            for loc in bfsResult.getGhostsLocData():
-                if (loc.isEatable()):
-                    if (lastDistance > loc.getDistance()):
-                        lastDistance = loc.getDistance()
+            for loc in bfsResult.ghosts:
+                if (loc.isEatable):
+                    if (lastDistance > loc.threat):
+                        lastDistance = loc.threat
                         nearestEnermy = loc
             index += 1
             
         return nearestEnermy
-        
-    def getNearestEatableOrNearestFood(self, state, bfsResult):
-        eatable = self.getNearestEatable(state, bfsResult)
-        food = bfsResult.getNextFoodLocData()
-        if (eatable == None):
-            return food
-            
-        if (eatable.getDistance() < food.getDistance()):
-            return eatable
-        else:
-            return food
     
     def getAction(self, state):
-        huntDistance = 3
-        evadeDistance = 3
+        evadeDistance = 2
         
-        bfsResult = NearestObjectSearch(state).getResult()
+        bfsResult = NearestObjectSearch(state).getReinforcmentResult()
         # SarsaAgent.sarsaAlgo(bfsResult)
         # EVADE UNEATABLE GHOST
         nearestEnermy = self.getNearestEnermy(state, bfsResult)
         if (nearestEnermy != None):
-            if (nearestEnermy.getDistance() < evadeDistance):
-                return self.evade(nearestEnermy.getDirection(), state)
+            if (nearestEnermy.threat < evadeDistance):
+                return self.evade(ReinforcementDirection.toGameDirection(nearestEnermy.direction), state)
 
-        # GET NEAREST FOOD OR NEAREST EATABLE GHOST
-        return self.getNearestEatableOrNearestFood(state, bfsResult).getDirection()
+        # GET NEAREST FOOD
+        return ReinforcementDirection.toGameDirection(bfsResult.bestDirection)
 
 def scoreEvaluation(state):
     return state.getScore()
