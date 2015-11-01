@@ -24,8 +24,6 @@ class NearestObjectSearch:
         self.ghostProcessed = []
 
     def toPos1D(self, pos2D):
-        #assert type(pos2D[0]) is IntType, "pos2D[0] is not an integer: %r" % pos2D[0]
-        #assert type(pos2D[1]) is IntType, "pos2D[1] is not an integer: %r" % pos2D[1]
         return ((self.width * int(pos2D[1])) + int(pos2D[0]))
     
     def initializeInput(self):
@@ -51,9 +49,6 @@ class NearestObjectSearch:
         return (not(False in self.ghostProcessed))
     
     def getRow(self, position):
-        assert type(position) is IntType, "position is not an integer: %r" % position
-        assert type(self.width) is IntType, "self.width is not an integer: %r" % self.width
-        assert type(self.height) is IntType, "self.height is not an integer: %r" % self.height
         return (position / self.width)
     
     def getChilds(self, position):
