@@ -8,7 +8,7 @@ import util
 import Queue
 
 # BFS algorithm to get information about nearest way to ghosts and nearest food
-class NearestObjectSearch:
+class ReinforcementSearch:
     # Settings for algorithm
     ADD_CAPSULES_TO_FEED = True
     CHOOSE_RANDOM_IF_MULTIPLE_NEAREST = True
@@ -49,7 +49,7 @@ class NearestObjectSearch:
             self.foodPositions.append(self.toPos1D(food))
         
         # Add capsules (power food) positions to feed positions
-        if (NearestObjectSearch.ADD_CAPSULES_TO_FEED):
+        if (ReinforcementSearch.ADD_CAPSULES_TO_FEED):
             capsules = self.state.getCapsules()
             for capsule in capsules:
                 self.foodPositions.append(self.toPos1D(capsule))
@@ -107,7 +107,7 @@ class NearestObjectSearch:
         
         # Shuffle position of elements
         # Purpose: Choosing random food, if multiple food in same distance but with different directions
-        if (NearestObjectSearch.CHOOSE_RANDOM_IF_MULTIPLE_NEAREST):
+        if (ReinforcementSearch.CHOOSE_RANDOM_IF_MULTIPLE_NEAREST):
             self.rand.shuffle(childs)
         
         return childs

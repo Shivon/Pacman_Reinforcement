@@ -11,7 +11,7 @@
 # Student side autograding was added by Brad Miller, Nick Hay, and
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
-from bfsSearch import NearestObjectSearch
+from bfsSearch import ReinforcementSearch
 from ReinforcementState import ReinforcementDirection
 from pacman import Directions
 from game import Agent
@@ -71,49 +71,50 @@ class BfsAgent(game.Agent):
         else:
             return self.rand.choice(legal)
     
-    def getNearestEnermy(self, state, bfsResult):
+    def getNearestEnermy(self, state, reinforcementState):
         nearestEnermy = None
-        lastDistance = 99999
+        lastThreat = 9223372036854775807
         
         index = 1
         while index < state.getNumAgents():
-            for loc in bfsResult.ghosts:
-                if (not loc.isEatable):
-                    if (lastDistance > loc.threat):
-                        lastDistance = loc.threat
-                        nearestEnermy = loc
+            for ghostState in reinforcementState.ghosts:
+                if (not ghostState.isEatable):
+                    if (lastThreat > ghostState.threat):
+                        lastThreat = ghostState.threat
+                        nearestEnermy = ghostState
             index += 1
             
         return nearestEnermy
         
-    def getNearestEatable(self, state, bfsResult):
+    def getNearestEatable(self, state, reinforcementState):
         nearestEnermy = None
-        lastDistance = 99999
+        lastThreat = 9223372036854775807
         
         index = 1
         while index < state.getNumAgents():
-            for loc in bfsResult.ghosts:
-                if (loc.isEatable):
-                    if (lastDistance > loc.threat):
-                        lastDistance = loc.threat
-                        nearestEnermy = loc
+            for ghostState in reinforcementState.ghosts:
+                if (ghostState.isEatable):
+                    if (lastThreat > ghostState.threat):
+                        lastThreat = ghostState.threat
+                        nearestEnermy = ghostState
             index += 1
             
         return nearestEnermy
     
     def getAction(self, state):
-        evadeDistance = 2
+        evadeThreat = 2
         
-        bfsResult = NearestObjectSearch(state).getReinforcmentResult()
-        # SarsaAgent.sarsaAlgo(bfsResult)
+        reinforcementState = ReinforcementSearch(state).getReinforcmentResult()
+        # SarsaAgent.sarsaAlgo(reinforcementState)
         # EVADE UNEATABLE GHOST
-        nearestEnermy = self.getNearestEnermy(state, bfsResult)
+        nearestEnermy = self.getNearestEnermy(state, reinforcementState)
         if (nearestEnermy != None):
-            if (nearestEnermy.threat < evadeDistance):
-                return self.evade(ReinforcementDirection.toGameDirection(nearestEnermy.direction), state)
+            if (nearestEnermy.threat < evadeThreat):
+                evadeDirection = ReinforcementDirection.toGameDirection(nearestEnermy.direction)
+                return self.evade(evadeDirection, state)
 
         # GET NEAREST FOOD
-        return ReinforcementDirection.toGameDirection(bfsResult.bestDirection)
+        return ReinforcementDirection.toGameDirection(reinforcementState.bestDirection)
 
 def scoreEvaluation(state):
     return state.getScore()
