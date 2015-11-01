@@ -56,7 +56,7 @@ class Threat(object):
 class GhostState(object):
     """docstring for ClassName"""
     def __init__(self, direction, threat, isEatable):
-        self.direction = ReinforcementDirection.fromGameDirection(direction)
+        self.direction = direction
         self.threat = threat
         self.isEatable = 1 if isEatable else 0
 
@@ -70,7 +70,7 @@ class ReinforcementState(object):
     """docstring for ClassName"""
     def __init__(self, bestDirection, ghosts):
         self.ghosts = ghosts
-        self.bestDirection = ReinforcementDirection.fromGameDirection(bestDirection)
+        self.bestDirection = bestDirection
 
     def __repr__(self):
         ghostStrings = '['
