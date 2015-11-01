@@ -10,6 +10,7 @@ import Queue
 # BFS algorithm to get information about nearest way to ghosts and nearest food
 class NearestObjectSearch:
     def __init__(self, state):
+        self.rand = random.Random()
         self.state = state
         self.width = self.state.data.layout.getWidth()
         self.height = self.state.data.layout.getHeight()
@@ -77,7 +78,7 @@ class NearestObjectSearch:
         
         # Shuffle position of elements
         # Purpose: Choosing random food, if multiple food in same distance but with different directions
-        random.shuffle(childs)
+        self.rand.shuffle(childs)
         return childs
         
     def executeBFS(self):
