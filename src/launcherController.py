@@ -10,18 +10,21 @@ class LauncherController:
     view = None
     numGamesVar = None
     numGhostsVar = None
+    layoutVar = None
     pacmanVar = None
+    zoomVar = None
     frameTimeVar = None
     textGraphicsVar = None
     quietTextGraphicsVar = None
     
-    def __init__(self, view, numGamesVar, numGhostsVar, layoutVar, pacmanVar, frameTimeVar, textGraphicsVar, quietTextGraphicsVar):
+    def __init__(self, view, numGamesVar, numGhostsVar, layoutVar, pacmanVar, zoomVar, frameTimeVar, textGraphicsVar, quietTextGraphicsVar):
         self.view = view
         self.numGamesVar = numGamesVar
         self.numGhostsVar = numGhostsVar
         self.layoutVar = layoutVar
         self.pacmanVar = pacmanVar
         
+        self.zoomVar = zoomVar
         self.frameTimeVar = frameTimeVar
         self.textGraphicsVar = textGraphicsVar
         self.quietTextGraphicsVar = quietTextGraphicsVar
@@ -34,6 +37,7 @@ class LauncherController:
         argumentValues.append("--layout=" + self.layoutVar.get())
         argumentValues.append("--pacman=" + self.pacmanVar.get())
         
+        argumentValues.append("--zoom=" + self.zoomVar.get())
         argumentValues.append("--frameTime=" + self.frameTimeVar.get())
         if (DatatypeUtils.stringToBoolean(self.textGraphicsVar.get())):
             argumentValues.append("--textGraphics")
@@ -67,7 +71,9 @@ class LauncherController:
             invalidFields.append("'Spielfeld' muss eine Zeichenkette sein (zum Beispiel: mediumClassic)!")
         if (not DatatypeUtils.isString(self.pacmanVar.get())):
             invalidFields.append("'Pacman-Agent' muss eine Zeichenkette sein (zum Beispiel: KeyboardAgent)!")
-            
+        
+        if (not DatatypeUtils.isFloatString(self.zoomVar.get())):
+            invalidFields.append("'Zoomfaktor' muss eine Kommazahl sein (zum Beispiel: 1.0)!")
         if (not DatatypeUtils.isFloatString(self.frameTimeVar.get())):
             invalidFields.append("'Spielgeschwindigkeit' muss eine Kommazahl sein (zum Beispiel: 0.1)!")
         if (not DatatypeUtils.isBooleanString(self.textGraphicsVar.get())):
@@ -75,7 +81,15 @@ class LauncherController:
         if (not DatatypeUtils.isBooleanString(self.quietTextGraphicsVar.get())):
             invalidFields.append("'Minimale Ausgabe' muss ein Wahrheitswert sein (True oder False)!")
             
-        # Value checking
+        # Value checking (zoom)
+        if (DatatypeUtils.isFloatString(self.zoomVar.get())):
+            zoomValue = DatatypeUtils.stringToFloat(self.zoomVar.get())
+            if (zoomValue > MAX_ZOOM):
+                invalidFields.append("'Zoomfaktor' muss kleiner oder gleich " + str(MAX_ZOOM) + " sein!")
+            if (zoomValue < MIN_ZOOM):
+                invalidFields.append("'Zoomfaktor' muss groesser oder gleich " + str(MIN_ZOOM) + " sein!")
+        
+        # Value checking (frameTime)
         if (DatatypeUtils.isFloatString(self.frameTimeVar.get())):
             frameTimeValue = DatatypeUtils.stringToFloat(self.frameTimeVar.get())
             if (frameTimeValue > MAX_SPEED):
@@ -101,6 +115,7 @@ class LauncherController:
         self.layoutVar.set("mediumClassic")
         self.pacmanVar.set("KeyboardAgent")
         
+        self.zoomVar.set("1.0")
         self.frameTimeVar.set("0.1")
         self.textGraphicsVar.set("False")
         self.quietTextGraphicsVar.set("False")
@@ -117,6 +132,7 @@ class LauncherController:
             self.layoutVar.set(Config.get('GameSettings', 'layout'))
             self.pacmanVar.set(Config.get('GameSettings', 'pacman'))
             
+            self.zoomVar.set(Config.get('DisplaySettings', 'zoom'))
             self.frameTimeVar.set(Config.get('DisplaySettings', 'frameTime'))
             self.textGraphicsVar.set(Config.get('DisplaySettings', 'textGraphics'))
             self.quietTextGraphicsVar.set(Config.get('DisplaySettings', 'quietTextGraphics'))
@@ -143,6 +159,7 @@ class LauncherController:
         Config.set('GameSettings', 'pacman', self.pacmanVar.get())
         
         Config.add_section('DisplaySettings')
+        Config.set('DisplaySettings', 'zoom', self.zoomVar.get())
         Config.set('DisplaySettings', 'frameTime', self.frameTimeVar.get())
         Config.set('DisplaySettings', 'textGraphics', self.textGraphicsVar.get())
         Config.set('DisplaySettings', 'quietTextGraphics', self.quietTextGraphicsVar.get())

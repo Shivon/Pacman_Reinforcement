@@ -154,6 +154,10 @@ class LauncherView(Tkinter.Tk):
         self.createHeader("Anzeigeeinstellungen", self.nextRow)
         self.finishRow()
         
+        self.createLabel("Zoomfaktor", self.nextRow)
+        self.zoomVar = self.createTextbox(self.nextRow)
+        self.finishRow()
+        
         self.createLabel("Spielgeschwindigkeit", self.nextRow)
         self.frameTimeVar = self.createTextbox(self.nextRow)
         self.finishRow()
@@ -215,7 +219,7 @@ class LauncherView(Tkinter.Tk):
         # Create controller
         self.launcherController = LauncherController(self,
             self.numGamesVar, self.numGhostsVar, self.layoutVar, self.pacmanVar,
-            self.frameTimeVar, self.textGraphicsVar, self.quietTextGraphicsVar)
+            self.zoomVar, self.frameTimeVar, self.textGraphicsVar, self.quietTextGraphicsVar)
             
         # Load settings
         self.launcherController.loadSettingsFromConfigFile()

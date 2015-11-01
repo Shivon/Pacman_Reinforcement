@@ -79,6 +79,10 @@ CAPSULE_SIZE = 0.25
 # Drawing walls
 WALL_RADIUS = 0.15
 
+# Zoom settings
+MIN_ZOOM = 0.2
+MAX_ZOOM = 5.0
+
 # Speed settings
 MIN_SPEED = 0.0
 MAX_SPEED = 1.0
