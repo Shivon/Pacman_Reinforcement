@@ -118,25 +118,29 @@ class BfsAgent(game.Agent):
 def scoreEvaluation(state):
     return state.getScore()
 
-# class SarsaAgent(game.Agent):
-#
-#     def __init__(self, evalFn="scoreEvaluation"):
-#         assert True
-#
-#     def getAction(self, state):
-#         return SarsaAgent.sarsaAlgo(self, state)
-#
-#
-#     def sarsaAlgo(state):
-#         # qState = 0
-#         steps = 4
-#         # gammar = 0.2
-#         # delta = 0
-#         # randomNum = random.randint(0, 3)
-#         for num in range(steps):
-#             direction = Directions.NORTH
-#             legal = state.getLegalPacmanActions()
-#             if direction in legal:
-#                 print direction
-#                 return direction
+class SarsaAgent(game.Agent):
+
+    def __init__(self, evalFn="scoreEvaluation"):
+        assert True
+
+    def getAction(self, state):
+        return SarsaAgent.sarsaAlgo(self, state)
+
+
+    def sarsaAlgo(self, state):
+        qState = 0
+        steps = 4
+
+        alpha = 0.2
+        gammar = 0.2
+        epsilon = 0
+        ourLambda = 0
+
+        # delta = 0
+        # randomNum = random.randint(0, 3)
+        reward = 0
+        pacmanPosState = self.state.getPacmanPosition()
+        for num in range(steps):
+            newQState = 0
+            delta = reward + gammar * newQState - qState
 
