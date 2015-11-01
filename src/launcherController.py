@@ -70,6 +70,21 @@ class LauncherController:
         argumentArray = self.getArgumentArray()
         startByLauncher(argumentArray)
     
+    def getMapNumGhosts(self, layout):
+        filename = "layouts/" + layout + ".lay"
+        count = 0
+        
+        with open(filename) as f:
+            while True:
+                ch = f.read(1)
+                if (not ch):
+                    break
+                
+                if (ch == 'G'):
+                    count = count + 1
+        
+        return count
+    
     def getInvalidFields(self):        
         invalidFields = []
         
@@ -91,7 +106,27 @@ class LauncherController:
             invalidFields.append("'Ausgabe als Text' muss ein Wahrheitswert sein (True oder False)!")
         if (not DatatypeUtils.isBooleanString(self.quietTextGraphicsVar.get())):
             invalidFields.append("'Minimale Ausgabe' muss ein Wahrheitswert sein (True oder False)!")
+        
+        # Value checking (numGhosts)
+        if (DatatypeUtils.isIntegerString(self.numGamesVar.get())):
+            numGamesValue = DatatypeUtils.stringToInteger(self.numGamesVar.get())
+            if (numGamesValue < 1):
+                invalidFields.append("'Anzahl der Spiele' muss groesser oder gleich " + str(1) + " sein!")
+        
+        # Value checking (numGhosts)
+        if (DatatypeUtils.isIntegerString(self.numGhostsVar.get())):
+            numGhostsValue = DatatypeUtils.stringToInteger(self.numGhostsVar.get())
+            if (numGhostsValue < 0):
+                invalidFields.append("'Anzahl der Geister' muss groesser oder gleich " + str(0) + " sein!")
             
+            layout = self.layoutVar.get()
+            mapNumGhosts = self.getMapNumGhosts(layout)
+            if (mapNumGhosts > 5):
+                mapNumGhosts = 5
+            
+            if (numGhostsValue > mapNumGhosts):
+                invalidFields.append("'Anzahl der Geister' muss fuer Spielfeld '" + layout + "' kleiner oder gleich " + str(mapNumGhosts) + " sein!")
+        
         # Value checking (zoom)
         if (DatatypeUtils.isFloatString(self.zoomVar.get())):
             zoomValue = DatatypeUtils.stringToFloat(self.zoomVar.get())
@@ -122,7 +157,7 @@ class LauncherController:
     
     def loadDefaultSettings(self):
         self.numGamesVar.set("1")
-        self.numGhostsVar.set("4")
+        self.numGhostsVar.set("2")
         self.layoutVar.set("mediumClassic")
         self.pacmanVar.set("KeyboardAgent")
         
