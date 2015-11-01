@@ -49,7 +49,7 @@ class NearestObjectSearch:
             self.foodPositions.append(self.toPos1D(food))
         
         # Add capsules (power food) positions to feed positions
-        if (ADD_CAPSULES_TO_FEED):
+        if (NearestObjectSearch.ADD_CAPSULES_TO_FEED):
             capsules = self.state.getCapsules()
             for capsule in capsules:
                 self.foodPositions.append(self.toPos1D(capsule))
@@ -107,7 +107,7 @@ class NearestObjectSearch:
         
         # Shuffle position of elements
         # Purpose: Choosing random food, if multiple food in same distance but with different directions
-        if (CHOOSE_RANDOM_IF_MULTIPLE_NEAREST):
+        if (NearestObjectSearch.CHOOSE_RANDOM_IF_MULTIPLE_NEAREST):
             self.rand.shuffle(childs)
         
         return childs
