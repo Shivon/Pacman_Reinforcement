@@ -14,6 +14,7 @@
 
 from graphicsUtils import *
 import math, time
+from runtimeSettings import RuntimeSettingsView
 from game import Directions
 
 ###########################
@@ -22,6 +23,8 @@ from game import Directions
 
 # Most code by Dan Klein and John Denero written or rewritten for cs188, UC Berkeley.
 # Some code from a Pacman implementation by LiveWires, and used / modified with permission.
+
+RUNTIME_SETTINGS_TITLE = "Pacman Runtime Settings"
 
 DEFAULT_GRID_SIZE = 30.0
 INFO_PANE_HEIGHT = 35
@@ -174,9 +177,10 @@ class InfoPane:
 
 
 class PacmanGraphics:
-    SPEED_DEC_KEY = 'w'
-    SPEED_INC_KEY = 'e'
-    SPEED_RESET_KEY = 'q'
+    SPEED_DEC_KEY = 'o'
+    SPEED_INC_KEY = 'p'
+    SPEED_RESET_KEY = 'i'
+    RUNTIME_SETTING_KEY = 'u'
     
     def __init__(self, zoom=1.0, frameTime=0.0, capture=False):
         self.have_window = 0
@@ -273,6 +277,10 @@ class PacmanGraphics:
                 if (self.frameTime < MIN_SPEED):
                     self.frameTime = MIN_SPEED
                 self.infoPane.updateSpeed(self.frameTime)
+            if self.RUNTIME_SETTING_KEY in keys:
+                app = RuntimeSettingsView(None)
+                app.title(RUNTIME_SETTINGS_TITLE)
+                app.mainloop()
     
     def update(self, newState):
         self.handleKeys()
