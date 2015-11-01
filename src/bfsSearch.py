@@ -39,6 +39,14 @@ class NearestObjectSearch:
         for food in foods:
             self.foodPositions.append(self.toPos1D(food))
         
+        # ================ TODO: Maybe remove ==================
+        ADD_CAPSULES_TO_FEED = True
+        if (ADD_CAPSULES_TO_FEED):
+            capsules = self.state.getCapsules()
+            for capsule in capsules:
+                self.foodPositions.append(self.toPos1D(capsule))
+        # ======================================================
+        
         ghostStates = self.state.getGhostStates()
         for ghostState in ghostStates:
             self.ghostPositions.append(self.toPos1D(ghostState.getPosition()))
