@@ -9,6 +9,11 @@ import Queue
 
 # BFS algorithm to get information about nearest way to ghosts and nearest food
 class NearestObjectSearch:
+    # Settings for algorithm
+    ADD_CAPSULES_TO_FEED = True
+    CHOOSE_RANDOM_IF_MULTIPLE_NEAREST = True
+    
+    # Constructor
     def __init__(self, state):
         self.rand = random.Random()
         self.state = state
@@ -24,71 +29,90 @@ class NearestObjectSearch:
         self.ghostEatable = []
         self.ghostProcessed = []
 
+    # Converts a 2D position to a 1D position, depending on fields width
     def toPos1D(self, pos2D):
         return ((self.width * int(pos2D[1])) + int(pos2D[0]))
     
+    # Initialize input for executeBFS method
     def initializeInput(self):
-        # initialize state data
+        # Save pacman's position
         self.pacmanPosition = self.toPos1D(self.state.getPacmanPosition())
         
+        # Add wall positions
         walls = self.state.data.layout.walls.asList()
         for wall in walls:
             self.wallPostitions.append(self.toPos1D(wall))
         
+        # Add feed positions
         foods = self.state.getFood().asList()
         for food in foods:
             self.foodPositions.append(self.toPos1D(food))
         
-        # ================ TODO: Maybe remove ==================
-        ADD_CAPSULES_TO_FEED = True
+        # Add capsules (power food) positions to feed positions
         if (ADD_CAPSULES_TO_FEED):
             capsules = self.state.getCapsules()
             for capsule in capsules:
                 self.foodPositions.append(self.toPos1D(capsule))
-        # ======================================================
         
+        # Save ghost states (position, eatable, processed and count)
         ghostStates = self.state.getGhostStates()
         for ghostState in ghostStates:
             self.ghostPositions.append(self.toPos1D(ghostState.getPosition()))
             self.ghostEatable.append(ghostState.isScared())
             self.ghostProcessed.append(False)
             self.numGhosts = self.numGhosts + 1
-            
+    
+    # All ghosts processed?
     def isGhostsProcessed(self):
         return (not(False in self.ghostProcessed))
     
+    # Get row of 1D position
     def getRow(self, position):
         return (position / self.width)
+        
+    # Get column of 1D position
+    def getColumn(self, position):
+        return (position % self.width)
     
+    # Get accessable nearbours of passed 1D position
+    # (returns a list of 1D positions)
     def getChilds(self, position):
         childs = []
         
+        # Determine possible nearbours
         top = position - self.width
         bottom = position + self.width
         left = position - 1
         right = position + 1
         
+        # Add top if not out of range and not a wall
         if ((top > 0) and (top < self.fieldSize)):
             if (not(top in self.wallPostitions)):
                 childs.append(top)
         
+        # Add bottom if not out of range and not a wall
         if ((bottom > 0) and (bottom < self.fieldSize)):
             if (not(bottom in self.wallPostitions)):
                 childs.append(bottom)
-                
+        
+        # Add left if not out of range and not a wall
         if (self.getRow(position) == self.getRow(left)):
             if (not(left in self.wallPostitions)):
                 childs.append(left)
-                
+        
+        # Add right if not out of range and not a wall
         if (self.getRow(position) == self.getRow(right)):
             if (not(right in self.wallPostitions)):
                 childs.append(right)
         
         # Shuffle position of elements
         # Purpose: Choosing random food, if multiple food in same distance but with different directions
-        self.rand.shuffle(childs)
-        return childs
+        if (CHOOSE_RANDOM_IF_MULTIPLE_NEAREST):
+            self.rand.shuffle(childs)
         
+        return childs
+    
+    # Executes a BFS algorithm until one feed is found and all ghosts are processed
     def executeBFS(self):
         INFINITY = 9223372036854775807
         
@@ -130,6 +154,10 @@ class NearestObjectSearch:
                     marked[w] = True
                     q.put(w)
     
+    # Get result path of BFS algorithm for target 1D Position
+    # Returns a list of 1D position, which represent the path
+    # The first element of the result path is the target position
+    # The last element of the result path is pacman's position
     def getPath(self, targetPosition):
         path = []
         
@@ -141,6 +169,7 @@ class NearestObjectSearch:
         
         return path;
     
+    # Get direction of first step toward target position
     def getDirection(self, targetPosition):
         path = self.getPath(targetPosition)
         
@@ -158,10 +187,12 @@ class NearestObjectSearch:
             
         if (positionTo > positionFrom):
             return ReinforcementDirection.NORTH
-            
+    
+    # Get distance (count of steps) toward target position
     def getDistance(self, targetPosition):
         return self.distTo[targetPosition]
     
+    # Generates a ReinforcementState for the BFS algorithm result
     def generateResult(self):
         # generate food direction
         nearestFoodDirection = self.getDirection(self.nearestFoodPosition)
@@ -178,6 +209,7 @@ class NearestObjectSearch:
         # return result
         return ReinforcementState(nearestFoodDirection, ghostStates)
     
+    # Generates a ReinforcementState by using the BFS algorithm
     def getReinforcmentResult(self):
         self.initializeInput()
         self.executeBFS()
