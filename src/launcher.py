@@ -151,6 +151,10 @@ class LauncherView(Tkinter.Tk):
         self.pacmanVar = self.createDropDown(self.nextRow, self.getPacmanValues())
         self.finishRow()
         
+        self.createLabel("Feste Random-Seed", self.nextRow)
+        self.fixRandomSeedVar = self.createCheckBox(self.nextRow)
+        self.finishRow()
+        
         self.createHeader("Anzeigeeinstellungen", self.nextRow)
         self.finishRow()
         
@@ -218,7 +222,7 @@ class LauncherView(Tkinter.Tk):
         
         # Create controller
         self.launcherController = LauncherController(self,
-            self.numGamesVar, self.numGhostsVar, self.layoutVar, self.pacmanVar,
+            self.numGamesVar, self.numGhostsVar, self.layoutVar, self.pacmanVar, self.fixRandomSeedVar,
             self.zoomVar, self.frameTimeVar, self.textGraphicsVar, self.quietTextGraphicsVar)
             
         # Load settings
