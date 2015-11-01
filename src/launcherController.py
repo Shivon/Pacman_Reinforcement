@@ -2,6 +2,7 @@ import ConfigParser
 import tkMessageBox
 import subprocess
 from datatypeUtils import DatatypeUtils
+from pacman import startByLauncher
 from graphicsDisplay import *
 
 CONFIGURATION_FILE = "settings.ini"
@@ -29,7 +30,8 @@ class LauncherController:
         self.textGraphicsVar = textGraphicsVar
         self.quietTextGraphicsVar = quietTextGraphicsVar
     
-    def getArgumentString(self):
+    # Used for executing with direct Pacman call
+    def getArgumentArray(self):
         argumentValues = []
         
         argumentValues.append("--numGames=" + self.numGamesVar.get())
@@ -43,7 +45,12 @@ class LauncherController:
             argumentValues.append("--textGraphics")
         if (DatatypeUtils.stringToBoolean(self.quietTextGraphicsVar.get())):
             argumentValues.append("--quietTextGraphics")
-        
+            
+        return argumentValues
+    
+    # Used for executing with subprocess.call
+    def getArgumentString(self):
+        argumentValues = self.getArgumentArray()
         if (len(argumentValues) > 0):
             return " ".join(argumentValues)
         else:
@@ -54,10 +61,14 @@ class LauncherController:
             return
         
         self.saveSettingsToConfigFile()
-        arguments = self.getArgumentString()
         
         self.view.destroy()
-        subprocess.call("python pacman.py " + arguments, shell=True)
+        
+        #arguments = self.getArgumentString()
+        #subprocess.call("python pacman.py " + arguments, shell=True)
+        
+        argumentArray = self.getArgumentArray()
+        startByLauncher(argumentArray)
     
     def getInvalidFields(self):        
         invalidFields = []
