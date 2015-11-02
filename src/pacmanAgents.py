@@ -21,6 +21,7 @@ import game
 import pacman
 import util
 import Queue
+from ReinforcementSave import *
 
 CONFIGURATIONSARSA_FILE = "sarsasettings.ini"
 

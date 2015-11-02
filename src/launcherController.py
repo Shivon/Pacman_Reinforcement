@@ -208,7 +208,7 @@ class LauncherController:
         cfgfile = open(CONFIGURATION_FILE, 'w')
         
         Config.add_section('GameSettings')
-        Config.set('GameSettings', 'numGames', self.numTrainingVar.get())
+        Config.set('GameSettings', 'numTrainingVar', self.numTrainingVar.get())
         Config.set('GameSettings', 'numGames', self.numGamesVar.get())
         Config.set('GameSettings', 'numGhosts', self.numGhostsVar.get())
         Config.set('GameSettings', 'layout', self.layoutVar.get())
