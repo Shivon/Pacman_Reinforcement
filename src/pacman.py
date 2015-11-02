@@ -45,6 +45,7 @@ from game import Directions
 from game import Actions
 from util import nearestPoint
 from util import manhattanDistance
+from pacmanGlobals import PacmanGlobals
 import util, layout
 import sys, types, time, random, os
 
@@ -252,6 +253,10 @@ class GameState:
         Creates an initial game state from a layout array (see layout.py).
         """
         self.data.initialize(layout, numGhostAgents)
+        
+        # Initialize globals
+        PacmanGlobals.layout = layout
+        PacmanGlobals.numGhostAgents = numGhostAgents
 
 ############################################################################
 #                     THE HIDDEN SECRETS OF PACMAN                         #
