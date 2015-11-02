@@ -10,15 +10,19 @@
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
 # Student side autograding was added by Brad Miller, Nick Hay, and
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
+import ConfigParser
 
 from bfsSearch import ReinforcementSearch
-from ReinforcementState import ReinforcementDirection
+from ReinforcementState import ReinforcementDirection, ReinforcementState
 from pacman import Directions
 from game import Agent
 import random
 import game
+import pacman
 import util
 import Queue
+
+CONFIGURATIONSARSA_FILE = "sarsasettings.ini"
 
 class LeftTurnAgent(game.Agent):
     "An agent that turns left at every opportunity"
@@ -122,27 +126,45 @@ def scoreEvaluation(state):
 
 class SarsaAgent(game.Agent):
 
-    def __init__(self, evalFn="scoreEvaluation"):
-        assert True
-
-    def getAction(self, state):
-        return SarsaAgent.sarsaAlgo(self, state)
-
-
-    def sarsaAlgo(self, state):
-        qState = 0
+    def __init__(self, state, evalFn="scoreEvaluation"):
+        # Config = ConfigParser.ConfigParser()
+        # Config.read(CONFIGURATIONSARSA_FILE)
         steps = 4
-
         alpha = 0.2
         gammar = 0.2
+        # wird noch nicht gebraucht
         epsilon = 0
-        ourLambda = 0
+        ourLambda = 1
+        queue = Queue.Queue(steps)
+        lastStateAction = 0
 
-        # delta = 0
-        # randomNum = random.randint(0, 3)
-        reward = 0
-        pacmanPosState = self.state.getPacmanPosition()
-        for num in range(steps):
-            newQState = 0
-            delta = reward + gammar * newQState - qState
+    def getAction(self, state):
+        reward = -0.4
+        return SarsaAgent.sarsaAlgo(self, state, reward)
 
+    def sarsaAlgo(self, state, reward):
+        if self.lastStateAction == 0:
+            self.firstInit()
+        """momentan ohne explorationsrate"""
+        currentStateAction = ReinforcementState.ReinforcementState.toBin()
+        # currentStateAction = pacman.GameState.getLegalPacmanActions()
+        posInQueue = len(self.queue) - 1
+        for elem in self.queue:
+            delta = reward + (self.gammar * currentStateAction) - self.lastStateAction
+            elem1 = elem + delta * self.alpha * pow(self.ourLambda, posInQueue)
+            print elem1
+            self.queue.pop(elem)
+            self.queue.push(elem1)
+            posInQueue -= 1
+        self.lastStateAction  = currentStateAction
+
+        if len(self.queue) > self.steps:
+            self.queue.remove()
+
+        self.queue.push(currentStateAction)
+
+    def firstInit(self):
+        currentStateAction = ReinforcementState.ReinforcementState.toBin()
+        # currentStateAction = pacman.GameState.getLegalPacmanActions()
+        lastStateAction = currentStateAction
+        self.queue.push(currentStateAction)
