@@ -126,59 +126,52 @@ def scoreEvaluation(state):
     return state.getScore()
 
 
-# class SarsaAgent(game.Agent):
-#
-#     def __init__(self, evalFn="scoreEvaluation"):
-#         # Config = ConfigParser.ConfigParser()
-#         # Config.read(CONFIGURATIONSARSA_FILE)
-#         self.steps = 4
-#         self.alpha = 0.2
-#         self.gammar = 0.2
-#         # epsilon wird noch nicht gebraucht
-#         self.epsilon = 0
-#         self.ourLambda = 1
-#         self.lastStateAction = None
-#         self.randomNum = random.Random()
-#         self.ringBuffer = []
-#         self.ghostCount = 2
-#         # self.ratingStorage = ReinforcementSave("ratingStorageFor" + str(self.ghostCount), self.ghostCount)
-#
-#     def getAction(self, state):
-#         # reward = -0.4
-#         # reinforcementState = ReinforcementSearch(state).getReinforcmentResult()
-#         # legalActions = state.getLegalPacmanActions()
-#         # return self.sarsaAlgo(reinforcementState, legalActions, reward)
-#         pass
-#
-#     def sarsaAlgo(self, reinforcementState, legalActions, reward):
-#         pass
-#         # print legalActions
-#         # for direction in legalActions:
-#         #     print direction
-#         #     if not self.lastStateAction:
-#         #         self.firstInit(direction, reinforcementState)
-#         #     """momentan ohne explorationsrate"""
-#         #     currentStateAction = self.ratingStorage.getRatingForNextState(direction, reinforcementState)
-#         #     posInQueue = len(self.ringBuffer) - 1
-#         #     for elem in self.ringBuffer:
-#         #         delta = reward + (self.gammar * currentStateAction) - self.lastStateAction
-#         #         elem1 = elem + delta * self.alpha * pow(self.ourLambda, posInQueue)
-#         #         print elem1
-#         #         self.ringBuffer.remove(elem)
-#         #         self.ringBuffer.insert(0, elem1)
-#         #         posInQueue -= 1
-#         #     self.lastStateAction  = currentStateAction
-#         #
-#         #     if len(self.ringBuffer) > self.steps:
-#         #         tmp = self.ringBuffer[self.steps-1]
-#         #         self.ringBuffer.remove(tmp)
-#         #
-#         #     self.ringBuffer.insert(0, currentStateAction)
-#
-#     def firstInit(self, direction, reinforcementState):
-#         # currentStateAction = self.ratingStorage.getRatingForNextState(direction, reinforcementState)
-#         # self.lastStateAction = currentStateAction
-#         # self.ringBuffer.insert(0, currentStateAction)
-#         pass
-#
-#
+class SarsaAgent(game.Agent):
+
+    def __init__(self, evalFn="scoreEvaluation"):
+        # Config = ConfigParser.ConfigParser()
+        # Config.read(CONFIGURATIONSARSA_FILE)
+        self.steps = 4
+        self.alpha = 0.2
+        self.gammar = 0.2
+        # epsilon wird noch nicht gebraucht
+        self.epsilon = 0
+        self.ourLambda = 1
+        self.lastStateAction = None
+        self.randomNum = random.Random()
+        self.ringBuffer = []
+        self.ghostCount = 1
+        self.ratingStorage = ReinforcementSave("ratingStorageFor" + str(self.ghostCount), self.ghostCount)
+
+    def getAction(self, state):
+        reward = -0.4
+        reinforcementState = ReinforcementSearch(state).getReinforcmentResult()
+        legalActions = state.getLegalPacmanActions()
+        legalActions.remove('Stop')
+        return self.sarsaAlgo(reinforcementState, legalActions, reward)
+
+    def sarsaAlgo(self, reinforcementState, legalActions, reward):
+        print legalActions
+        for direction in legalActions:
+            print direction
+            if not self.lastStateAction:
+                self.firstInit(direction, reinforcementState)
+            """momentan ohne explorationsrate"""
+            currentStateAction = self.ratingStorage.getRatingForNextState(direction, reinforcementState)
+            for index in range(0, len(self.ringBuffer)):
+                delta = reward + (self.gammar * currentStateAction) - self.lastStateAction
+                self.ringBuffer[index] += delta * self.alpha * pow(self.ourLambda, index)
+            self.lastStateAction = currentStateAction
+
+            if len(self.ringBuffer) >= self.steps:
+                # deletes last element in list, returns it
+                self.ringBuffer.pop()
+
+            self.ringBuffer.insert(0, currentStateAction)
+
+    def firstInit(self, direction, reinforcementState):
+        currentStateAction = self.ratingStorage.getRatingForNextState(direction, reinforcementState)
+        self.lastStateAction = currentStateAction
+        self.ringBuffer.insert(0, currentStateAction)
+
+
