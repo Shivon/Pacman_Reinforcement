@@ -8,8 +8,9 @@ from graphicsDisplay import *
 CONFIGURATION_FILE = "settings.ini"
 
 class LauncherController:
-    def __init__(self, view, numGamesVar, numGhostsVar, layoutVar, pacmanVar, fixRandomSeedVar, zoomVar, frameTimeVar, textGraphicsVar, quietTextGraphicsVar):
+    def __init__(self, view, numTrainingVar, numGamesVar, numGhostsVar, layoutVar, pacmanVar, fixRandomSeedVar, zoomVar, frameTimeVar, textGraphicsVar, quietTextGraphicsVar):
         self.view = view
+        self.numTrainingVar = numTrainingVar
         self.numGamesVar = numGamesVar
         self.numGhostsVar = numGhostsVar
         self.layoutVar = layoutVar
@@ -25,6 +26,7 @@ class LauncherController:
     def getArgumentArray(self):
         argumentValues = []
         
+        argumentValues.append("-x " + self.numTrainingVar.get())
         argumentValues.append("--numGames=" + self.numGamesVar.get())
         argumentValues.append("--numghosts=" + self.numGhostsVar.get())
         argumentValues.append("--layout=" + self.layoutVar.get())
@@ -82,6 +84,8 @@ class LauncherController:
         invalidFields = []
         
         # Datatype checking
+        if (not DatatypeUtils.isIntegerString(self.numTrainingVar.get())):
+            invalidFields.append("'Anzahl der Trainings' muss eine Ganzzahl sein (zum Beispiel: 1)!")
         if (not DatatypeUtils.isIntegerString(self.numGamesVar.get())):
             invalidFields.append("'Anzahl der Spiele' muss eine Ganzzahl sein (zum Beispiel: 1)!")
         if (not DatatypeUtils.isIntegerString(self.numGhostsVar.get())):
@@ -102,7 +106,13 @@ class LauncherController:
         if (not DatatypeUtils.isBooleanString(self.quietTextGraphicsVar.get())):
             invalidFields.append("'Minimale Ausgabe' muss ein Wahrheitswert sein (True oder False)!")
         
-        # Value checking (numGhosts)
+        # Value checking (numTraining)
+        if (DatatypeUtils.isIntegerString(self.numTrainingVar.get())):
+            numTrainingValue = DatatypeUtils.stringToInteger(self.numTrainingVar.get())
+            if (numTrainingValue < 0):
+                invalidFields.append("'Anzahl der Trainings' muss groesser oder gleich " + str(0) + " sein!")
+        
+        # Value checking (numGames)
         if (DatatypeUtils.isIntegerString(self.numGamesVar.get())):
             numGamesValue = DatatypeUtils.stringToInteger(self.numGamesVar.get())
             if (numGamesValue < 1):
@@ -151,6 +161,7 @@ class LauncherController:
             return True
     
     def loadDefaultSettings(self):
+        self.numTrainingVar.set("0")
         self.numGamesVar.set("1")
         self.numGhostsVar.set("2")
         self.layoutVar.set("mediumClassic")
@@ -169,6 +180,7 @@ class LauncherController:
             Config = ConfigParser.ConfigParser()
             Config.read(CONFIGURATION_FILE)
             
+            self.numTrainingVar.set(Config.get('GameSettings', 'numTraining'))
             self.numGamesVar.set(Config.get('GameSettings', 'numGames'))
             self.numGhostsVar.set(Config.get('GameSettings', 'numGhosts'))
             self.layoutVar.set(Config.get('GameSettings', 'layout'))
@@ -196,6 +208,7 @@ class LauncherController:
         cfgfile = open(CONFIGURATION_FILE, 'w')
         
         Config.add_section('GameSettings')
+        Config.set('GameSettings', 'numGames', self.numTrainingVar.get())
         Config.set('GameSettings', 'numGames', self.numGamesVar.get())
         Config.set('GameSettings', 'numGhosts', self.numGhostsVar.get())
         Config.set('GameSettings', 'layout', self.layoutVar.get())

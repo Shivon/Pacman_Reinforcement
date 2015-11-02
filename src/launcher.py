@@ -135,6 +135,10 @@ class LauncherView(Tkinter.Tk):
         self.createHeader("Spieleinstellungen", self.nextRow)
         self.finishRow()
         
+        self.createLabel("Anzahl der Trainings", self.nextRow)
+        self.numTrainingVar = self.createTextbox(self.nextRow)
+        self.finishRow()
+        
         self.createLabel("Anzahl der Spiele", self.nextRow)
         self.numGamesVar = self.createTextbox(self.nextRow)
         self.finishRow()
@@ -222,8 +226,9 @@ class LauncherView(Tkinter.Tk):
         
         # Create controller
         self.launcherController = LauncherController(self,
-            self.numGamesVar, self.numGhostsVar, self.layoutVar, self.pacmanVar, self.fixRandomSeedVar,
-            self.zoomVar, self.frameTimeVar, self.textGraphicsVar, self.quietTextGraphicsVar)
+            self.numTrainingVar, self.numGamesVar, self.numGhostsVar, self.layoutVar,
+            self.pacmanVar, self.fixRandomSeedVar, self.zoomVar, self.frameTimeVar,
+            self.textGraphicsVar, self.quietTextGraphicsVar)
             
         # Load settings
         self.launcherController.loadSettingsFromConfigFile()
