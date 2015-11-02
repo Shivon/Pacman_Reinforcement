@@ -3,7 +3,8 @@
 Implementing an agent for Pacman, trained by reinforcement learning
 
 ### Downloads
-If you are using a windows operation system then you need to install numpy before you can run this project
+If you are using a windows operation system then you need to install numpy before you can run this project.
+It should be numpy-1.10.1-win32-superpack-python2.7.exe
 http://sourceforge.net/projects/numpy/files/NumPy/1.10.1/
 
 ### API
