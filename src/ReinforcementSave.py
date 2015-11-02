@@ -114,7 +114,7 @@ class ReinforcementSave(object):
             freePage = self.usedPages
             self.usedPages += 1
         else:
-            savePage(self.nextPageToReplace)
+            self.savePage(self.nextPageToReplace)
             freePage = self.nextPageToReplace
         self.virtMem[self.pageNrToVirtualNr[freePage]] = -1
         self.pageNrToVirtualNr[freePage] = -1
