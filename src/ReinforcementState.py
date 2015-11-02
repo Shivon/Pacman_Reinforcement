@@ -32,6 +32,15 @@ class ReinforcementDirection(object):
             return Directions.WEST
         else:
             raise ValueError('Direction Unknown')
+        
+    @classmethod
+    def getDirections(self): 
+        resultList = []
+        resultList.append(self.NORTH)
+        resultList.append(self.EAST)
+        resultList.append(self.SOUTH)
+        resultList.append(self.WEST)
+        return resultList
 
 
 class Threat(object):
