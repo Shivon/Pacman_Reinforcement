@@ -20,6 +20,7 @@ import random
 import game
 import pacman
 from ReinforcementSave import ReinforcementSave
+from pacmanGlobals import PacmanGlobals
 import util
 import Queue
 from ReinforcementSave import *
@@ -140,6 +141,7 @@ class SarsaAgent(game.Agent):
         self.lastStateAction = None
         self.randomNum = random.Random()
         self.ringBuffer = []
+        # self.ghostCount = PacmanGlobals.numGhostAgents
         self.ghostCount = 1
         self.ratingStorage = ReinforcementSave("ratingStorageFor" + str(self.ghostCount), self.ghostCount)
 
@@ -168,6 +170,7 @@ class SarsaAgent(game.Agent):
                 self.ringBuffer.pop()
 
             self.ringBuffer.insert(0, currentStateAction)
+            return legalActions[0]
 
     def firstInit(self, direction, reinforcementState):
         currentStateAction = self.ratingStorage.getRatingForNextState(direction, reinforcementState)
