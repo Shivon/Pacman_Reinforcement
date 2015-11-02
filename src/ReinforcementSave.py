@@ -10,7 +10,19 @@ class ReinforcementSave(object):
     DIRTY = 2 ** 3
 
     """docstring for ClassName"""
-    def __init__(self, fileName, numGhosts, maxMemoryInMB = 1, offsetBits = 7):
+    # Erstellen am besten einmal pro spiel mit:
+    # ReinforcementSave('save_001', numGhosts, ...)
+    
+    # vorsicht beim löschen (Laufzeitaufwending)
+    # wichtige Operationen:
+    #   - getRatingForNextState(...)
+    #   - setRatingForNextState(...): muss in range(0, 2^16) sein
+    #           -> negative Werte können nachgerüstet werden (durch Torben)
+    
+    # fileName = Output file (savedlearned/<filename>)
+    # maxMemoryInMB (Speicher im RAM)
+    # offsetBits (Seitengröße), hier 2^7
+    def __init__(self, fileName, numGhosts, maxMemoryInMB = 16, offsetBits = 7):
         self.fileName = fileName
         self.numGhosts = numGhosts
         self.maxNeededBitsForSaving = ((self.numGhosts * 5) + 2)
