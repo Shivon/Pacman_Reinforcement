@@ -37,10 +37,8 @@ class ReinforcementSave(object):
     def getRatingForNextState(self, wentDirection, state):
         wf = open(str(self.filePath), "rb")
         binVal = state.toBin()
-        print 'BinVal' + str(bin(binVal))
         wf.seek((binVal * 2) + ReinforcementDirection.fromGameDirection(wentDirection))
         tmp = struct.unpack("H", wf.read(2))[0]
-        print 'tmp' + str(bin(tmp))
         wf.close()
         return tmp
 
