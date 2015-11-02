@@ -25,7 +25,7 @@ class ReinforcementSave(object):
     def __init__(self, fileName, numGhosts, maxMemoryInMB = 16, offsetBits = 7):
         self.fileName = fileName
         self.numGhosts = numGhosts
-        self.maxNeededBitsForSaving = ((self.numGhosts * 5) + 2)
+        self.maxNeededBitsForSaving = ((self.numGhosts * 5) + 2) + 2
         self.maxMemoryInMB = maxMemoryInMB
         if (offsetBits > self.maxNeededBitsForSaving):
             self.offsetBits = self.maxNeededBitsForSaving
@@ -100,6 +100,8 @@ class ReinforcementSave(object):
             raise ValueError('Something is wrong with the Adress')
         wf = open(str(self.filePath), "rb")
         wf.seek(startAdress)
+        print self.maxNumberOfStates()
+        print startAdress
         for offset in range(0, self.offsetSize):
             self.ramMem[freePageNr][offset] = struct.unpack("H", wf.read(2))[0]
         wf.close
@@ -132,7 +134,9 @@ class ReinforcementSave(object):
         binVal = state.toBin()
         adress = (binVal << 2) + ReinforcementDirection.fromGameDirection(wentDirection)
         virtualPageNr = adress >> self.offsetBits
+        print "test " + str(virtualPageNr)
         offset = adress & (self.offsetSize - 1)
+        print "tewt " + str(offset)
         pageNr = self.getPageNr(virtualPageNr)
         self.flagTable[pageNr] = self.flagTable[pageNr] | self.USED
         return self.ramMem[pageNr][offset]
@@ -148,12 +152,12 @@ class ReinforcementSave(object):
         self.flagTable[pageNr] = self.flagTable[pageNr] | self.USED | self.DIRTY
         self.ramMem[pageNr][offset] = rating
 
-# a = ReinforcementSave('1ghost', 1)
-# print str(a.maxNumberOfStates()) + ' ' + str(float(a.fileSizeInBit()) / (8 * 1024 * 1024))
-# state = ReinforcementState(ReinforcementDirection.NORTH, [GhostState(ReinforcementDirection.NORTH, Threat.DANGER, True)])
-# print 'getRatingForNextState ' + str(a.getRatingForNextState(Directions.WEST, state))
-# a.setRatingForState(Directions.WEST,state,8)
-# print 'setRatingForNextState ' + str(a.getRatingForNextState(Directions.WEST, state))
+#a = ReinforcementSave('1ghost', 1)
+#print str(a.maxNumberOfStates()) + ' ' + str(float(a.fileSizeInBit()) / (8 * 1024 * 1024))
+#state = ReinforcementState(ReinforcementDirection.WEST, [GhostState(ReinforcementDirection.WEST, Threat.FAR_AWAY, True)])
+#print 'getRatingForNextState ' + str(a.getRatingForNextState(Directions.WEST, state))
+#a.setRatingForState(Directions.WEST,state,8)
+#print 'setRatingForNextState ' + str(a.getRatingForNextState(Directions.WEST, state))
 #a = ReinforcementSave('2ghost', 2)
 #print str(a.maxNumberOfStates()) + ' ' + str(float(a.fileSizeInBit()) / (8 * 1024 * 1024))
 #a = ReinforcementSave('3ghost', 3, 128)
