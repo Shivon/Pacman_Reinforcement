@@ -2,6 +2,7 @@ from pacman import Directions
 from game import Agent
 from ReinforcementState import *
 from types import *
+import array
 import random
 import game
 import util
@@ -114,11 +115,11 @@ class ReinforcementSearch:
     
     # Executes a BFS algorithm until one feed is found and all ghosts are processed
     def executeBFS(self):
-        INFINITY = 9223372036854775807
+        INFINITY = 2147483647
         
-        self.edgeTo = [None] * (self.fieldSize)
-        self.distTo = [INFINITY] * (self.fieldSize)
-        marked = [False] * (self.fieldSize)
+        self.edgeTo = array.array('i', [-1] * (self.fieldSize))
+        self.distTo = array.array('i', [INFINITY] * (self.fieldSize))
+        marked = array.array('b', [False] * (self.fieldSize))
         
         s = self.pacmanPosition
         q = Queue.Queue()
