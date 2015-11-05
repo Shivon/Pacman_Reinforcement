@@ -134,6 +134,7 @@ class ReinforcementSave(object):
         binVal = state.toBin()
         adress = (binVal << 2) + ReinforcementDirection.fromGameDirection(wentDirection)
         virtualPageNr = adress >> self.offsetBits
+        print "test " + str(virtualPageNr)
         offset = adress & (self.offsetSize - 1)
         pageNr = self.getPageNr(virtualPageNr)
         self.flagTable[pageNr] = self.flagTable[pageNr] | self.USED
