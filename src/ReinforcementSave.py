@@ -5,10 +5,6 @@ import struct
 import numpy as np
 
 class ReinforcementSave(object):
-    PRESENT = 2 ** 0
-    USED = 2 ** 1
-    DIRTY = 2 ** 3
-
     """
     Speicherverwaltung fuer das Reinforcementlearning.
     Es sollte pro Spiel maximal eine Instanz existieren.
@@ -19,6 +15,9 @@ class ReinforcementSave(object):
     Bei der Instanzierung wird im Unterordner savedLearned die entsprechende Datei erstellt, wenn nicht vorhanden,
     sonst wir gecheckt, ob die vorhandene Datei Konsistent ist.
     """
+    PRESENT = 2 ** 0
+    USED = 2 ** 1
+    DIRTY = 2 ** 3
 
     def __init__(self, fileName, numGhosts, maxMemoryInMB = 16, offsetBits = 7):
         """
@@ -26,6 +25,7 @@ class ReinforcementSave(object):
         :param numGhosts: Integer Anzahl der Geister im Spiel
         :param maxMemoryInMB: Integer Groesse des im Arbeitsspeicher vorgehaltenem Bereichs in MB
         :param offsetBits: Integer Bestimmt die Seitengroesse 2 ** offsetBits ist die Anzahl der Ratings pro Seite.
+        :raise ValueError: Wenn die Datei inkonsistent ist
         """
         self.fileName = fileName
         self.numGhosts = numGhosts
@@ -153,7 +153,7 @@ class ReinforcementSave(object):
 
     def __getPageNr(self, virtualPageNr):
         """
-
+        Rechnet eine Virtuelle Seitennummer in die echte um
         """
         pageNr = self.virtMem[virtualPageNr]
         if (pageNr >= 0):
@@ -162,6 +162,13 @@ class ReinforcementSave(object):
             return self.__loadPage(virtualPageNr)
 
     def getRatingForNextState(self, wentDirection, state):
+        """
+        Gibt die gespeicherte wahrscheinliche Wertung fuer den naechsten State zurueck.
+        Ist noch keine Wertung vorhanden, ist der Wert 0.0
+        :param wentDirection: String game.Directions eine Orginalgamedirection, in die gegangen werden soll
+        :param state: ReinforcementState Momentaner Status des Pacmans
+        :return: Float32 wahrscheinliche Wertung des naechsten Zustandes
+        """
         binVal = state.toBin()
         adress = (binVal << 2) + ReinforcementDirection.fromGameDirection(wentDirection)
         virtualPageNr = adress >> self.offsetBits
@@ -171,6 +178,13 @@ class ReinforcementSave(object):
         return self.ramMem[pageNr][offset]
 
     def setRatingForState(self, wentDirection, state, rating):
+        """
+        Speichert einen Rating fuer einen bestimmten Zug
+        :param wentDirection: String game.Directions eine Orginalgamedirection, in die gegangen worden ist
+        :param state: ReinforcementState aus dem gestartet wurde
+        :param Rating: Float32 Rating das erwirtschaftet wurde
+        :raise ValueError: Wenn Rating kleiner Float32.Min oder groesser Float32.Max
+        """
         if rating > (np.finfo('f').max):
             raise ValueError('Rating to high')
         if rating < (np.finfo('f').min):
