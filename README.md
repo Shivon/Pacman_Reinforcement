@@ -37,12 +37,12 @@ This works both with double-click on the file launcher.py or by executing the fo
 * Actions available for agent: `north`, `west`, `south`, `east` and `stop`
 
 ### State
-<a href="./doc/ReinforcementSave.html">PyDoc Eintrag</a><br />
+<a href="https://rawgit.com/Shivon/Pacman_Reinforcement/master/doc/ReinforcementState.html">PyDoc Eintrag</a><br />
 Der ReinforcementState setzt sich aus den Geistern und der Richtung, in die das nächste fressbare Objekt liegt zusammen. Dieser Status ist, und muss bei Änderungen, eindeutig in eine Binärcodierung überführbar sein. <br />
 ACHTUNG! Wird die binärrepräsentation geändert, muss auch die Speicherung angepasst werden.
 
 ### Saving
-<a href="./doc/ReinforcementSave.html">PyDoc Eintrag</a><br>
+<a href="https://rawgit.com/Shivon/Pacman_Reinforcement/master/doc/ReinforcementSave.html">PyDoc Eintrag</a><br>
 Das Speichern erfolgt Lokal auf die Festplatte. Der Algorytmus verwendet die Binärrepräsentation des State zur Aderssierung der Werte. Wenn eine Anpassung der Binärrepräsentation gemacht wurde, ist auch eine Anpassung der Speicherung notwendig.<br />
 Um das Laden und speichern von Werten zu beschleunigen, und nicht den Arbeitsspeicher unnötig auszulasten, ist ein Seitenersetzungssystem eingebaut. Das heißt, es wir nicht die Vollständige Datei im Arbeitssppeicher gehalten, sondern nur Teile, die dynamisch wechseln. Im Standard Werden 16 MB im Arbeitsspeicher gehalten, und eine Seite beinhaltet 2⁷ Zustände<br />
 <br />
