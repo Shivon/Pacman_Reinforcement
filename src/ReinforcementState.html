@@ -1,0 +1,155 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module ReinforcementState</title>
+<meta charset="utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>ReinforcementState</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/torben/workspace/Pacman_Reinforcement/src/ReinforcementState.py">/home/torben/workspace/Pacman_Reinforcement/src/ReinforcementState.py</a></font></td></tr></table>
+    <p></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="__builtin__.html#object">__builtin__.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="ReinforcementState.html#GhostState">GhostState</a>
+</font></dt><dt><font face="helvetica, arial"><a href="ReinforcementState.html#ReinforcementDirection">ReinforcementDirection</a>
+</font></dt><dt><font face="helvetica, arial"><a href="ReinforcementState.html#ReinforcementState">ReinforcementState</a>
+</font></dt><dt><font face="helvetica, arial"><a href="ReinforcementState.html#Threat">Threat</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="GhostState">class <strong>GhostState</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Der&nbsp;<a href="#GhostState">GhostState</a>&nbsp;repraesentiert&nbsp;den&nbsp;Status&nbsp;eines&nbsp;Geistes&nbsp;im&nbsp;Spiel.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="GhostState-__init__"><strong>__init__</strong></a>(self, direction, threat, isEatable)</dt><dd><tt>:param&nbsp;direction:&nbsp;<a href="#ReinforcementDirection">ReinforcementDirection</a>&nbsp;die&nbsp;die&nbsp;Richtung&nbsp;wiederspiegelt,&nbsp;in&nbsp;die&nbsp;Pacman&nbsp;laufen&nbsp;muesste,&nbsp;um&nbsp;auf&nbsp;den&nbsp;Geist&nbsp;zuzulaufen<br>
+:param&nbsp;threat:&nbsp;<a href="#Threat">Threat</a>&nbsp;des&nbsp;Geistes,&nbsp;also&nbsp;die&nbsp;approximierte&nbsp;Entfernung&nbsp;zwischen&nbsp;Pacman&nbsp;und&nbsp;dem&nbsp;Geist<br>
+:param&nbsp;isEatable:&nbsp;Boolean,&nbsp;ob&nbsp;der&nbsp;Geist&nbsp;fressbar&nbsp;ist.</tt></dd></dl>
+
+<dl><dt><a name="GhostState-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Stringrepraesentation&nbsp;des&nbsp;Zustandes.</tt></dd></dl>
+
+<dl><dt><a name="GhostState-toBin"><strong>toBin</strong></a>(self)</dt><dd><tt>Binaerrepreasentation&nbsp;des&nbsp;Zustandes.</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ReinforcementDirection">class <strong>ReinforcementDirection</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#ReinforcementDirection">ReinforcementDirection</a>&nbsp;dient&nbsp;zur&nbsp;Umwandlung&nbsp;von&nbsp;Strings,&nbsp;die&nbsp;in&nbsp;der&nbsp;game.Directions&nbsp;verwendet&nbsp;werden,&nbsp;in&nbsp;Integer.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Class methods defined here:<br>
+<dl><dt><a name="ReinforcementDirection-fromGameDirection"><strong>fromGameDirection</strong></a>(self, direction)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Wandelt&nbsp;eine&nbsp;die&nbsp;Repraesentation&nbsp;einer&nbsp;game.Directions&nbsp;in&nbsp;die&nbsp;entsprechende&nbsp;<a href="#ReinforcementDirection">ReinforcementDirection</a>&nbsp;um.<br>
+:param&nbsp;direction:&nbsp;Eine&nbsp;game.Directions&nbsp;oder&nbsp;die&nbsp;entsprechende&nbsp;Stringrepraesentation&nbsp;{'North',&nbsp;'South',&nbsp;'East',&nbsp;'West'}.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Stop'&nbsp;ist&nbsp;eine&nbsp;illegale&nbsp;Eingabe,&nbsp;da&nbsp;das&nbsp;Anhalten&nbsp;nicht&nbsp;vorgesehen&nbsp;ist.<br>
+:return:&nbsp;Gibt&nbsp;die&nbsp;Intergerrepraesentation&nbsp;der&nbsp;eingegebenen&nbsp;direction&nbsp;wieder.</tt></dd></dl>
+
+<dl><dt><a name="ReinforcementDirection-getDirections"><strong>getDirections</strong></a>(self)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>:return:&nbsp;Ein&nbsp;Liste&nbsp;bestehend&nbsp;aus&nbsp;allen&nbsp;<a href="#ReinforcementDirection">ReinforcementDirection</a>'s</tt></dd></dl>
+
+<dl><dt><a name="ReinforcementDirection-toGameDirection"><strong>toGameDirection</strong></a>(self, direction)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Wandelt&nbsp;eine&nbsp;die&nbsp;Repraesentation&nbsp;einer&nbsp;<a href="#ReinforcementDirection">ReinforcementDirection</a>&nbsp;in&nbsp;die&nbsp;entsprechende&nbsp;game.Directions&nbsp;um.<br>
+:param&nbsp;direction:&nbsp;Eine&nbsp;<a href="#ReinforcementDirection">ReinforcementDirection</a>&nbsp;oder&nbsp;die&nbsp;entsprechende&nbsp;Integerrepraesentation&nbsp;{0,&nbsp;1,&nbsp;2,&nbsp;3}.<br>
+:return:&nbsp;Gibt&nbsp;die&nbsp;Stringrepraesentation&nbsp;der&nbsp;eingegebenen&nbsp;direction&nbsp;wieder.</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>EAST</strong> = 1</dl>
+
+<dl><dt><strong>NORTH</strong> = 0</dl>
+
+<dl><dt><strong>SOUTH</strong> = 2</dl>
+
+<dl><dt><strong>WEST</strong> = 3</dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ReinforcementState">class <strong>ReinforcementState</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Der&nbsp;<a href="#ReinforcementState">ReinforcementState</a>&nbsp;repraesentiert&nbsp;den&nbsp;gesamten&nbsp;fuer&nbsp;die&nbsp;Reinforcementberechnung&nbsp;noetigen&nbsp;Spielstatus.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="ReinforcementState-__init__"><strong>__init__</strong></a>(self, nextFoodDirection, ghosts)</dt><dd><tt>:param&nbsp;nextFoodDirection:&nbsp;<a href="#ReinforcementDirection">ReinforcementDirection</a>&nbsp;Richtung,&nbsp;in&nbsp;der&nbsp;der&nbsp;naechste&nbsp;Fresspunkt&nbsp;liegt.<br>
+:param&nbsp;ghosts:&nbsp;Liste&nbsp;von&nbsp;<a href="#GhostState">GhostState</a>.</tt></dd></dl>
+
+<dl><dt><a name="ReinforcementState-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Stringrepraesentation&nbsp;des&nbsp;Zustandes.</tt></dd></dl>
+
+<dl><dt><a name="ReinforcementState-toBin"><strong>toBin</strong></a>(self)</dt><dd><tt>Binaerrepreasentation&nbsp;des&nbsp;Zustandes.</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Threat">class <strong>Threat</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Thread&nbsp;dient&nbsp;zur&nbsp;Umwandlung&nbsp;von&nbsp;echten&nbsp;Entfernungen&nbsp;in&nbsp;approximierte&nbsp;Werte.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Class methods defined here:<br>
+<dl><dt><a name="Threat-fromDistance"><strong>fromDistance</strong></a>(self, distance)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Wandelt&nbsp;eine&nbsp;Entfernung&nbsp;in&nbsp;den&nbsp;approximierten&nbsp;Wert&nbsp;um.&nbsp;Eine&nbsp;Rueckumwandlung&nbsp;ist&nbsp;nicht&nbsp;moeglich.<br>
+:param&nbsp;distance:&nbsp;Integer&nbsp;reale&nbsp;Entfernung<br>
+:return:&nbsp;Integer&nbsp;approximierter&nbsp;Wert</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>DANGER</strong> = 0</dl>
+
+<dl><dt><strong>FAR_AWAY</strong> = 3</dl>
+
+<dl><dt><strong>NEAR</strong> = 2</dl>
+
+<dl><dt><strong>NEXT</strong> = 1</dl>
+
+</td></tr></table></td></tr></table>
+</body></html>

@@ -58,7 +58,7 @@ class ReinforcementSave(object):
         wf = open(str(filePath), "wb")
         for x in range(0, self.maxNumberOfStates()):
             for y in xrange(0,self.numGhosts):
-                wf.write(struct.pack("H", 0))
+                wf.write(struct.pack("h", 0))
         wf.close()
 
     def initVirtualAdressSpace(self):
@@ -89,7 +89,7 @@ class ReinforcementSave(object):
             wf = open(str(self.filePath), "r+b")
             wf.seek(startingAdress)
             for value in self.ramMem[pageNr]:
-                wf.write(struct.pack("H", value))
+                wf.write(struct.pack("h", value))
             wf.close()
             self.flagTable[pageNr] = (self.flagTable[pageNr] ^ self.DIRTY)
 
@@ -103,7 +103,7 @@ class ReinforcementSave(object):
         print self.maxNumberOfStates()
         print startAdress
         for offset in range(0, self.offsetSize):
-            self.ramMem[freePageNr][offset] = struct.unpack("H", wf.read(2))[0]
+            self.ramMem[freePageNr][offset] = struct.unpack("h", wf.read(2))[0]
         wf.close
         self.virtMem[virtualPageNr] = freePageNr
         self.pageNrToVirtualNr[freePageNr] = virtualPageNr
@@ -134,15 +134,16 @@ class ReinforcementSave(object):
         binVal = state.toBin()
         adress = (binVal << 2) + ReinforcementDirection.fromGameDirection(wentDirection)
         virtualPageNr = adress >> self.offsetBits
-        print "test " + str(virtualPageNr)
         offset = adress & (self.offsetSize - 1)
         pageNr = self.getPageNr(virtualPageNr)
         self.flagTable[pageNr] = self.flagTable[pageNr] | self.USED
         return self.ramMem[pageNr][offset]
 
     def setRatingForState(self, wentDirection, state, rating):
-        if rating > 2**16:
+        if rating > (2**15 - 1):
             raise ValueError('Rating to high')
+        if rating < -(2**15):
+            raise ValueError('Rating to low')
         binVal = state.toBin()
         adress = (binVal << 2) + ReinforcementDirection.fromGameDirection(wentDirection)
         virtualPageNr = adress >> self.offsetBits
