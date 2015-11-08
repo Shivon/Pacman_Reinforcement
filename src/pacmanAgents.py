@@ -153,42 +153,30 @@ class SarsaAgent(game.Agent):
         return self.sarsaAlgo(reinforcementState, legalActions, reward)
 
     def sarsaAlgo(self, reinforcementState, legalActions, reward):
-        print legalActions
-
+        # print legalActions
         nextBestAction = self.getBestAction(legalActions, reinforcementState)
-        print nextBestAction
-
+        # print nextBestAction
         self.updateRingBuffer(nextBestAction, reward)
-        print "--- nextBestAction --- " + str(nextBestAction[0])
+        # print "--- nextBestAction --- " + str(nextBestAction[0])
         return nextBestAction[0]
 
     def updateRingBuffer(self, nextBestAction, reward):
         # nextAction = nextBestAction[0]
         nextRating = nextBestAction[1]
-
         if not self.ringBuffer:
             self.lastStateActionRating = 0
-
         self.ringBuffer.insert(0, nextBestAction)
-
         if len(self.ringBuffer) >= self.steps:
             # deletes last element in list, returns it
             self.ringBuffer.pop()
-
         for index in range(0, len(self.ringBuffer)):
-            print "-- schritt in for-schleife -- " + str(index)
             delta = reward + (self.gamma * nextRating) - self.lastStateActionRating
-            print "--- delta --- " + str(delta)
             self.ringBuffer[index][1] = delta * self.alpha * pow(self.ourLambda, index)
-            print "--- self.ringBuffer[index][1] --- " + " index " + str(index) + str(self.ringBuffer[index][1])
             self.ratingStorage.setRatingForState(self.ringBuffer[index][0], self.ringBuffer[index][2], self.ringBuffer[index][1])
-
-        print "-- self.ringBuffer --- " + str(self.ringBuffer)
+        # print "-- self.ringBuffer --- " + str(self.ringBuffer)
         self.lastStateActionRating = self.ringBuffer[0][1]
-
         # self.lastStateActionRating = nextRating
-        print "--- lastStateActionRating --- " + str(self.lastStateActionRating)
-
+        # print "--- lastStateActionRating --- " + str(self.lastStateActionRating)
 
     def getBestAction(self, directions, state):
         # getRatingForNextState(self, wentDirection, state):
@@ -199,45 +187,8 @@ class SarsaAgent(game.Agent):
             if (bestRating < ratingCurrDirection):
                 bestDirection = direction
                 bestRating = ratingCurrDirection
-        print "--- [bestDirection, bestRating, state] --- " + str([bestDirection, bestRating, state])
-
+        # print "--- [bestDirection, bestRating, state] --- " + str([bestDirection, bestRating, state])
         return [bestDirection, bestRating, state]
 
 
 
-
-# for currentStateAction in legalActions:
-#     print currentStateAction
-#     if not self.lastStateAction:
-#         self.firstInit(currentStateAction, reinforcementState)
-#     """momentan ohne explorationsrate"""
-#     currentStateActionRating = self.ratingStorage.getRatingForNextState(currentStateAction, reinforcementState)
-#
-#     for index in range(0, len(self.ringBuffer)):
-#         delta = reward + (self.gammar * currentStateActionRating) - self.lastStateActionRating
-#         # currentRingBufferElem = self.ringBuffer[index]
-#         # key = currentRingBufferElem.keys()[0]
-#         currentRingBufferElem[key] += delta * self.alpha * pow(self.ourLambda, index)
-#         # self.ringBuffer[index] += delta * self.alpha * pow(self.ourLambda, index)
-#         # currentStateAction = self.ringBuffer[index]
-#
-#     self.lastStateActionRating = self.ringBuffer[0].values()[0]
-#     print "----- lastStateActionRating: --- " + str(self.lastStateActionRating)
-#
-#     if len(self.ringBuffer) >= self.steps:
-#         # deletes last element in list, returns it
-#         self.ringBuffer.pop()
-#
-#     self.ringBuffer.insert(0, p)
-#
-#     rand = int(self.randomNum.random() * len(legalActions))
-#     # rand = int(currentStateAction * len(legalActions))
-#     print "---- this is rand num " + str(rand)
-#     return legalActions[rand]
-
-# def firstInit(self, currentStateAction, reinforcementState):
-#     currentStateActionRating = self.ratingStorage.getRatingForNextState(currentStateAction, reinforcementState)
-#     self.lastStateActionRating = currentStateActionRating
-#     directionRating = {}
-#     directionRating[currentStateAction] = currentStateActionRating
-#     self.ringBuffer.insert(0, directionRating)
