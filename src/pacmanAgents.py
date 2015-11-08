@@ -134,6 +134,7 @@ class SarsaAgent(game.Agent):
         # Config.read(CONFIGURATIONSARSA_FILE)
         self.steps = 4
         self.alpha = 0.2
+        # Discount-rate
         self.gamma = 0.8
         # epsilon wird noch nicht gebraucht
         self.epsilon = 0.1
@@ -146,38 +147,50 @@ class SarsaAgent(game.Agent):
         self.ratingStorage = ReinforcementSave("ratingStorageFor" + str(self.ghostCount), self.ghostCount)
 
     def getAction(self, state):
-        reward = -4
+        reward = -0.4
         reinforcementState = ReinforcementSearch(state).getReinforcmentResult()
         legalActions = state.getLegalPacmanActions()
         legalActions.remove('Stop')
         return self.sarsaAlgo(reinforcementState, legalActions, reward)
 
     def sarsaAlgo(self, reinforcementState, legalActions, reward):
-        # print legalActions
-        nextBestAction = self.getBestAction(legalActions, reinforcementState)
+        """ choose best next action. With 10% choose non best action """
+        if (self.epsilon * 100) > (self.randomNum.random() * 100 + 1):
+            index = int(self.randomNum.random() * len(legalActions))
+            legalDirection = legalActions[index]
+            bestRating = self.ratingStorage.getRatingForNextState(legalDirection, reinforcementState)
+            nextBestAction = [legalDirection, bestRating, reinforcementState]
+        else:
+            nextBestAction = self.getBestAction(legalActions, reinforcementState)
         # print nextBestAction
         self.updateRingBuffer(nextBestAction, reward)
         # print "--- nextBestAction --- " + str(nextBestAction[0])
         return nextBestAction[0]
 
+    """ update ringbuffer in which last stateActions are hold """
     def updateRingBuffer(self, nextBestAction, reward):
         # nextAction = nextBestAction[0]
         nextRating = nextBestAction[1]
+        """ If ringBuffer has no items yet """
         if not self.ringBuffer:
             self.lastStateActionRating = 0
+
+        """ Add new item """
         self.ringBuffer.insert(0, nextBestAction)
+        """ if more than steps items in buffer remove last (oldest) one """
         if len(self.ringBuffer) >= self.steps:
             # deletes last element in list, returns it
             self.ringBuffer.pop()
+        """ compute new rating """
         for index in range(0, len(self.ringBuffer)):
             delta = reward + (self.gamma * nextRating) - self.lastStateActionRating
             self.ringBuffer[index][1] = delta * self.alpha * pow(self.ourLambda, index)
             self.ratingStorage.setRatingForState(self.ringBuffer[index][0], self.ringBuffer[index][2], self.ringBuffer[index][1])
         # print "-- self.ringBuffer --- " + str(self.ringBuffer)
+        """ choose first item from ringbuffer to be the last action """
         self.lastStateActionRating = self.ringBuffer[0][1]
-        # self.lastStateActionRating = nextRating
-        # print "--- lastStateActionRating --- " + str(self.lastStateActionRating)
 
+    """ choose best action for state """
     def getBestAction(self, directions, state):
         # getRatingForNextState(self, wentDirection, state):
         bestDirection = directions[0]
