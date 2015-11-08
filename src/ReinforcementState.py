@@ -2,6 +2,10 @@ from game import Directions
 
 
 class ReinforcementDirection(object):
+    """
+    ReinforcementDirection dient zur Umwandlung von Strings, die in der game.Directions verwendet werden, in Integer.
+    """
+
     NORTH = 0
     EAST = 1
     SOUTH = 2
@@ -9,6 +13,12 @@ class ReinforcementDirection(object):
 
     @classmethod
     def fromGameDirection(self, direction):
+        """
+        Wandelt eine die Repraesentation einer game.Directions in die entsprechende ReinforcementDirection um.
+        :param direction: Eine game.Directions oder die entsprechende Stringrepraesentation {'North', 'South', 'East', 'West'}.
+                          'Stop' ist eine illegale Eingabe, da das Anhalten nicht vorgesehen ist.
+        :return: Gibt die Intergerrepraesentation der eingegebenen direction wieder.
+        """
         if direction == Directions.NORTH:
             return self.NORTH
         elif direction == Directions.EAST:
@@ -22,6 +32,11 @@ class ReinforcementDirection(object):
 
     @classmethod
     def toGameDirection(self, direction):
+        """
+        Wandelt eine die Repraesentation einer ReinforcementDirection in die entsprechende game.Directions um.
+        :param direction: Eine ReinforcementDirection oder die entsprechende Integerrepraesentation {0, 1, 2, 3}.
+        :return: Gibt die Stringrepraesentation der eingegebenen direction wieder.
+        """
         if direction == self.NORTH:
             return Directions.NORTH
         elif direction == self.EAST:
@@ -32,9 +47,12 @@ class ReinforcementDirection(object):
             return Directions.WEST
         else:
             raise ValueError('Direction Unknown')
-        
+
     @classmethod
-    def getDirections(self): 
+    def getDirections(self):
+        """
+        :return: Ein Liste bestehend aus allen ReinforcementDirection's
+        """
         resultList = []
         resultList.append(self.NORTH)
         resultList.append(self.EAST)
@@ -44,7 +62,8 @@ class ReinforcementDirection(object):
 
 
 class Threat(object):
-    """docstring for ClassName"""
+    """Thread dient zur Umwandlung von echten Entfernungen in approximierte Werte."""
+
     DANGER = 0
     NEXT = 1
     NEAR = 2
@@ -52,6 +71,11 @@ class Threat(object):
 
     @classmethod
     def fromDistance(self, distance):
+        """
+        Wandelt eine Entfernung in den approximierten Wert um. Eine Rueckumwandlung ist nicht moeglich.
+        :param distance: Integer reale Entfernung
+        :return: Integer approximierter Wert
+        """
         if distance <=1:
             return self.DANGER
         elif distance <= 3:
@@ -63,36 +87,58 @@ class Threat(object):
 
 
 class GhostState(object):
-    """docstring for ClassName"""
+    """Der GhostState repraesentiert den Status eines Geistes im Spiel."""
+
     def __init__(self, direction, threat, isEatable):
+        """
+        :param direction: ReinforcementDirection die die Richtung wiederspiegelt, in die Pacman laufen muesste, um auf den Geist zuzulaufen
+        :param threat: Threat des Geistes, also die approximierte Entfernung zwischen Pacman und dem Geist
+        :param isEatable: Boolean, ob der Geist fressbar ist.
+        """
         self.direction = direction
         self.threat = threat
         self.isEatable = 1 if isEatable else 0
 
     def __repr__(self):
+        """
+        Stringrepraesentation des Zustandes.
+        """
         return ('GhostState[direction=' + str(self.direction) + ',threat=' + str(self.threat) + ',isEatable=' + str(self.isEatable) + ']')
 
     def toBin(self):
+        """
+        Binaerrepreasentation des Zustandes.
+        """
         return self.direction << 3 | self.threat << 1 | self.isEatable
 
 class ReinforcementState(object):
-    """docstring for ClassName"""
-    def __init__(self, bestDirection, ghosts):
+    """Der ReinforcementState repraesentiert den gesamten fuer die Reinforcementberechnung noetigen Spielstatus."""
+    def __init__(self, nextFoodDirection, ghosts):
+        """
+        :param nextFoodDirection: ReinforcementDirection Richtung, in der der naechste Fresspunkt liegt.
+        :param ghosts: Liste von GhostState.
+        """
         self.ghosts = ghosts
-        self.bestDirection = bestDirection
+        self.nextFoodDirection = nextFoodDirection
 
     def __repr__(self):
+        """
+        Stringrepraesentation des Zustandes.
+        """
         ghostStrings = '['
         for ghost in self.ghosts:
             ghostStrings += str(ghost) + ','
         ghostStrings = ghostStrings[:-1] + ']'
-        return ('GhostState[direction=' + str(self.bestDirection) + ',ghosts=' + ghostStrings + ']')
+        return ('GhostState[direction=' + str(self.nextFoodDirection) + ',ghosts=' + ghostStrings + ']')
 
     def toBin(self):
+        """
+        Binaerrepreasentation des Zustandes.
+        """
         binVal = 0
         for ghost in self.ghosts:
             binVal = binVal << 5 | ghost.toBin()
-        return binVal << 2 | self.bestDirection
+        return binVal << 2 | self.nextFoodDirection
 
 
 
