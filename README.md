@@ -3,7 +3,7 @@
 Implementing an agent for Pacman, trained by reinforcement learning
 
 ### Downloads
-Windows requires python 2.* 32Bit 
+Windows requires python 2.* 32Bit
 If you are using a windows operation system then you need to install numpy before you can run this project.
 It should be numpy-1.10.1-win32-superpack-python2.7.exe
 http://sourceforge.net/projects/numpy/files/NumPy/1.10.1/
@@ -33,9 +33,9 @@ This works both with double-click on the file launcher.py or by executing the fo
 
 ### Implementation details
 
-* Positions are represented by (x,y) Cartesian coordinates and any arrays are indexed by [x][y] 
+* Positions are represented by (x,y) Cartesian coordinates and any arrays are indexed by [x][y]
 * Actions available for agent: `north`, `west`, `south`, `east` and `stop`
-
+* When setting rating and the value of rating is bigger than max float or less than min float, setRating() will throw value exception and terminates immediately
 
 ### Open tasks and bugs
 
