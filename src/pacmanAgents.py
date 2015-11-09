@@ -130,13 +130,10 @@ def scoreEvaluation(state):
 class SarsaAgent(game.Agent):
 
     def __init__(self, evalFn="scoreEvaluation"):
-        # Config = ConfigParser.ConfigParser()
-        # Config.read(CONFIGURATIONSARSA_FILE)
         self.steps = 4
         self.alpha = 0.2
         # Discount-rate
         self.gamma = 0.8
-        # epsilon wird noch nicht gebraucht
         self.epsilon = 0.1
         self.ourLambda = 0.9
         self.lastStateActionRating = None
@@ -145,17 +142,16 @@ class SarsaAgent(game.Agent):
         # self.ghostCount = PacmanGlobals.numGhostAgents
         self.ghostCount = 1
         self.ratingStorage = ReinforcementSave("ratingStorageFor" + str(self.ghostCount), self.ghostCount)
+        self.prevState = None
+        self.lastAction = None
 
     def getAction(self, state):
-        reward = -0.4
         reinforcementState = ReinforcementSearch(state).getReinforcmentResult()
         legalActions = state.getLegalPacmanActions()
         legalActions.remove('Stop')
-        return self.sarsaAlgo(reinforcementState, legalActions, reward)
-
-    def sarsaAlgo(self, reinforcementState, legalActions, reward):
-        """ choose best next action. With 10% choose non best action """
+        self.prevState = state
         if (self.epsilon * 100) > (self.randomNum.random() * 100 + 1):
+            """ choose best next action. With 10% choose random action """
             index = int(self.randomNum.random() * len(legalActions))
             legalDirection = legalActions[index]
             bestRating = self.ratingStorage.getRatingForNextState(legalDirection, reinforcementState)
@@ -163,9 +159,26 @@ class SarsaAgent(game.Agent):
         else:
             nextBestAction = self.getBestAction(legalActions, reinforcementState)
         # print nextBestAction
-        self.updateRingBuffer(nextBestAction, reward)
-        # print "--- nextBestAction --- " + str(nextBestAction[0])
+        self.lastAction = nextBestAction
         return nextBestAction[0]
+        # return self.sarsaAlgo(reinforcementState, legalActions, reward)
+
+
+    """ choose best action for state """
+    def getBestAction(self, directions, state):
+        # getRatingForNextState(self, wentDirection, state):
+        bestDirection = directions[0]
+        bestRating = self.ratingStorage.getRatingForNextState(bestDirection, state)
+        for direction in directions:
+            ratingCurrDirection = self.ratingStorage.getRatingForNextState(direction, state)
+            if (bestRating < ratingCurrDirection):
+                bestDirection = direction
+                bestRating = ratingCurrDirection
+        # print "--- [bestDirection, bestRating, state] --- " + str([bestDirection, bestRating, state])
+        return [bestDirection, bestRating, state]
+
+    def sarsaAlgo(self, action, reward):
+        self.updateRingBuffer(action, reward)
 
     """ update ringbuffer in which last stateActions are hold """
     def updateRingBuffer(self, nextBestAction, reward):
@@ -185,23 +198,42 @@ class SarsaAgent(game.Agent):
         for index in range(0, len(self.ringBuffer)):
             delta = reward + (self.gamma * nextRating) - self.lastStateActionRating
             self.ringBuffer[index][1] = delta * self.alpha * pow(self.ourLambda, index)
+            print self.ringBuffer[index][1]
             self.ratingStorage.setRatingForState(self.ringBuffer[index][0], self.ringBuffer[index][2], self.ringBuffer[index][1])
         # print "-- self.ringBuffer --- " + str(self.ringBuffer)
         """ choose first item from ringbuffer to be the last action """
         self.lastStateActionRating = self.ringBuffer[0][1]
 
-    """ choose best action for state """
-    def getBestAction(self, directions, state):
-        # getRatingForNextState(self, wentDirection, state):
-        bestDirection = directions[0]
-        bestRating = self.ratingStorage.getRatingForNextState(bestDirection, state)
-        for direction in directions:
-            ratingCurrDirection = self.ratingStorage.getRatingForNextState(direction, state)
-            if (bestRating < ratingCurrDirection):
-                bestDirection = direction
-                bestRating = ratingCurrDirection
-        # print "--- [bestDirection, bestRating, state] --- " + str([bestDirection, bestRating, state])
-        return [bestDirection, bestRating, state]
+    def calcReward(self, state):
+        reward = 0
+        # pos reward für Große Punkt
+        # pos reward für Geister fressen wenn großer Punkt
+        # pos reward win game
+        # neg reward für Geist friss Pacman
+        # neg reward loss game
+        # neg reward gegen Wand laufen
+        return reward
 
+    """ Is called after each step """
+    def observationFunction(self, state):
+        if self.lastAction:
+            # reward = -0.4
+            reward = state.getScore() - self.prevState.getScore()
+            print "--- reward --- " + str(reward)
+            # print [method for method in dir(state) if callable(getattr(state, method))]
+            # print self.prevState
+            # print self.lastAction
+            self.sarsaAlgo(self.lastAction, reward)
+        return state
 
-
+    """ Is calles at the end of game """
+    def final(self, state):
+        reward = state.getScore() - self.prevState.getScore()
+        self.sarsaAlgo(self.lastAction, reward)
+        self.lastAction = None
+        self.ringBuffer = []
+        self.prevState = None
+        self.lastStateActionRating = None
+        # print self.prevState
+        # print state
+        print state.isLose()
