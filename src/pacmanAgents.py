@@ -199,44 +199,55 @@ class SarsaAgent(game.Agent):
         """ compute new rating """
         for index in range(0, len(self.ringBuffer)):
             # delta = reward + (self.gamma * self.ringBuffer[index][1]) - self.lastStateActionRating
-            delta = reward + (self.gamma * self.ringBuffer[index][1]) 
+            delta = reward + (self.gamma * self.ringBuffer[index][1])
             self.ringBuffer[index][1] = delta * self.alpha * pow(self.ourLambda, index)
-            print self.ringBuffer[index][1]
+            # print self.ringBuffer[index][1]
             self.ratingStorage.setRatingForState(self.ringBuffer[index][0], self.ringBuffer[index][2], self.ringBuffer[index][1])
         # print "-- self.ringBuffer --- " + str(self.ringBuffer)
         """ choose first item from ringbuffer to be the last action """
         self.lastStateActionRating = self.ringBuffer[0][1]
 
     def calcReward(self, state):
-        reward = 0
-        """  pos reward fuer Grosse Punkt """
+        # pos reward fuer Grosse Punkt
         # pos reward fuer Geister fressen wenn grosser Punkt
         # pos reward win game
-        """ neg reward fuer Geist friss Pacman """
-        """ neg reward loss game """
-        """ neg reward gegen Wand laufen """
+        # neg reward loss game
+        reward = -1
+        rewardSmallPoints = (len(self.prevState.getFood().asList()) - len(state.getFood().asList())) * 50
+        rewardEatablePoint = (len(self.prevState.getCapsules()) - len(state.getCapsules())) * 60
+        rewardEatGhost = 0
+        rewardLose = 0
+        rewardWin = 0
+        PacmanPos = state.getPacmanPosition()
+        for ghostPos in state.getGhostPositions():
+            if (not state.isLose()) and ((int(ghostPos[0]) == PacmanPos[0]) and (int(ghostPos[1]) == PacmanPos[1])):
+                rewardEatGhost = 100
+
+        if state.isLose():
+            rewardLose = -300
+        elif state.isWin():
+            rewardWin = 300
+        reward += rewardSmallPoints + rewardEatablePoint + rewardEatGhost + rewardWin + rewardLose
+        # print reward
         return reward
 
     """ Is called after each step """
     def observationFunction(self, state):
         if self.lastAction:
-            # reward = -0.4
-            reward = state.getScore() - self.prevState.getScore()
-            print "--- reward --- " + str(reward)
-            # print [method for method in dir(state) if callable(getattr(state, method))]
-            # print self.prevState
-            # print self.lastAction
+            reward = self.calcReward(state)
+            # reward = state.getScore() - self.prevState.getScore()
+            # print "--- reward --- " + str(reward)
             self.sarsaAlgo(self.lastAction, reward)
         return state
 
     """ Is calles at the end of game """
     def final(self, state):
-        reward = state.getScore() - self.prevState.getScore()
+        reward = self.calcReward(state)
+        # reward = state.getScore() - self.prevState.getScore()
+        # print [method for method in dir(object) if callable(getattr(object, method))]
         self.sarsaAlgo(self.lastAction, reward)
         self.lastAction = None
         self.ringBuffer = []
         self.prevState = None
         self.lastStateActionRating = None
-        # print self.prevState
-        # print state
         print state.isLose()
