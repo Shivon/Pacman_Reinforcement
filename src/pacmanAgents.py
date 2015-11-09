@@ -130,7 +130,7 @@ def scoreEvaluation(state):
 class SarsaAgent(game.Agent):
 
     def __init__(self, evalFn="scoreEvaluation"):
-        self.steps = 4
+        self.steps = 20
         self.alpha = 0.2
         # Discount-rate
         self.gamma = 0.8
@@ -194,9 +194,12 @@ class SarsaAgent(game.Agent):
         if len(self.ringBuffer) >= self.steps:
             # deletes last element in list, returns it
             self.ringBuffer.pop()
+
+        # print "nextrating   " + str(nextRating)
         """ compute new rating """
         for index in range(0, len(self.ringBuffer)):
-            delta = reward + (self.gamma * nextRating) - self.lastStateActionRating
+            # delta = reward + (self.gamma * self.ringBuffer[index][1]) - self.lastStateActionRating
+            delta = reward + (self.gamma * self.ringBuffer[index][1]) 
             self.ringBuffer[index][1] = delta * self.alpha * pow(self.ourLambda, index)
             print self.ringBuffer[index][1]
             self.ratingStorage.setRatingForState(self.ringBuffer[index][0], self.ringBuffer[index][2], self.ringBuffer[index][1])
@@ -206,12 +209,12 @@ class SarsaAgent(game.Agent):
 
     def calcReward(self, state):
         reward = 0
-        # pos reward für Große Punkt
-        # pos reward für Geister fressen wenn großer Punkt
+        """  pos reward fuer Grosse Punkt """
+        # pos reward fuer Geister fressen wenn grosser Punkt
         # pos reward win game
-        # neg reward für Geist friss Pacman
-        # neg reward loss game
-        # neg reward gegen Wand laufen
+        """ neg reward fuer Geist friss Pacman """
+        """ neg reward loss game """
+        """ neg reward gegen Wand laufen """
         return reward
 
     """ Is called after each step """
