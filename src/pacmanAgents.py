@@ -131,7 +131,7 @@ class SarsaAgent(game.Agent):
 
     def __init__(self, evalFn="scoreEvaluation"):
         self.steps = 20
-        self.alpha = 0.2
+        self.alpha = 0.4
         # Discount-rate
         self.gamma = 0.8
         self.epsilon = 0.1
@@ -177,35 +177,39 @@ class SarsaAgent(game.Agent):
         # print "--- [bestDirection, bestRating, state] --- " + str([bestDirection, bestRating, state])
         return [bestDirection, bestRating, state]
 
-    def sarsaAlgo(self, action, reward):
-        self.updateRingBuffer(action, reward)
-
-    """ update ringbuffer in which last stateActions are hold """
-    def updateRingBuffer(self, nextBestAction, reward):
-        # nextAction = nextBestAction[0]
-        nextRating = nextBestAction[1]
-        """ If ringBuffer has no items yet """
+    def sarsaAlgo(self, currentBestAction, reward):
         if not self.ringBuffer:
-            self.lastStateActionRating = 0
+            """ If ringBuffer has no items yet """
+            self.lastStateActionRating = currentBestAction[1]
+            self.ringBuffer.insert(0, currentBestAction)
 
-        """ Add new item """
-        self.ringBuffer.insert(0, nextBestAction)
         """ if more than steps items in buffer remove last (oldest) one """
         if len(self.ringBuffer) >= self.steps:
-            # deletes last element in list, returns it
             self.ringBuffer.pop()
 
-        # print "nextrating   " + str(nextRating)
-        """ compute new rating """
-        for index in range(0, len(self.ringBuffer)):
-            # delta = reward + (self.gamma * self.ringBuffer[index][1]) - self.lastStateActionRating
-            delta = reward + (self.gamma * self.ringBuffer[index][1])
-            self.ringBuffer[index][1] = delta * self.alpha * pow(self.ourLambda, index)
-            # print self.ringBuffer[index][1]
-            self.ratingStorage.setRatingForState(self.ringBuffer[index][0], self.ringBuffer[index][2], self.ringBuffer[index][1])
-        # print "-- self.ringBuffer --- " + str(self.ringBuffer)
+        delta = reward + (self.gamma * self.ringBuffer[0][1]) - self.lastStateActionRating
+
+        self.updateRingBuffer(currentBestAction, delta)
         """ choose first item from ringbuffer to be the last action """
         self.lastStateActionRating = self.ringBuffer[0][1]
+        """ Add new item """
+        self.ringBuffer.insert(0, currentBestAction)
+
+
+    """ update ringbuffer in which last stateActions are hold """
+    def updateRingBuffer(self, currentBestAction, delta):
+        for index in range(0, len(self.ringBuffer)):
+            """ compute new rating """
+            self.ringBuffer[index][1] = delta * self.alpha * pow(self.ourLambda, index)
+            # if not (self.ringBuffer[index][2] == self.ringBuffer[0][2]):
+            #     self.ringBuffer[index][1] = delta * self.alpha * pow(self.ourLambda, index)
+            # elif (self.ringBuffer[index][2] == self.ringBuffer[0][2]) and not (self.ringBuffer[index][0] == self.ringBuffer[0][0]):
+            #     self.ringBuffer[index][1] = 0
+            # elif (self.ringBuffer[index][2] == self.ringBuffer[0][2]) and (self.ringBuffer[index][0] == self.ringBuffer[0][0]):
+            #     self.ringBuffer[index][1] = delta * self.alpha * pow(self.ourLambda, index) - 1
+            # print self.ringBuffer[index][1]
+            self.ratingStorage.setRatingForState(self.ringBuffer[index][0], self.ringBuffer[index][2], self.ringBuffer[index][1])
+
 
     def calcReward(self, state):
         # pos reward fuer Grosse Punkt
@@ -213,8 +217,8 @@ class SarsaAgent(game.Agent):
         # pos reward win game
         # neg reward loss game
         reward = -1
-        rewardSmallPoints = (len(self.prevState.getFood().asList()) - len(state.getFood().asList())) * 50
-        rewardEatablePoint = (len(self.prevState.getCapsules()) - len(state.getCapsules())) * 60
+        rewardSmallPoints = (len(self.prevState.getFood().asList()) - len(state.getFood().asList())) * 5
+        rewardEatablePoint = (len(self.prevState.getCapsules()) - len(state.getCapsules())) * 6
         rewardEatGhost = 0
         rewardLose = 0
         rewardWin = 0
