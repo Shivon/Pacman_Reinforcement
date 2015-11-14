@@ -215,3 +215,7 @@ class ReinforcementSearch:
         self.initializeInput()
         self.executeBFS()
         return self.generateResult()
+
+
+    def getPacmanPosition(self):
+        return self.state.getPacmanPosition()

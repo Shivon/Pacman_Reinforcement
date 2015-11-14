@@ -130,11 +130,15 @@ def scoreEvaluation(state):
 class SarsaAgent(game.Agent):
 
     def __init__(self, evalFn="scoreEvaluation"):
-        self.steps = 20
-        self.alpha = 0.4
+        # Number of indices in RingBuffer to save last StateActions
+        self.steps = 4
+        # learning rate (0 < alpha < 1)
+        self.alpha = 0.5
         # Discount-rate
         self.gamma = 0.8
+        # Ecloiration Rate
         self.epsilon = 0.1
+        # decrease of qValues for older actions
         self.ourLambda = 0.9
         self.lastStateActionRating = None
         self.randomNum = random.Random()
@@ -144,20 +148,25 @@ class SarsaAgent(game.Agent):
         self.ratingStorage = ReinforcementSave("ratingStorageFor" + str(self.ghostCount), self.ghostCount)
         self.prevState = None
         self.lastAction = None
+        self.pacmanPos = None
 
     def getAction(self, state):
         reinforcementState = ReinforcementSearch(state).getReinforcmentResult()
+        self.pacmanPos =  ReinforcementSearch(state).getPacmanPosition()
         legalActions = state.getLegalPacmanActions()
         legalActions.remove('Stop')
+        # print "state " + str(state)
+        # print state.getPacmanPosition()
         self.prevState = state
         if (self.epsilon * 100) > (self.randomNum.random() * 100 + 1):
             """ choose best next action. With 10% choose random action """
             index = int(self.randomNum.random() * len(legalActions))
             legalDirection = legalActions[index]
             bestRating = self.ratingStorage.getRatingForNextState(legalDirection, reinforcementState)
-            nextBestAction = [legalDirection, bestRating, reinforcementState]
+            nextBestAction = [legalDirection, bestRating, reinforcementState, self.pacmanPos]
         else:
             nextBestAction = self.getBestAction(legalActions, reinforcementState)
+
         # print nextBestAction
         self.lastAction = nextBestAction
         return nextBestAction[0]
@@ -175,7 +184,7 @@ class SarsaAgent(game.Agent):
                 bestDirection = direction
                 bestRating = ratingCurrDirection
         # print "--- [bestDirection, bestRating, state] --- " + str([bestDirection, bestRating, state])
-        return [bestDirection, bestRating, state]
+        return [bestDirection, bestRating, state, self.pacmanPos]
 
     def sarsaAlgo(self, currentBestAction, reward):
         if not self.ringBuffer:
@@ -198,15 +207,27 @@ class SarsaAgent(game.Agent):
 
     """ update ringbuffer in which last stateActions are hold """
     def updateRingBuffer(self, currentBestAction, delta):
+        currentPacmanPos = self.ringBuffer[0][3]
+        # print currentPacmanPos
+        # print " this is the state   " + str(self.ringBuffer[0][2])
         for index in range(0, len(self.ringBuffer)):
             """ compute new rating """
             self.ringBuffer[index][1] = delta * self.alpha * pow(self.ourLambda, index)
-            # if not (self.ringBuffer[index][2] == self.ringBuffer[0][2]):
-            #     self.ringBuffer[index][1] = delta * self.alpha * pow(self.ourLambda, index)
-            # elif (self.ringBuffer[index][2] == self.ringBuffer[0][2]) and not (self.ringBuffer[index][0] == self.ringBuffer[0][0]):
-            #     self.ringBuffer[index][1] = 0
-            # elif (self.ringBuffer[index][2] == self.ringBuffer[0][2]) and (self.ringBuffer[index][0] == self.ringBuffer[0][0]):
-            #     self.ringBuffer[index][1] = delta * self.alpha * pow(self.ourLambda, index) - 1
+            # print " current pos in buffer " + str(self.ringBuffer[index][3])
+            # print " pos of pacman " + str(currentPacmanPos)
+            # print " state in buffer " + str(self.ringBuffer[index][0])
+            # print " state pacman " + str(self.ringBuffer[0][0])
+            """ If Pacman position now is not the same as the current one in buffer """
+            if not (self.ringBuffer[index][3] == currentPacmanPos):
+                # print "a"
+                self.ringBuffer[index][1] = delta * self.alpha * pow(self.ourLambda, index)
+                """ Pacman position now is same as the current one in buffer and actions are not the same """
+            elif (self.ringBuffer[index][3] == currentPacmanPos) and not (self.ringBuffer[index][0] == self.ringBuffer[0][0]):
+                # print "b"
+                self.ringBuffer[index][1] = 0
+            elif (self.ringBuffer[index][3] == currentPacmanPos) and (self.ringBuffer[index][0] == self.ringBuffer[0][0]):
+                # print "c"
+                self.ringBuffer[index][1] = delta * self.alpha * pow(self.ourLambda, index) - 1
             # print self.ringBuffer[index][1]
             self.ratingStorage.setRatingForState(self.ringBuffer[index][0], self.ringBuffer[index][2], self.ringBuffer[index][1])
 
