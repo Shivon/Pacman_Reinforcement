@@ -4,6 +4,7 @@ import subprocess
 from datatypeUtils import DatatypeUtils
 from pacman import startByLauncher
 from graphicsDisplay import *
+from pacmanGlobals import PacmanGlobals
 
 CONFIGURATION_FILE = "settings.ini"
 
@@ -54,6 +55,9 @@ class LauncherController:
     def startApplication(self):
         if (not self.validateData('Fehlerhafte Einstellungen!', 'Einige Einstellungswerte sind ungueltig: ')):
             return
+        
+        numGhostsValue = DatatypeUtils.stringToInteger(self.numGhostsVar.get())
+        PacmanGlobals.numGhostAgents = numGhostsValue
         
         self.saveSettingsToConfigFile()
         
