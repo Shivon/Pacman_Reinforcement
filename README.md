@@ -127,10 +127,13 @@ Die Tastaturbelegungen können in der Datei `src/keyBindings.py` angepasst werde
 
 Zur Anpassung der Einstellungen für den Learning-Algorithmus ist wie im Kapitel [Änderungen an Konfigurationswerten](#Änderungen-an-konfigurationswerten) vorzugehen, nur das bei den Einstellungen für den Learning-Algorithmus die Dateien `src/runtimeSettings.py` und `src/runtimeSettingsController.py` genutzt werden (statt `src/launcher.py` und `src/launcherController.py`).
 
-### Implementation details
+### Implementationsdetails
 
-* Positions are represented by (x,y) Cartesian coordinates and any arrays are indexed by [x][y]
-* Actions available for agent: `north`, `west`, `south`, `east` and `stop`
+* Positionen werden als 2-dimensionale kartesisches Koordinaten (x,y) darstellt. Im Programmcode werden diese Werte als Tupel mit 2 Elementen umgesetzt. Der erste Wert ist die x-Koordinate und der zweite Wert ist die y-Koordinate. Die Benutzung von Tupeln in Python wird hier erläutert: http://www.tutorialspoint.com/python/python_tuples.htm.
+  
+  Einzige Ausnahme bei der Umsetzung ist unser [...](#...), welcher aus Effitienzgründen 1-dimensionale Koordinaten benutzt. Diese werden vom Algorithmus aus den 2-dimensionale kartesisches Koordinaten berechnet.
+
+* Globale Variablen (also solche die von mehreren Programmteilen benötigt werden) werden in der Klasse `PacmanGlobals` (in der Datei `src/pacmanGlobals.py`) gespeichert.
 
 ### State
 <a href="https://rawgit.com/Shivon/Pacman_Reinforcement/master/doc/ReinforcementState.html">PyDoc Eintrag</a><br />
@@ -144,6 +147,21 @@ Um das Laden und speichern von Werten zu beschleunigen, und nicht den Arbeitsspe
 <br />
 TODO: Das Speichern generischer machen, so das nicht jede Änderung am State eine Änderung des Speichervorgang nach sich zieht.<br />
 TODO: Z.Z. wir das FIFO Prinzip für die Seitenersetzung genutzt, prüfen ob dies Performancemäßig reicht, oder ob ein anderes Verfahren gewählt werden sollte.
+
+### BFS-Suchalgorithmus
+Der BFS-Algorithmus wird von Pacman genutzt, um die nächstgelegende Richtung zum nächsten fressbaren Punkt und zu allen Geistern zu bestimmen. Die Ergebnisse der Resulte werden in einem Objekt der Klasse `ReinforcementState` ([siehe Dokumentation](#state)) gespeichert. Zu finden ist unser Algorithmus in der Klasse `ReinforcementSearch` der Datei `src/bfsSearch.py`.
+
+BFS steht für "breadth-first search" uns ist ein Verfahren der Breitensuche. Eine detalierte Erläuterung des Algorithmus (inkl. Pseudocode) ist hier zu finden: https://de.wikipedia.org/wiki/Breitensuche.
+
+Auf unsere Problemstellung bezogen, läuft der Algorithmus bei uns wie folgt ab:
+1. `initializeInput(self)`:  
+Auslesen der benötigten Daten aus eingehenden Pacman-State, welches durch den Konstruktur als Attribut `self.state` gespeichert wurde. Dabei werden die Positionen aller Wände, fressbaren Punkte, sowie der Geister und Pacman in 1-dimensionale Koordinaten umgewandelt und dann als Attribute gespeichert. Zudem wird gespeichert, ob die Geister fressbar sind oder nicht (für jeden Geist einzeln).
+2. `executeBFS(self)`:  
+Ausführung der Suche. Die Suche wird solange ausgeführt, bis sowohl ein fressbarer Punkt, als auch alle Geister gefunden wurden. Der Punkt, der als erstes gefunden wurde hat die geringste Entfernung zu Pacman und wird daher für das Ergebnis der Suche gespeichert.
+Zur Bestimmung aller benachbarten Positionen einer gegebenen Position `position`, welche von Pacman begehbar sind und daher in die Suche einfließen müssen, wird die Methode `getChilds(self, position)` genutzt. Geliefert wird eine Liste von 1-dimensionalen Punkten, die die Nachbarpositionen beinhaltet.  
+Der schnellste Weg von Pacman zu einer Position `targetPosition` kann durch die Methode `getPath(self, targetPosition)` bestimmt werden (jedoch erst nach Ausführung der Methode `executeBFS(self)`). Geliefert wird eine Liste von 1-dimensionalen Punkten, die den Weg darstellen. Dabei ist das erste Element die Position `targetPosition` und das letzte Element die Position von Pacman selbst. Der nächste Schritt für Pacman zum Ziel ist damit das vorletzte Element, welches durch den Index `-2` bestimmt werden kann.
+3. `generateResult(self)`:  
+Generierung eines Objekt der Klasse `ReinforcementState` mit dem Ergebnis der Suche.
 
 ### Open tasks and bugs
 
