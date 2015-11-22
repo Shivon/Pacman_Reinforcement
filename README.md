@@ -125,7 +125,7 @@ Es ist möglich die Spielgeschwindigkeit und die Einstellungen für den Learning
 
 Die Tastaturbelegungen können in der Datei `src/keyBindings.py` angepasst werden. Eine vollständige Liste aller möglichen Werte ist hier zu finden: http://infohost.nmt.edu/tcc/help/pubs/tkinter/web/key-names.html. Die Attribute der Klasse `KeyBindings` müssen dabei mit dem entsprechenden Wert aus der Tabelle in der Spalte `.keysym` gesetzt werden.
 
-Zur Anpassung der Einstellungen für den Learning-Algorithmus ist wie im Kapitel [...](#...) vorzugehen, nur das bei den Einstellungen für den Learning-Algorithmus die Dateien `src/runtimeSettings.py` und `src/runtimeSettingsController.py` genutzt werden (statt `src/launcher.py` und `src/launcherController.py`).
+Zur Anpassung der Einstellungen für den Learning-Algorithmus ist wie im Kapitel [Änderungen an Konfigurationswerten](#Änderungen-an-konfigurationswerten) vorzugehen, nur das bei den Einstellungen für den Learning-Algorithmus die Dateien `src/runtimeSettings.py` und `src/runtimeSettingsController.py` genutzt werden (statt `src/launcher.py` und `src/launcherController.py`).
 
 ### Implementation details
 
