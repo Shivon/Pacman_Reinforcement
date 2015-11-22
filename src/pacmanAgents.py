@@ -127,6 +127,14 @@ def scoreEvaluation(state):
     return state.getScore()
 
 
+
+class QLearningAgent(game.Agent):
+    def __init__(self):
+        self.steps = 4
+
+    def getAgent(self):
+        reinforcementState = ReinforcementSearch(state).getReinforcmentResult()
+
 class SarsaAgent(game.Agent):
 
     def __init__(self, evalFn="scoreEvaluation"):
