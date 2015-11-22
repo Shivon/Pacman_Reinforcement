@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -60,7 +60,7 @@ class GreedyAgent(game.Agent):
 class BfsAgent(game.Agent):
     def __init__(self, evalFn="scoreEvaluation"):
         self.rand = random.Random()
-    
+
     def evade(self, direction, state):
         legal = state.getLegalPacmanActions()
         if Directions.STOP in legal: legal.remove(Directions.STOP)
@@ -69,7 +69,7 @@ class BfsAgent(game.Agent):
             return Directions.STOP
         else:
             return self.rand.choice(legal)
-        
+
     def goTo(self, direction, state):
         legal = state.getLegalPacmanActions()
         if direction in legal: return direction
@@ -77,11 +77,11 @@ class BfsAgent(game.Agent):
             return Directions.STOP
         else:
             return self.rand.choice(legal)
-    
+
     def getNearestEnermy(self, state, reinforcementState):
         nearestEnermy = None
         lastThreat = 9223372036854775807
-        
+
         index = 1
         while index < state.getNumAgents():
             for ghostState in reinforcementState.ghosts:
@@ -90,13 +90,13 @@ class BfsAgent(game.Agent):
                         lastThreat = ghostState.threat
                         nearestEnermy = ghostState
             index += 1
-            
+
         return nearestEnermy
-        
+
     def getNearestEatable(self, state, reinforcementState):
         nearestEnermy = None
         lastThreat = 9223372036854775807
-        
+
         index = 1
         while index < state.getNumAgents():
             for ghostState in reinforcementState.ghosts:
@@ -105,12 +105,12 @@ class BfsAgent(game.Agent):
                         lastThreat = ghostState.threat
                         nearestEnermy = ghostState
             index += 1
-            
+
         return nearestEnermy
-    
+
     def getAction(self, state):
         evadeThreat = 2
-        
+
         reinforcementState = ReinforcementSearch(state).getReinforcmentResult()
         # SarsaAgent.sarsaAlgo(reinforcementState)
         # EVADE UNEATABLE GHOST
@@ -131,9 +131,94 @@ def scoreEvaluation(state):
 class QLearningAgent(game.Agent):
     def __init__(self):
         self.steps = 4
+        # learning rate (0 < alpha < 1)
+        self.alpha = 0.4
+        # Discount-rate
+        self.gamma = 0.8
+        self.ghostCount = PacmanGlobals.numGhostAgents
+        self.prevState = None
+        self.bestRating = None
+        self.lastAction = None
+        self.ratingStorage = ReinforcementSave("ratingStorageFor" + str(self.ghostCount), self.ghostCount)
 
-    def getAgent(self):
+    def getAgent(self, state):
         reinforcementState = ReinforcementSearch(state).getReinforcmentResult()
+        legalActions = state.getLegalPacmanActions()
+        legalActions.remove('Stop')
+        # print "state " + str(state)
+        # print state.getPacmanPosition()
+        self.prevState = state
+        if (self.epsilon * 100) > (self.randomNum.random() * 100 + 1):
+            """ choose best next action. With 10% choose random action """
+            index = int(self.randomNum.random() * len(legalActions))
+            legalDirection = legalActions[index]
+            self.bestRating = self.ratingStorage.getRatingForNextState(legalDirection, reinforcementState)
+            nextBestAction = [legalDirection, self.bestRating, reinforcementState]
+        else:
+            nextBestAction = self.getBestAction(legalActions, reinforcementState)
+        self.lastAction = nextBestAction
+        return nextBestAction[0]
+
+    def qlearning(self, stateAction, reward):
+        legalActions = stateAction[2].getLegalPacmanActions()
+        legalActions.remove('Stop')
+        bestNextAction = getBestAction(legalActions, stateAction[2])
+        bestNextActionRate = bestNextAction[1]
+        rating = self.bestRating + self.alpha * (reward + self.gamma * bestNextActionRate - self.bestRating)
+        self.ratingStorage.setRatingForState(stateAction[0], stateAction[2], rating)
+
+
+    """ choose best action for state """
+    def getBestAction(self, directions, state):
+        # getRatingForNextState(self, wentDirection, state):
+        bestDirection = directions[0]
+        self.bestRating = self.ratingStorage.getRatingForNextState(bestDirection, state)
+        for direction in directions:
+            ratingCurrDirection = self.ratingStorage.getRatingForNextState(direction, state)
+            if (bestRating < ratingCurrDirection):
+                bestDirection = direction
+                self.bestRating = ratingCurrDirection
+        return [bestDirection, self.bestRating, state]
+
+    def calcReward(self, state):
+        reward = 0
+        rewardSmallPoints = (len(self.prevState.getFood().asList()) - len(state.getFood().asList())) * 20
+        rewardEatablePoint = (len(self.prevState.getCapsules()) - len(state.getCapsules())) * 20
+        rewardEatGhost = 0
+        rewardLose = 0
+        rewardWin = 0
+        PacmanPos = state.getPacmanPosition()
+        for ghostPos in state.getGhostPositions():
+            if (not state.isLose()) and ((int(ghostPos[0]) == PacmanPos[0]) and (int(ghostPos[1]) == PacmanPos[1])):
+                rewardEatGhost = 100
+
+        if state.isLose():
+            rewardLose = -300
+        elif state.isWin():
+            rewardWin = 300
+        reward += rewardSmallPoints + rewardEatablePoint + rewardEatGhost + rewardWin + rewardLose
+        # print reward
+        return reward
+
+    """ Is called after each step """
+    def observationFunction(self, state):
+        if self.lastAction:
+            reward = self.calcReward(state)
+            self.qlearning(self.lastAction, reward)
+        return state
+
+    """ Is calles at the end of game """
+    def final(self, state):
+        reward = self.calcReward(state)
+        self.qlearning(self.lastAction, reward)
+        self.prevState = None
+        self.bestRating = None
+        self.lastAction = None
+        print state.isLose()
+
+
+
+
 
 class SarsaAgent(game.Agent):
 
