@@ -30,7 +30,7 @@ Often used:
 
 Um den Programmstart einfacher zu machen, haben wir einen Launcher erstellt, mit dem man zu Programmbeginn sämtliche relevanten Konfigurationen angeben kann. Für jede dieser Einstellungen sind Standartwerte vorgeben, die jederzeitig im Launcher zurückgesetzt werden können. Weiterhin gibt es die Möglichkeit die aktuellen Konfigurationen zu speichern und wieder zu laden. Die Konfigurationen werden in der Datei `src/settings.ini` gespeichert, welche auch auf der `.gitignore` aufgeführt ist.
 
-##### Konfigurationswerte des Launchers
+##### Änderungen an Konfigurationswerten
 Sollten Änderungen an den Konfigurationswerten im Launcher durchgeführt werden (z.B. Hinzufügen weiterer Einstellungen oder Löschen bestehender Einstellungen), sind folgende Stellen im Programmcode anzupassen:
 * `LauncherView #initialize(self):`  
 Darstellung der Einstellung in der View.
@@ -62,7 +62,7 @@ Darstellung der Einstellung in der View.
   self.finishRow()
   ```
 * `LauncherController #getArgumentArray(self):`  
-Generierung des Kommandozeilen-Arguments (siehe [Terminal Usage](#TerminalUsage)). Die Variable `argumentValues` in eine Liste von Strings, welche die einzelnen Kommandozeieln-Argumente beinhaltet (vergleichbar mit dem Parameter `args` einer `main`-Methode in Java).
+Generierung des Kommandozeilen-Arguments (siehe [Terminal Usage](#terminal-usage)). Die Variable `argumentValues` in eine Liste von Strings, welche die einzelnen Kommandozeieln-Argumente beinhaltet (vergleichbar mit dem Parameter `args` einer `main`-Methode in Java).
 
   **Beispiel** für die Einstellung "Anzahl der Spiele".
   ``` python
@@ -116,6 +116,16 @@ Speichern des Einstellungswertes in die Datei `src/settings.ini`. Genutzt wird h
   Config.add_section('GameSettings')
   ```
 
+### Einstellungen zur Laufzeit
+Es ist möglich die Spielgeschwindigkeit und die Einstellungen für den Learning-Algorithmus zur Laufzeit zu ändern. Dazu können bei aktiviertem Spiel folgende Tasten genutzt werden:
+* `O`: Verringern der Spielgeschwindikeit
+* `P`: Erhöhen der Spielgeschwindigkeit
+* `I`: Zurücksetzen der Spielgeschwindigkeit
+* `U`:  Einblendung des Dialoges für die Einstellung des Learning-Algorithmus (beim Öffnen des Dialoges wird das Spiel pausiert bis der Dialog geschlossen wird)
+
+Die Tastaturbelegungen können in der Datei `src/keyBindings.py` angepasst werden. Eine vollständige Liste aller möglichen Werte ist hier zu finden: http://infohost.nmt.edu/tcc/help/pubs/tkinter/web/key-names.html. Die Attribute der Klasse `KeyBindings` müssen dabei mit dem entsprechenden Wert aus der Tabelle in der Spalte `.keysym` gesetzt werden.
+
+Zur Anpassung der Einstellungen für den Learning-Algorithmus ist wie im Kapitel [...](#...) vorzugehen, nur das bei den Einstellungen für den Learning-Algorithmus die Dateien `src/runtimeSettings.py` und `src/runtimeSettingsController.py` genutzt werden (statt `src/launcher.py` und `src/launcherController.py`).
 
 ### Implementation details
 
