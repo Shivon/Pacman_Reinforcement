@@ -16,6 +16,7 @@ from graphicsUtils import *
 import math, time
 from runtimeSettings import RuntimeSettingsView
 from game import Directions
+from keyBindings import KeyBindings
 
 ###########################
 #  GRAPHICS DISPLAY CODE  #
@@ -177,11 +178,6 @@ class InfoPane:
 
 
 class PacmanGraphics:
-    SPEED_DEC_KEY = 'o'
-    SPEED_INC_KEY = 'p'
-    SPEED_RESET_KEY = 'i'
-    RUNTIME_SETTING_KEY = 'u'
-    
     def __init__(self, zoom=1.0, frameTime=0.0, capture=False):
         self.have_window = 0
         self.currentGhostImages = {}
@@ -267,17 +263,17 @@ class PacmanGraphics:
         from graphicsUtils import keys_pressed
         keys = keys_waiting() + keys_pressed()
         if keys != []:
-            if self.SPEED_INC_KEY in keys:
+            if KeyBindings.SPEED_INC_KEY in keys:
                 self.frameTime *= SPEED_MODIFICATION_FACTOR
                 if (self.frameTime > MAX_SPEED):
                     self.frameTime = MAX_SPEED
                 self.infoPane.updateSpeed(self.frameTime)
-            if self.SPEED_DEC_KEY in keys:
+            if KeyBindings.SPEED_DEC_KEY in keys:
                 self.frameTime /= SPEED_MODIFICATION_FACTOR
                 if (self.frameTime < MIN_SPEED):
                     self.frameTime = MIN_SPEED
                 self.infoPane.updateSpeed(self.frameTime)
-            if self.RUNTIME_SETTING_KEY in keys:
+            if KeyBindings.RUNTIME_SETTING_KEY in keys:
                 app = RuntimeSettingsView(None)
                 app.title(RUNTIME_SETTINGS_TITLE)
                 app.mainloop()
@@ -361,7 +357,7 @@ class PacmanGraphics:
         if self.frameTime < 0:
             print 'Press any key to step forward, "q" to play'
             keys = wait_for_keys()
-            if self.SPEED_RESET_KEY in keys:
+            if KeyBindings.SPEED_RESET_KEY in keys:
                 self.frameTime = 0.1
         if self.frameTime > 0.01 or self.frameTime < 0:
             start = time.time()
