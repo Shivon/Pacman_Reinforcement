@@ -186,7 +186,9 @@ class LauncherController:
             self.view.quietTextGraphicsVar.set(Config.get('DisplaySettings', 'quietTextGraphics'))
             
             self.validateData('Fehlerhafte Einstellungen!', 'Einige Einstellungswerte sind ungueltig: ')
-        except:
+        except Exception, e:
+            print str(e)
+            print "Because an error occured, the default configuration will be loaded and will also be written to the configuration file!"
             self.handleMissingConfigFile();
         
     def handleMissingConfigFile(self):
