@@ -135,13 +135,15 @@ class QLearningAgent(game.Agent):
         self.alpha = 0.4
         # Discount-rate
         self.gamma = 0.8
+        self.epsilon = 0.1
+        self.randomNum = random.Random()
         self.ghostCount = PacmanGlobals.numGhostAgents
         self.prevState = None
         self.bestRating = None
         self.lastAction = None
         self.ratingStorage = ReinforcementSave("ratingStorageFor" + str(self.ghostCount), self.ghostCount)
 
-    def getAgent(self, state):
+    def getAction(self, state):
         reinforcementState = ReinforcementSearch(state).getReinforcmentResult()
         legalActions = state.getLegalPacmanActions()
         legalActions.remove('Stop')
@@ -153,16 +155,16 @@ class QLearningAgent(game.Agent):
             index = int(self.randomNum.random() * len(legalActions))
             legalDirection = legalActions[index]
             self.bestRating = self.ratingStorage.getRatingForNextState(legalDirection, reinforcementState)
-            nextBestAction = [legalDirection, self.bestRating, reinforcementState]
+            nextBestAction = [legalDirection, self.bestRating, reinforcementState,  self.prevState]
         else:
             nextBestAction = self.getBestAction(legalActions, reinforcementState)
         self.lastAction = nextBestAction
         return nextBestAction[0]
 
     def qlearning(self, stateAction, reward):
-        legalActions = stateAction[2].getLegalPacmanActions()
+        legalActions = stateAction[3].getLegalPacmanActions()
         legalActions.remove('Stop')
-        bestNextAction = getBestAction(legalActions, stateAction[2])
+        bestNextAction = self.getBestAction(legalActions, stateAction[2])
         bestNextActionRate = bestNextAction[1]
         rating = self.bestRating + self.alpha * (reward + self.gamma * bestNextActionRate - self.bestRating)
         self.ratingStorage.setRatingForState(stateAction[0], stateAction[2], rating)
@@ -175,10 +177,10 @@ class QLearningAgent(game.Agent):
         self.bestRating = self.ratingStorage.getRatingForNextState(bestDirection, state)
         for direction in directions:
             ratingCurrDirection = self.ratingStorage.getRatingForNextState(direction, state)
-            if (bestRating < ratingCurrDirection):
+            if (self.bestRating < ratingCurrDirection):
                 bestDirection = direction
                 self.bestRating = ratingCurrDirection
-        return [bestDirection, self.bestRating, state]
+        return [bestDirection, self.bestRating, state, self.prevState]
 
     def calcReward(self, state):
         reward = 0
