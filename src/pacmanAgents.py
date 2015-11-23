@@ -131,9 +131,9 @@ class SarsaAgent(game.Agent):
 
     def __init__(self, evalFn="scoreEvaluation"):
         # Number of indices in RingBuffer to save last StateActions
-        self.steps = 4
+        self.steps = 32
         # learning rate (0 < alpha < 1)
-        self.alpha = 0.4
+        self.alpha = 0.1
         # Discount-rate
         self.gamma = 0.8
         # Exploration Rate
@@ -236,7 +236,7 @@ class SarsaAgent(game.Agent):
         # pos reward fuer Geister fressen wenn grosser Punkt
         # pos reward win game
         # neg reward loss game
-        reward = 0
+        reward = -5
         rewardSmallPoints = (len(self.prevState.getFood().asList()) - len(state.getFood().asList())) * 20
         rewardEatablePoint = (len(self.prevState.getCapsules()) - len(state.getCapsules())) * 20
         rewardEatGhost = 0
