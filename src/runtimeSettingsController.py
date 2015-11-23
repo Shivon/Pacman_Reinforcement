@@ -13,7 +13,6 @@ class RuntimeSettingsController:
     
     def __init__(self, view): #TODO: ADD ATTRIBUTES
         self.view = view
-        #TODO: ADD ATTRIBUTES
     
     def apply(self):
         if (not self.validateData('Fehlerhafte Einstellungen!', 'Einige Einstellungswerte sind ungueltig: ')):
