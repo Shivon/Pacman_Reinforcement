@@ -9,37 +9,26 @@ from pacmanGlobals import PacmanGlobals
 CONFIGURATION_FILE = "settings.ini"
 
 class LauncherController:
-    def __init__(self, view, numTrainingVar, numGamesVar, numGhostsVar, layoutVar, pacmanVar, fixRandomSeedVar, zoomVar, frameTimeVar, textGraphicsVar, quietTextGraphicsVar):
+    def __init__(self, view):
         self.view = view
-        self.numTrainingVar = numTrainingVar
-        self.numGamesVar = numGamesVar
-        self.numGhostsVar = numGhostsVar
-        self.layoutVar = layoutVar
-        self.pacmanVar = pacmanVar
-        self.fixRandomSeedVar = fixRandomSeedVar
-        
-        self.zoomVar = zoomVar
-        self.frameTimeVar = frameTimeVar
-        self.textGraphicsVar = textGraphicsVar
-        self.quietTextGraphicsVar = quietTextGraphicsVar
     
     # Used for executing with direct Pacman call
     def getArgumentArray(self):
         argumentValues = []
         
-        argumentValues.append("-x " + self.numTrainingVar.get())
-        argumentValues.append("--numGames=" + self.numGamesVar.get())
-        argumentValues.append("--numghosts=" + self.numGhostsVar.get())
-        argumentValues.append("--layout=" + self.layoutVar.get())
-        argumentValues.append("--pacman=" + self.pacmanVar.get())
-        if (DatatypeUtils.stringToBoolean(self.fixRandomSeedVar.get())):
+        argumentValues.append("-x " + self.view.numTrainingVar.get())
+        argumentValues.append("--numGames=" + self.view.numGamesVar.get())
+        argumentValues.append("--numghosts=" + self.view.numGhostsVar.get())
+        argumentValues.append("--layout=" + self.view.layoutVar.get())
+        argumentValues.append("--pacman=" + self.view.pacmanVar.get())
+        if (DatatypeUtils.stringToBoolean(self.view.fixRandomSeedVar.get())):
             argumentValues.append("--fixRandomSeed")
         
-        argumentValues.append("--zoom=" + self.zoomVar.get())
-        argumentValues.append("--frameTime=" + self.frameTimeVar.get())
-        if (DatatypeUtils.stringToBoolean(self.textGraphicsVar.get())):
+        argumentValues.append("--zoom=" + self.view.zoomVar.get())
+        argumentValues.append("--frameTime=" + self.view.frameTimeVar.get())
+        if (DatatypeUtils.stringToBoolean(self.view.textGraphicsVar.get())):
             argumentValues.append("--textGraphics")
-        if (DatatypeUtils.stringToBoolean(self.quietTextGraphicsVar.get())):
+        if (DatatypeUtils.stringToBoolean(self.view.quietTextGraphicsVar.get())):
             argumentValues.append("--quietTextGraphics")
             
         return argumentValues
@@ -56,7 +45,7 @@ class LauncherController:
         if (not self.validateData('Fehlerhafte Einstellungen!', 'Einige Einstellungswerte sind ungueltig: ')):
             return
         
-        numGhostsValue = DatatypeUtils.stringToInteger(self.numGhostsVar.get())
+        numGhostsValue = DatatypeUtils.stringToInteger(self.view.numGhostsVar.get())
         PacmanGlobals.numGhostAgents = numGhostsValue
         
         self.saveSettingsToConfigFile()
@@ -88,47 +77,47 @@ class LauncherController:
         invalidFields = []
         
         # Datatype checking
-        if (not DatatypeUtils.isIntegerString(self.numTrainingVar.get())):
+        if (not DatatypeUtils.isIntegerString(self.view.numTrainingVar.get())):
             invalidFields.append("'Anzahl der Trainings' muss eine Ganzzahl sein (zum Beispiel: 1)!")
-        if (not DatatypeUtils.isIntegerString(self.numGamesVar.get())):
+        if (not DatatypeUtils.isIntegerString(self.view.numGamesVar.get())):
             invalidFields.append("'Anzahl der Spiele' muss eine Ganzzahl sein (zum Beispiel: 1)!")
-        if (not DatatypeUtils.isIntegerString(self.numGhostsVar.get())):
+        if (not DatatypeUtils.isIntegerString(self.view.numGhostsVar.get())):
             invalidFields.append("'Anzahl der Geister' muss eine Ganzzahl sein (zum Beispiel: 4)!")
-        if (not DatatypeUtils.isString(self.layoutVar.get())):
+        if (not DatatypeUtils.isString(self.view.layoutVar.get())):
             invalidFields.append("'Spielfeld' muss eine Zeichenkette sein (zum Beispiel: mediumClassic)!")
-        if (not DatatypeUtils.isString(self.pacmanVar.get())):
+        if (not DatatypeUtils.isString(self.view.pacmanVar.get())):
             invalidFields.append("'Pacman-Agent' muss eine Zeichenkette sein (zum Beispiel: KeyboardAgent)!")
-        if (not DatatypeUtils.isBooleanString(self.fixRandomSeedVar.get())):
+        if (not DatatypeUtils.isBooleanString(self.view.fixRandomSeedVar.get())):
             invalidFields.append("'Feste Random-Seed' muss ein Wahrheitswert sein (True oder False)!")
         
-        if (not DatatypeUtils.isFloatString(self.zoomVar.get())):
+        if (not DatatypeUtils.isFloatString(self.view.zoomVar.get())):
             invalidFields.append("'Zoomfaktor' muss eine Kommazahl sein (zum Beispiel: 1.0)!")
-        if (not DatatypeUtils.isFloatString(self.frameTimeVar.get())):
+        if (not DatatypeUtils.isFloatString(self.view.frameTimeVar.get())):
             invalidFields.append("'Spielgeschwindigkeit' muss eine Kommazahl sein (zum Beispiel: 0.1)!")
-        if (not DatatypeUtils.isBooleanString(self.textGraphicsVar.get())):
+        if (not DatatypeUtils.isBooleanString(self.view.textGraphicsVar.get())):
             invalidFields.append("'Ausgabe als Text' muss ein Wahrheitswert sein (True oder False)!")
-        if (not DatatypeUtils.isBooleanString(self.quietTextGraphicsVar.get())):
+        if (not DatatypeUtils.isBooleanString(self.view.quietTextGraphicsVar.get())):
             invalidFields.append("'Minimale Ausgabe' muss ein Wahrheitswert sein (True oder False)!")
         
         # Value checking (numTraining)
-        if (DatatypeUtils.isIntegerString(self.numTrainingVar.get())):
-            numTrainingValue = DatatypeUtils.stringToInteger(self.numTrainingVar.get())
+        if (DatatypeUtils.isIntegerString(self.view.numTrainingVar.get())):
+            numTrainingValue = DatatypeUtils.stringToInteger(self.view.numTrainingVar.get())
             if (numTrainingValue < 0):
                 invalidFields.append("'Anzahl der Trainings' muss groesser oder gleich " + str(0) + " sein!")
         
         # Value checking (numGames)
-        if (DatatypeUtils.isIntegerString(self.numGamesVar.get())):
-            numGamesValue = DatatypeUtils.stringToInteger(self.numGamesVar.get())
+        if (DatatypeUtils.isIntegerString(self.view.numGamesVar.get())):
+            numGamesValue = DatatypeUtils.stringToInteger(self.view.numGamesVar.get())
             if (numGamesValue < 1):
                 invalidFields.append("'Anzahl der Spiele' muss groesser oder gleich " + str(1) + " sein!")
         
         # Value checking (numGhosts)
-        if (DatatypeUtils.isIntegerString(self.numGhostsVar.get())):
-            numGhostsValue = DatatypeUtils.stringToInteger(self.numGhostsVar.get())
+        if (DatatypeUtils.isIntegerString(self.view.numGhostsVar.get())):
+            numGhostsValue = DatatypeUtils.stringToInteger(self.view.numGhostsVar.get())
             if (numGhostsValue < 0):
                 invalidFields.append("'Anzahl der Geister' muss groesser oder gleich " + str(0) + " sein!")
             
-            layout = self.layoutVar.get()
+            layout = self.view.layoutVar.get()
             mapNumGhosts = self.getMapNumGhosts(layout)
             if (mapNumGhosts > 5):
                 mapNumGhosts = 5
@@ -137,16 +126,16 @@ class LauncherController:
                 invalidFields.append("'Anzahl der Geister' muss fuer Spielfeld '" + layout + "' kleiner oder gleich " + str(mapNumGhosts) + " sein!")
 
         # Value checking (zoom)
-        if (DatatypeUtils.isFloatString(self.zoomVar.get())):
-            zoomValue = DatatypeUtils.stringToFloat(self.zoomVar.get())
+        if (DatatypeUtils.isFloatString(self.view.zoomVar.get())):
+            zoomValue = DatatypeUtils.stringToFloat(self.view.zoomVar.get())
             if (zoomValue > MAX_ZOOM):
                 invalidFields.append("'Zoomfaktor' muss kleiner oder gleich " + str(MAX_ZOOM) + " sein!")
             if (zoomValue < MIN_ZOOM):
                 invalidFields.append("'Zoomfaktor' muss groesser oder gleich " + str(MIN_ZOOM) + " sein!")
         
         # Value checking (frameTime)
-        if (DatatypeUtils.isFloatString(self.frameTimeVar.get())):
-            frameTimeValue = DatatypeUtils.stringToFloat(self.frameTimeVar.get())
+        if (DatatypeUtils.isFloatString(self.view.frameTimeVar.get())):
+            frameTimeValue = DatatypeUtils.stringToFloat(self.view.frameTimeVar.get())
             if (frameTimeValue > MAX_SPEED):
                 invalidFields.append("'Spielgeschwindigkeit' muss kleiner oder gleich " + str(MAX_SPEED) + " sein!")
             if (frameTimeValue < MIN_SPEED):
@@ -165,17 +154,17 @@ class LauncherController:
             return True
     
     def loadDefaultSettings(self):
-        self.numTrainingVar.set("0")
-        self.numGamesVar.set("1")
-        self.numGhostsVar.set("2")
-        self.layoutVar.set("mediumClassic")
-        self.pacmanVar.set("KeyboardAgent")
-        self.fixRandomSeedVar.set("False")
+        self.view.numTrainingVar.set("0")
+        self.view.numGamesVar.set("1")
+        self.view.numGhostsVar.set("2")
+        self.view.layoutVar.set("mediumClassic")
+        self.view.pacmanVar.set("KeyboardAgent")
+        self.view.fixRandomSeedVar.set("False")
         
-        self.zoomVar.set("1.0")
-        self.frameTimeVar.set("0.1")
-        self.textGraphicsVar.set("False")
-        self.quietTextGraphicsVar.set("False")
+        self.view.zoomVar.set("1.0")
+        self.view.frameTimeVar.set("0.1")
+        self.view.textGraphicsVar.set("False")
+        self.view.quietTextGraphicsVar.set("False")
         
         self.validateData('Fehlerhafte Einstellungen!', 'Einige Standard-Einstellungswerte sind ungueltig: ')
         
@@ -184,20 +173,22 @@ class LauncherController:
             Config = ConfigParser.ConfigParser()
             Config.read(CONFIGURATION_FILE)
             
-            self.numTrainingVar.set(Config.get('GameSettings', 'numTraining'))
-            self.numGamesVar.set(Config.get('GameSettings', 'numGames'))
-            self.numGhostsVar.set(Config.get('GameSettings', 'numGhosts'))
-            self.layoutVar.set(Config.get('GameSettings', 'layout'))
-            self.pacmanVar.set(Config.get('GameSettings', 'pacman'))
-            self.fixRandomSeedVar.set(Config.get('GameSettings', 'fixRandomSeed'))
+            self.view.numTrainingVar.set(Config.get('GameSettings', 'numTraining'))
+            self.view.numGamesVar.set(Config.get('GameSettings', 'numGames'))
+            self.view.numGhostsVar.set(Config.get('GameSettings', 'numGhosts'))
+            self.view.layoutVar.set(Config.get('GameSettings', 'layout'))
+            self.view.pacmanVar.set(Config.get('GameSettings', 'pacman'))
+            self.view.fixRandomSeedVar.set(Config.get('GameSettings', 'fixRandomSeed'))
             
-            self.zoomVar.set(Config.get('DisplaySettings', 'zoom'))
-            self.frameTimeVar.set(Config.get('DisplaySettings', 'frameTime'))
-            self.textGraphicsVar.set(Config.get('DisplaySettings', 'textGraphics'))
-            self.quietTextGraphicsVar.set(Config.get('DisplaySettings', 'quietTextGraphics'))
+            self.view.zoomVar.set(Config.get('DisplaySettings', 'zoom'))
+            self.view.frameTimeVar.set(Config.get('DisplaySettings', 'frameTime'))
+            self.view.textGraphicsVar.set(Config.get('DisplaySettings', 'textGraphics'))
+            self.view.quietTextGraphicsVar.set(Config.get('DisplaySettings', 'quietTextGraphics'))
             
             self.validateData('Fehlerhafte Einstellungen!', 'Einige Einstellungswerte sind ungueltig: ')
-        except:
+        except Exception, e:
+            print str(e)
+            print "Because an error occured, the default configuration will be loaded and will also be written to the configuration file!"
             self.handleMissingConfigFile();
         
     def handleMissingConfigFile(self):
@@ -212,18 +203,18 @@ class LauncherController:
         cfgfile = open(CONFIGURATION_FILE, 'w')
         
         Config.add_section('GameSettings')
-        Config.set('GameSettings', 'numTraining', self.numTrainingVar.get())
-        Config.set('GameSettings', 'numGames', self.numGamesVar.get())
-        Config.set('GameSettings', 'numGhosts', self.numGhostsVar.get())
-        Config.set('GameSettings', 'layout', self.layoutVar.get())
-        Config.set('GameSettings', 'pacman', self.pacmanVar.get())
-        Config.set('GameSettings', 'fixRandomSeed', self.fixRandomSeedVar.get())
+        Config.set('GameSettings', 'numTraining', self.view.numTrainingVar.get())
+        Config.set('GameSettings', 'numGames', self.view.numGamesVar.get())
+        Config.set('GameSettings', 'numGhosts', self.view.numGhostsVar.get())
+        Config.set('GameSettings', 'layout', self.view.layoutVar.get())
+        Config.set('GameSettings', 'pacman', self.view.pacmanVar.get())
+        Config.set('GameSettings', 'fixRandomSeed', self.view.fixRandomSeedVar.get())
         
         Config.add_section('DisplaySettings')
-        Config.set('DisplaySettings', 'zoom', self.zoomVar.get())
-        Config.set('DisplaySettings', 'frameTime', self.frameTimeVar.get())
-        Config.set('DisplaySettings', 'textGraphics', self.textGraphicsVar.get())
-        Config.set('DisplaySettings', 'quietTextGraphics', self.quietTextGraphicsVar.get())
+        Config.set('DisplaySettings', 'zoom', self.view.zoomVar.get())
+        Config.set('DisplaySettings', 'frameTime', self.view.frameTimeVar.get())
+        Config.set('DisplaySettings', 'textGraphics', self.view.textGraphicsVar.get())
+        Config.set('DisplaySettings', 'quietTextGraphics', self.view.quietTextGraphicsVar.get())
         Config.write(cfgfile)
         
         cfgfile.close()

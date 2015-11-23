@@ -29,7 +29,7 @@ class ReinforcementSave(object):
         """
         self.fileName = fileName
         self.numGhosts = numGhosts
-        self.maxNeededBitsForSaving = ((self.numGhosts * 5) + 2) + 2
+        self.maxNeededBitsForSaving = ((self.numGhosts * 5) + 7) + 2
         self.maxMemoryInMB = maxMemoryInMB
         if (offsetBits > self.maxNeededBitsForSaving):
             self.offsetBits = self.maxNeededBitsForSaving
@@ -185,7 +185,7 @@ class ReinforcementSave(object):
 
 #a = ReinforcementSave('1ghost', 1)
 #print str(a.maxNumberOfStates()) + ' ' + str(float(a.fileSizeInBit()) / (8 * 1024 * 1024))
-#state = ReinforcementState(ReinforcementDirection.WEST, [GhostState(ReinforcementDirection.WEST, Threat.FAR_AWAY, True)])
+#state = ReinforcementState(ReinforcementDirection.WEST, 32, [GhostState(ReinforcementDirection.WEST, Threat.FAR_AWAY, True)])
 #print 'getRatingForNextState ' + str(a.getRatingForNextState(Directions.WEST, state))
 #a.setRatingForState(Directions.WEST,state,8.2356283723627367)
 #print 'setRatingForNextState ' + str(a.getRatingForNextState(Directions.WEST, state))
