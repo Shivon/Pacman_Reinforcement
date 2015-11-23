@@ -142,7 +142,7 @@ class ReinforcementState(object):
         binVal = 0
         for ghost in self.ghosts:
             binVal = binVal << 5 | ghost.toBin()
-        binval = binval << 5 | self.nextFoodDistance
+        binVal = binVal << 5 | self.nextFoodDistance
         return binVal << 2 | self.nextFoodDirection
 
 
