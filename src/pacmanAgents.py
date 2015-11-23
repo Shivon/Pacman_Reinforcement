@@ -130,12 +130,11 @@ def scoreEvaluation(state):
 
 class QLearningAgent(game.Agent):
     def __init__(self):
-        self.steps = 4
         # learning rate (0 < alpha < 1)
-        self.alpha = 0.4
+        self.alpha = 0.0
         # Discount-rate
         self.gamma = 0.8
-        self.epsilon = 0.1
+        self.epsilon = 0.0
         self.randomNum = random.Random()
         self.ghostCount = PacmanGlobals.numGhostAgents
         self.prevState = None
@@ -183,7 +182,7 @@ class QLearningAgent(game.Agent):
         return [bestDirection, self.bestRating, state, self.prevState]
 
     def calcReward(self, state):
-        reward = 0
+        reward = -5
         rewardSmallPoints = (len(self.prevState.getFood().asList()) - len(state.getFood().asList())) * 20
         rewardEatablePoint = (len(self.prevState.getCapsules()) - len(state.getCapsules())) * 20
         rewardEatGhost = 0
@@ -217,9 +216,6 @@ class QLearningAgent(game.Agent):
         self.bestRating = None
         self.lastAction = None
         print state.isLose()
-
-
-
 
 
 class SarsaAgent(game.Agent):
