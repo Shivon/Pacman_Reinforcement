@@ -3,7 +3,7 @@
 Implementing an agent for Pacman, trained by reinforcement learning
 
 ### Downloads
-Windows requires python 2.* 32Bit and must be added to PATH environment variable.
+Windows requires python 2.* 32Bit
 If you are using a windows operation system then you need to install numpy before you can run this project.
 It should be numpy-1.10.1-win32-superpack-python2.7.exe
 http://sourceforge.net/projects/numpy/files/NumPy/1.10.1/
@@ -28,7 +28,7 @@ Often used:
 
 ### Launcher
 
-Um den Programmstart einfacher zu machen, haben wir einen Launcher erstellt, mit dem man zu Programmbeginn sämtliche relevanten Konfigurationen angeben kann. Gestartet werden kann dieser über einen Doppelklick auf die Datei launcher.py oder auf der Konsole durch den Befehl `python launcher.py`. Für jede der Einstellungen im Launcher sind Standartwerte vorgeben, die jederzeit zurückgesetzt werden können. Weiterhin gibt es die Möglichkeit die aktuellen Konfigurationen zu speichern und wieder zu laden. Die Konfigurationen werden in der Datei `src/settings.ini` gespeichert, welche auch auf der `.gitignore` aufgeführt ist.
+Um den Programmstart einfacher zu machen, haben wir einen Launcher erstellt, mit dem man zu Programmbeginn sämtliche relevanten Konfigurationen angeben kann. Für jede dieser Einstellungen sind Standartwerte vorgeben, die jederzeitig im Launcher zurückgesetzt werden können. Weiterhin gibt es die Möglichkeit die aktuellen Konfigurationen zu speichern und wieder zu laden. Die Konfigurationen werden in der Datei `src/settings.ini` gespeichert, welche auch auf der `.gitignore` aufgeführt ist.
 
 ##### Änderungen an Konfigurationswerten
 Sollten Änderungen an den Konfigurationswerten im Launcher durchgeführt werden (z.B. Hinzufügen weiterer Einstellungen oder Löschen bestehender Einstellungen), sind folgende Stellen im Programmcode anzupassen:
@@ -55,7 +55,7 @@ Darstellung der Einstellung in der View.
   self.textGraphicsVar = self.createCheckBox(self.nextRow)
   self.finishRow()
   ```
-
+  
   **Beispiel: Erzeugung einer Überschrift** für die Katergorie "Spieleinstellungen".
   ``` python
   self.createHeader("Spieleinstellungen", self.nextRow)
@@ -77,7 +77,7 @@ Generierung des Kommandozeilen-Arguments (siehe [Terminal Usage](#terminal-usage
   # Datatype checking
   if (not DatatypeUtils.isIntegerString(self.view.numTrainingVar.get())):
     invalidFields.append("'Anzahl der Trainings' muss eine Ganzzahl sein (zum Beispiel: 1)!")
-
+  
   # Value checking
   if (DatatypeUtils.isIntegerString(self.view.numGamesVar.get())):
     numGamesValue = DatatypeUtils.stringToInteger(self.view.numGamesVar.get())
@@ -108,7 +108,7 @@ Speichern des Einstellungswertes in die Datei `src/settings.ini`. Genutzt wird h
   ``` python
   Config.set('GameSettings', 'numGames', self.view.numGamesVar.get())
   ```
-
+  
   Sollte eine neue Kategorie für die Einstellungen eingeführt werden ist vor dem Setzen der entsprechenden Einstellungen durch die `set`-Methode die Methode `add_section(section)` aufzurufen!
 
   **Beispiel** für die Katergorie "Spieleinstellungen".
@@ -130,12 +130,10 @@ Zur Anpassung der Einstellungen für den Learning-Algorithmus ist wie im Kapitel
 ### Implementationsdetails
 
 * Positionen werden als 2-dimensionale kartesisches Koordinaten (x,y) darstellt. Im Programmcode werden diese Werte als Tupel mit 2 Elementen umgesetzt. Der erste Wert ist die x-Koordinate und der zweite Wert ist die y-Koordinate. Die Benutzung von Tupeln in Python wird hier erläutert: http://www.tutorialspoint.com/python/python_tuples.htm.
-
+  
   Einzige Ausnahme bei der Umsetzung ist unser [BFS-Suchalgorithmus](#bfs-suchalgorithmus), welcher aus Effitienzgründen 1-dimensionale Koordinaten benutzt. Diese werden vom Algorithmus aus den 2-dimensionale kartesisches Koordinaten berechnet.
 
 * Globale Variablen (also solche die von mehreren Programmteilen benötigt werden) werden in der Klasse `PacmanGlobals` (in der Datei `src/pacmanGlobals.py`) gespeichert.
-
-* Wenn das Rating gesetzt wird und der Wert größer als MaxFloat oder kleiner als MinFloat ist, wird setRating() eine Value Exception werfen und sofort terminieren
 
 ### State
 <a href="https://rawgit.com/Shivon/Pacman_Reinforcement/master/doc/ReinforcementState.html">PyDoc Eintrag</a><br />
