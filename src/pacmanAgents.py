@@ -121,7 +121,7 @@ class BfsAgent(game.Agent):
                 return self.evade(evadeDirection, state)
 
         # GET NEAREST FOOD
-        return ReinforcementDirection.toGameDirection(reinforcementState.bestDirection)
+        return ReinforcementDirection.toGameDirection(reinforcementState.nextFoodDirection)
 
 def scoreEvaluation(state):
     return state.getScore()
