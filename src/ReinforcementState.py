@@ -113,13 +113,14 @@ class GhostState(object):
 
 class ReinforcementState(object):
     """Der ReinforcementState repraesentiert den gesamten fuer die Reinforcementberechnung noetigen Spielstatus."""
-    def __init__(self, nextFoodDirection, ghosts):
+    def __init__(self, nextFoodDirection, nextFoodDistance, ghosts):
         """
         :param nextFoodDirection: ReinforcementDirection Richtung, in der der naechste Fresspunkt liegt.
         :param ghosts: Liste von GhostState.
         """
         self.ghosts = ghosts
         self.nextFoodDirection = nextFoodDirection
+        self.nextFoodDistance = nextFoodDistance
 
     def __repr__(self):
         """
