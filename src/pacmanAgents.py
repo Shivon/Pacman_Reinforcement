@@ -129,12 +129,15 @@ def scoreEvaluation(state):
 
 
 class QLearningAgent(game.Agent):
+    alphacounter = 0
+
     def __init__(self):
+        QLearningAgent.alphacounter += (1)
         # learning rate (0 < alpha < 1)
-        self.alpha = 0.0
+        self.alpha = 0.3/QLearningAgent.alphacounter
         # Discount-rate
         self.gamma = 0.8
-        self.epsilon = 0.0
+        self.epsilon = 0.1
         self.randomNum = random.Random()
         self.ghostCount = PacmanGlobals.numGhostAgents
         self.prevState = None
