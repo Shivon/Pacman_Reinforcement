@@ -48,6 +48,9 @@ class LauncherController:
         numGhostsValue = DatatypeUtils.stringToInteger(self.view.numGhostsVar.get())
         PacmanGlobals.numGhostAgents = numGhostsValue
         
+        debugValue = DatatypeUtils.stringToBoolean(self.view.debugVar.get())
+        PacmanGlobals.debug = debugValue
+        
         self.saveSettingsToConfigFile()
         
         self.view.destroy()
@@ -97,6 +100,8 @@ class LauncherController:
         if (not DatatypeUtils.isBooleanString(self.view.textGraphicsVar.get())):
             invalidFields.append("'Ausgabe als Text' muss ein Wahrheitswert sein (True oder False)!")
         if (not DatatypeUtils.isBooleanString(self.view.quietTextGraphicsVar.get())):
+            invalidFields.append("'Minimale Ausgabe' muss ein Wahrheitswert sein (True oder False)!")
+        if (not DatatypeUtils.isBooleanString(self.view.debugVar.get())):
             invalidFields.append("'Minimale Ausgabe' muss ein Wahrheitswert sein (True oder False)!")
         
         # Value checking (numTraining)
@@ -165,6 +170,7 @@ class LauncherController:
         self.view.frameTimeVar.set("0.1")
         self.view.textGraphicsVar.set("False")
         self.view.quietTextGraphicsVar.set("False")
+        self.view.debugVar.set("False")
         
         self.validateData('Fehlerhafte Einstellungen!', 'Einige Standard-Einstellungswerte sind ungueltig: ')
         
@@ -184,6 +190,7 @@ class LauncherController:
             self.view.frameTimeVar.set(Config.get('DisplaySettings', 'frameTime'))
             self.view.textGraphicsVar.set(Config.get('DisplaySettings', 'textGraphics'))
             self.view.quietTextGraphicsVar.set(Config.get('DisplaySettings', 'quietTextGraphics'))
+            self.view.debugVar.set(Config.get('DisplaySettings', 'debug'))
             
             self.validateData('Fehlerhafte Einstellungen!', 'Einige Einstellungswerte sind ungueltig: ')
         except Exception, e:
@@ -215,6 +222,7 @@ class LauncherController:
         Config.set('DisplaySettings', 'frameTime', self.view.frameTimeVar.get())
         Config.set('DisplaySettings', 'textGraphics', self.view.textGraphicsVar.get())
         Config.set('DisplaySettings', 'quietTextGraphics', self.view.quietTextGraphicsVar.get())
+        Config.set('DisplaySettings', 'debug', self.view.debugVar.get())
         Config.write(cfgfile)
         
         cfgfile.close()
