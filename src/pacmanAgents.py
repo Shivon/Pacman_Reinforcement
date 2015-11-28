@@ -143,8 +143,18 @@ class QLearningAgent(game.Agent):
         self.prevState = None
         self.bestRating = None
         self.lastAction = None
-        self.ratingStorage = ReinforcementSave("ratingStorageFor" + str(self.ghostCount), self.ghostCount)
+        self.ratingStorage = {}
 
+    def getRatingForNextState(self, action, state):
+        tuple = (action, state)
+        result = self.ratingStorage.get(tuple, 0.0)
+        #print str(result) + "  " + str(len(self.ratingStorage))
+        return result
+    
+    def setRatingForState(self, action, state, rating):
+        tuple = (action, state)
+        self.ratingStorage[tuple] = rating
+    
     def getAction(self, state):
         reinforcementState = ReinforcementSearch(state).getReinforcmentResult()
         legalActions = state.getLegalPacmanActions()
@@ -156,10 +166,10 @@ class QLearningAgent(game.Agent):
             """ choose best next action. With 10% choose random action """
             index = int(self.randomNum.random() * len(legalActions))
             legalDirection = legalActions[index]
-            self.bestRating = self.ratingStorage.getRatingForNextState(legalDirection, reinforcementState)
-            nextBestAction = [legalDirection, self.bestRating, reinforcementState,  self.prevState]
+            self.bestRating = self.getRatingForNextState(legalDirection, state)
+            nextBestAction = [legalDirection, self.bestRating, state,  self.prevState]
         else:
-            nextBestAction = self.getBestAction(legalActions, reinforcementState)
+            nextBestAction = self.getBestAction(legalActions, state)
         self.lastAction = nextBestAction
         return nextBestAction[0]
 
@@ -169,16 +179,16 @@ class QLearningAgent(game.Agent):
         bestNextAction = self.getBestAction(legalActions, stateAction[2])
         bestNextActionRate = bestNextAction[1]
         rating = self.bestRating + self.alpha * (reward + self.gamma * bestNextActionRate - self.bestRating)
-        self.ratingStorage.setRatingForState(stateAction[0], stateAction[2], rating)
+        self.setRatingForState(stateAction[0], stateAction[2], rating)
 
 
     """ choose best action for state """
     def getBestAction(self, directions, state):
         # getRatingForNextState(self, wentDirection, state):
         bestDirection = directions[0]
-        self.bestRating = self.ratingStorage.getRatingForNextState(bestDirection, state)
+        self.bestRating = self.getRatingForNextState(bestDirection, state)
         for direction in directions:
-            ratingCurrDirection = self.ratingStorage.getRatingForNextState(direction, state)
+            ratingCurrDirection = self.getRatingForNextState(direction, state)
             if (self.bestRating < ratingCurrDirection):
                 bestDirection = direction
                 self.bestRating = ratingCurrDirection
@@ -240,10 +250,20 @@ class SarsaAgent(game.Agent):
         self.ringBuffer = []
         self.ghostCount = PacmanGlobals.numGhostAgents
         # self.ghostCount = 1
-        self.ratingStorage = ReinforcementSave("ratingStorageFor" + str(self.ghostCount), self.ghostCount)
+        self.ratingStorage = {}
         self.prevState = None
         self.lastAction = None
         self.pacmanPos = None
+    
+    def getRatingForNextState(self, action, state):
+        tuple = (action, state)
+        result = self.ratingStorage.get(tuple, 0.0)
+        #print str(result) + "  " + str(len(self.ratingStorage))
+        return result
+    
+    def setRatingForState(self, action, state, rating):
+        tuple = (action, state)
+        self.ratingStorage[tuple] = rating
 
     def getAction(self, state):
         reinforcementState = ReinforcementSearch(state).getReinforcmentResult()
@@ -257,23 +277,23 @@ class SarsaAgent(game.Agent):
             """ choose best next action. With 10% choose random action """
             index = int(self.randomNum.random() * len(legalActions))
             legalDirection = legalActions[index]
-            bestRating = self.ratingStorage.getRatingForNextState(legalDirection, reinforcementState)
-            nextBestAction = [legalDirection, bestRating, reinforcementState, self.pacmanPos]
+            bestRating = self.getRatingForNextState(legalDirection, state)
+            nextBestAction = [legalDirection, bestRating, state, self.pacmanPos]
         else:
-            nextBestAction = self.getBestAction(legalActions, reinforcementState)
+            nextBestAction = self.getBestAction(legalActions, state)
         # print nextBestAction
         self.lastAction = nextBestAction
         return nextBestAction[0]
-        # return self.sarsaAlgo(reinforcementState, legalActions, reward)
+        # return self.sarsaAlgo(state, legalActions, reward)
 
 
     """ choose best action for state """
     def getBestAction(self, directions, state):
         # getRatingForNextState(self, wentDirection, state):
         bestDirection = directions[0]
-        bestRating = self.ratingStorage.getRatingForNextState(bestDirection, state)
+        bestRating = self.getRatingForNextState(bestDirection, state)
         for direction in directions:
-            ratingCurrDirection = self.ratingStorage.getRatingForNextState(direction, state)
+            ratingCurrDirection = self.getRatingForNextState(direction, state)
             if (bestRating < ratingCurrDirection):
                 bestDirection = direction
                 bestRating = ratingCurrDirection
@@ -322,7 +342,7 @@ class SarsaAgent(game.Agent):
             # elif (self.ringBuffer[index][3] == currentPacmanPos) and (self.ringBuffer[index][0] == self.ringBuffer[0][0]):
             #     # print "same state action " + str(self.ringBuffer[index][3]) + " AMD " + str(currentPacmanPos) + " action: " + str(self.ringBuffer[index][0]) + " AMD " + str(self.ringBuffer[0][0])
             #     self.ringBuffer[index][1] = delta * self.alpha * pow(self.ourLambda, index) + 1
-            self.ratingStorage.setRatingForState(self.ringBuffer[index][0], self.ringBuffer[index][2], self.ringBuffer[index][1])
+            self.setRatingForState(self.ringBuffer[index][0], self.ringBuffer[index][2], self.ringBuffer[index][1])
 
 
     def calcReward(self, state):
