@@ -17,6 +17,7 @@ import math, time
 from runtimeSettings import RuntimeSettingsView
 from game import Directions
 from keyBindings import KeyBindings
+from pacmanGlobals import PacmanGlobals
 
 ###########################
 #  GRAPHICS DISPLAY CODE  #
@@ -354,7 +355,7 @@ class PacmanGraphics:
         refresh()
 
     def animatePacman(self, pacman, prevPacman, image):
-        if self.frameTime < 0:
+        if (self.frameTime < 0) or (PacmanGlobals.debug):
             print 'Press any key to step forward, "q" to play'
             keys = wait_for_keys()
             if KeyBindings.SPEED_RESET_KEY in keys:
