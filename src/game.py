@@ -92,7 +92,7 @@ class Configuration:
 
     def __eq__(self, other):
         if other == None: return False
-        return (self.pos == other.pos and self.direction == other.direction)
+        return (self.pos == other.pos)
 
     def __hash__(self):
         x = hash(self.pos)
@@ -139,7 +139,7 @@ class AgentState:
     def __eq__( self, other ):
         if other == None:
             return False
-        return self.configuration == other.configuration and self.scaredTimer == other.scaredTimer
+        return self.configuration == other.configuration
 
     def __hash__(self):
         return hash(hash(self.configuration) + 13 * hash(self.scaredTimer))
@@ -420,7 +420,7 @@ class GameStateData:
         if not self.agentStates == other.agentStates: return False
         if not self.food == other.food: return False
         if not self.capsules == other.capsules: return False
-        if not self.score == other.score: return False
+        #if not self.score == other.score: return False
         return True
 
     def __hash__( self ):
