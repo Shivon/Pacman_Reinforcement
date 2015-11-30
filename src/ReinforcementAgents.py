@@ -240,9 +240,9 @@ class RuleGenerator():
         searchResult['maxDistance'] = maxDistance
         return searchResult   
         
-    def getRules(self, state, direction):
-        rules = myDict(0.0)
-        #rules['base'] = 1.0
+    def getfeatures(self, state, direction):
+        features = myDict(0.0)
+        #features['base'] = 1.0
         #print "str " + str(state)
         #print "dir " + str(direction)
         stateSearch = self.getStateSearch(state, direction)
@@ -250,18 +250,18 @@ class RuleGenerator():
         print "MaxDistance " + str(direction) + " " + str(maxDistance)
         if stateSearch['nearestFoodDist'] is not None:
             #print "FoodDist " +  str(stateSearch['nearestFoodDist'])
-            rules['foodValuability'] = (float(stateSearch['nearestFoodDist']) + 1) / maxDistance #/ maxDistance
+            features['foodValuability'] = (float(stateSearch['nearestFoodDist']) + 1) / maxDistance #/ maxDistance
         if stateSearch['nearestGhostDistances'] is not None:
-            rules['ghostThreat'] = (maxDistance - float(stateSearch['nearestGhostDistances'])) / maxDistance#/ maxDistance
-        #rules['maxDistance'] = maxDistance
-        rules.divideAll(10)
+            features['ghostThreat'] = (maxDistance - float(stateSearch['nearestGhostDistances'])+1) / maxDistance#/ maxDistance
+        #features['maxDistance'] = maxDistance
+        features.divideAll(10)
         
-        #print str(rules)
-        return rules
+        #print str(features)
+        return features
 
 class ReinforcementRAgent(game.Agent):
     def __init__(self, numTraining = 0):
-        self.rulePower = myDict(0.0)
+        self.actionPower = myDict(0.0)
         self.ruleGenerator = RuleGenerator();
         self.random = random.Random()
         self.lastState = None
@@ -280,24 +280,26 @@ class ReinforcementRAgent(game.Agent):
         
     def getCombinedValue(self,state, direction):
         combinedValue = 0.0
-        rules = self.ruleGenerator.getRules(state, direction)
-        print "Rules " + str(direction) + " " + str(rules)
-        for ruleKey in rules.keys():
-            combinedValue += rules[ruleKey] * self.rulePower[ruleKey]
+        features = self.ruleGenerator.getfeatures(state, direction)
+        print "Features " + str(direction) + " " + str(features)
+        for featureKey in features.keys():
+            combinedValue += features[featureKey] * self.actionPower[featureKey]
         return combinedValue
         
     def updater(self,nextState):
         print "Start Updating"
         reward = self.calcReward(nextState)
-        rules = self.ruleGenerator.getRules(self.lastState, self.lastAction)
+        features = self.ruleGenerator.getfeatures(self.lastState, self.lastAction)
         combinatedValue = self.getCombinedValue(self.lastState, self.lastAction)
         maxPossibleFutureValue = self.getBestValue(nextState, self.legaldirections(nextState))
-        for ruleKey in rules.keys():
+        for ruleKey in features.keys():
             difference = reward + self.gamma * maxPossibleFutureValue - combinatedValue
             print "Difference: " + str(difference)
-            self.rulePower[ruleKey] = self.rulePower[ruleKey] + self.alpha * difference * rules[ruleKey]
-            #calcVal =  rules[ruleKey] + self.alpha * (reward + self.gamma * maxPossibleFutureValue - rules[ruleKey])
-        print "ActionPower: " + str(self.rulePower)
+            self.actionPower[ruleKey] = self.actionPower[ruleKey] + self.alpha * difference * features[ruleKey]
+            #zur demo orginal QLearning
+            #different = (reward + self.gamma * maxPossibleFutureValue - currentValue)
+            #calcVal =  currentValue + self.alpha * different
+        print "ActionPower: " + str(self.actionPower)
         #self.saving.setRatingForState(self.lastAction, self.lastState, calcVal)
         print "Stop Updating"
         
@@ -307,9 +309,9 @@ class ReinforcementRAgent(game.Agent):
     def getAction(self, state):
         print "Start GetAction"
         self.lastAction = self.chooseAction(state)
-        print "Action Power: " + str(self.rulePower)
-#        if self.isInTesting():
-#            raw_input("Press Any Key ")
+        print "Action Power: " + str(self.actionPower)
+        if self.isInTesting():
+            raw_input("Press Any Key ")
         print "Chosen Acction: " + str(self.lastAction)
         print "Stop GetAction"
         #print str(self.lastAction)
@@ -357,8 +359,9 @@ class ReinforcementRAgent(game.Agent):
             self.updater(state)
         else:
             if not self.isInTraining():
-                self.epsilon = 0.0 
-                self.alpha = 0.0
+#                self.epsilon = 0.0 
+#                self.alpha = 0.0
+                pass
         self.lastState = state
         #raw_input("Press Any Key ")
         return state
@@ -372,8 +375,8 @@ class ReinforcementRAgent(game.Agent):
             self.episodesSoFar += 1
             print "Training " + str(self.episodesSoFar) + " of " + str (self.numTraining)
         else:
-            self.epsilon = 0.0 
-            self.alpha = 0.0
+#            self.epsilon = 0.0 
+#            self.alpha = 0.0
             if state.isLose():
                 raw_input("Press Any Key ")
             pass
