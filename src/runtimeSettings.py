@@ -132,10 +132,28 @@ class RuntimeSettingsView(Tkinter.Tk):
         self.grid()
 
         # Labels and textboxes for different attributes
-        self.createHeader("Laufzeiteinstellungen", self.nextRow)
+        self.createHeader("Sarsa-Lambda-Parameter", self.nextRow)
         self.finishRow()
         
-        #TODO: ADD ATTRIBUTES
+        self.createLabel("Groesse des Ringpuffers", self.nextRow)
+        self.stepsVar = self.createTextbox(self.nextRow)
+        self.finishRow()
+        
+        self.createLabel("Alpha", self.nextRow)
+        self.alphaVar = self.createTextbox(self.nextRow)
+        self.finishRow()
+        
+        self.createLabel("Gamma", self.nextRow)
+        self.gammaVar = self.createTextbox(self.nextRow)
+        self.finishRow()
+        
+        self.createLabel("Epsilon", self.nextRow)
+        self.epsilonVar = self.createTextbox(self.nextRow)
+        self.finishRow()
+        
+        self.createLabel("Lambda", self.nextRow)
+        self.lambdaVar = self.createTextbox(self.nextRow)
+        self.finishRow()
         
         # Button to apply default settings
         defaultSettingsButton = Tkinter.Button(self,

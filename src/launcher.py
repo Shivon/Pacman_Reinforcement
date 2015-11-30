@@ -178,6 +178,10 @@ class LauncherView(Tkinter.Tk):
         self.quietTextGraphicsVar = self.createCheckBox(self.nextRow)
         self.finishRow()
         
+        self.createLabel("Debug-Modus", self.nextRow)
+        self.debugVar = self.createCheckBox(self.nextRow)
+        self.finishRow()
+        
         # Button to apply default settings
         defaultSettingsButton = Tkinter.Button(self,
             text=u"Standard-Einstellungen laden",
