@@ -7,19 +7,19 @@ class AbstractQState():
     def __init__(self, state, direction):
         self.state = state
         self.direction = direction
- 
+
     def __eq__(self, other):
         if isinstance(other, self.__class__):
             return self.state == other.state and self.direction == other.direction
         else:
             return False
     def __hash__(self):
-        return hash(hash(self.state) + hash(self.direction))    
-        
+        return hash(hash(self.state) + hash(self.direction))
+
 class Saving():
     def __init__(self, evalFn="scoreEvaluation"):
         self.savedStates = {}
-    
+
     def getRatingForNextState(self, direction, state):
         abstractState = AbstractQState(state, direction)
         value = self.savedStates.get(abstractState)
@@ -27,11 +27,11 @@ class Saving():
             return 0
         else:
             return value
-            
+
     def setRatingForState(self, direction, state, value):
         abstractState = AbstractQState(state, direction)
         self.savedStates[abstractState] = value
-    
+
     def getBestDirection(self, state, directions):
         bestVal = float('-inf')
         bestDirection = None
@@ -41,17 +41,17 @@ class Saving():
                 bestVal = tmpValue
                 bestDirection = direction
         return bestDirection
-        
+
     def getBestValue(self, state, directions):
         bestDirection = self.getBestDirection(state,directions)
         if bestDirection:
             return self.getRatingForNextState(bestDirection, state)
         else:
             return 0.0
-            
+
     def __repr__(self):
         return str(self.savedStates)
-        
+
 class ReinforcementQAgent(game.Agent):
     def __init__(self, numTraining = 0):
          self.saving = Saving()
@@ -63,13 +63,13 @@ class ReinforcementQAgent(game.Agent):
          self.epsilon = 0.1
          self.numTraining = int(numTraining)
          self.episodesSoFar = 0
-         
+
     def getAction(self, state):
         #print str(state)
         self.lastAction = self.chooseAction(state)
-        
+
         return self.lastAction
-    
+
     def chooseAction(self, state):
         directions = self.legaldirections(state)
         rnd = self.random.random()
@@ -78,10 +78,10 @@ class ReinforcementQAgent(game.Agent):
             return self.random.choice(directions)
         else:
             return self.saving.getBestDirection(self.lastState, directions)
-            
+
     def calcReward(self, state):
         return state.getScore() - self.lastState.getScore()
-    
+
     def legaldirections(self, state):
         directions = state.getLegalPacmanActions()
         self.safeListRemove(directions, Directions.LEFT)
@@ -89,26 +89,26 @@ class ReinforcementQAgent(game.Agent):
         self.safeListRemove(directions, Directions.RIGHT)
         #self.safeListRemove(directions, Directions.STOP)
         return directions
-    
+
     def safeListRemove(self,lst,item):
         try:
             lst.remove(item)
-        except ValueError: 
+        except ValueError:
             pass
-        
+
     def updater(self, state):
         reward = self.calcReward(state)
         currentValue = self.saving.getRatingForNextState(self.lastAction, self.lastState)
         maxPossibleFutureValue = self.saving.getBestValue(state, self.legaldirections(state))
         calcVal =  currentValue + self.alpha * (reward + self.gamma * maxPossibleFutureValue - currentValue)
         self.saving.setRatingForState(self.lastAction, self.lastState, calcVal)
-        
+
     def observationFunction(self, state):
         if self.lastState:
             self.updater(state)
         self.lastState = state
         return state
-        
+
     def final(self, state):
         self.updater(state)
         self.lastState = None
@@ -117,7 +117,7 @@ class ReinforcementQAgent(game.Agent):
             self.episodesSoFar += 1
             print "Training " + str(self.episodesSoFar) + " of " + str (self.numTraining)
         else:
-            self.epsilon = 0.0 
+            self.epsilon = 0.0
             self.alpha = 0.0
 
     def isInTraining(self):
@@ -131,13 +131,13 @@ class ReinforcementSAgent(ReinforcementQAgent):
     def __init__(self, numTraining = 0):
         ReinforcementQAgent.__init__(self, numTraining)
         self.chosenAction = None;
-    
+
     def getAction(self, state):
         if not self.chosenAction:
             self.chosenAction = self.chooseAction(state)
         self.lastAction = self.chosenAction
         return self.lastAction
-        
+
     def updater(self, state):
         reward = self.calcReward(state)
         currentValue = self.saving.getRatingForNextState(self.lastAction, self.lastState)
@@ -148,9 +148,9 @@ class ReinforcementSAgent(ReinforcementQAgent):
             self.chosenAction = self.chooseAction(state)
             maxPossibleFutureValue = self.saving.getRatingForNextState(self.chosenAction, state)
         calcVal =  currentValue + self.alpha * (reward + self.gamma * maxPossibleFutureValue - currentValue)
-        #print "Calc " + str(calcVal)        
+        #print "Calc " + str(calcVal)
         self.saving.setRatingForState(self.lastAction, self.lastState, calcVal)
-    
+
     def final(self, state):
         ReinforcementQAgent.final(self, state)
         self.chosenAction = None
@@ -158,16 +158,16 @@ class ReinforcementSAgent(ReinforcementQAgent):
 class myDict(dict):
     def __init__(self, default):
         self.default = default
-        
+
     def __getitem__(self, key):
         self.setdefault(key, self.default)
-        return dict.__getitem__(self, key)   
-        
+        return dict.__getitem__(self, key)
+
     def normalize(self):
         maxi = max(abs(i) for i in self.values())
         for key in self.keys():
             self[key] = self[key] / maxi
-    
+
     def divideAll(self, value):
         for key in self.keys():
             self[key] = float(self[key]) / value
@@ -192,27 +192,27 @@ class RuleGenerator():
                 lst.append((posX, posY+1))
         except IndexError:
             pass
-        
+
         try:
             if not walls[posX][posY-1]:
                 lst.append((posX, posY-1))
         except IndexError:
             pass
-        
-        try: 
+
+        try:
             if not walls[posX-1][posY]:
                 lst.append((posX-1, posY))
         except IndexError:
             pass
-        
+
         try:
             if not walls[posX+1][posY]:
                 lst.append((posX+1, posY))
         except IndexError:
             pass
-        
+
         return lst
-        
+
     def getStateSearch(self, state, direction):
         vecX, vecY = self.directionToCoordinate(direction)
         posX, posY = state.getPacmanPosition()
@@ -238,8 +238,8 @@ class RuleGenerator():
                     openList.append((sucX, sucY, dist + 1))
                 maxDistance = max(maxDistance, dist)
         searchResult['maxDistance'] = maxDistance
-        return searchResult   
-        
+        return searchResult
+
     def getfeatures(self, state, direction):
         features = myDict(0.0)
         #features['base'] = 1.0
@@ -255,7 +255,7 @@ class RuleGenerator():
             features['ghostThreat'] = (maxDistance - float(stateSearch['nearestGhostDistances'])+1) / maxDistance#/ maxDistance
         #features['maxDistance'] = maxDistance
         features.divideAll(10)
-        
+
         #print str(features)
         return features
 
@@ -271,13 +271,13 @@ class ReinforcementRAgent(game.Agent):
         self.epsilon = 0.1
         self.numTraining = int(numTraining)
         self.episodesSoFar = 0
-        
+
     def safeListRemove(self,lst,item):
         try:
             lst.remove(item)
-        except ValueError: 
+        except ValueError:
             pass
-        
+
     def getCombinedValue(self,state, direction):
         combinedValue = 0.0
         features = self.ruleGenerator.getfeatures(state, direction)
@@ -285,7 +285,7 @@ class ReinforcementRAgent(game.Agent):
         for featureKey in features.keys():
             combinedValue += features[featureKey] * self.actionPower[featureKey]
         return combinedValue
-        
+
     def updater(self,nextState):
         print "Start Updating"
         reward = self.calcReward(nextState)
@@ -302,21 +302,22 @@ class ReinforcementRAgent(game.Agent):
         print "ActionPower: " + str(self.actionPower)
         #self.saving.setRatingForState(self.lastAction, self.lastState, calcVal)
         print "Stop Updating"
-        
+
     def calcReward(self, state):
-        return state.getScore() - self.lastState.getScore()       
-        
+        return state.getScore() - self.lastState.getScore()
+
     def getAction(self, state):
         print "Start GetAction"
         self.lastAction = self.chooseAction(state)
         print "Action Power: " + str(self.actionPower)
         if self.isInTesting():
-            raw_input("Press Any Key ")
+            #raw_input("Press Any Key ")
+            pass
         print "Chosen Acction: " + str(self.lastAction)
         print "Stop GetAction"
         #print str(self.lastAction)
         return self.lastAction
-    
+
     def chooseAction(self, state):
         directions = self.legaldirections(state)
         #print str(directions)
@@ -325,7 +326,7 @@ class ReinforcementRAgent(game.Agent):
             return self.random.choice(directions)
         else:
             return self.getBestDirection(self.lastState, directions)
-            
+
     def legaldirections(self, state):
         directions = state.getLegalPacmanActions()
         self.safeListRemove(directions, Directions.LEFT)
@@ -333,7 +334,7 @@ class ReinforcementRAgent(game.Agent):
         self.safeListRemove(directions, Directions.RIGHT)
         self.safeListRemove(directions, Directions.STOP)
         return directions
-        
+
     def getBestDirection(self, state, directions):
         bestVal = float('-inf')
         bestDirection = None
@@ -346,26 +347,25 @@ class ReinforcementRAgent(game.Agent):
                 bestVal = tmpValue
                 bestDirection = direction
         return bestDirection
-        
+
     def getBestValue(self, state, directions):
         bestDirection = self.getBestDirection(state,directions)
         if bestDirection:
             return self.getCombinedValue(state, bestDirection)
         else:
             return 0.0
-            
+
     def observationFunction(self, state):
         if self.lastState:
             self.updater(state)
         else:
             if not self.isInTraining():
-#                self.epsilon = 0.0 
-#                self.alpha = 0.0
-                pass
+               self.epsilon = 0.0
+               self.alpha = 0.0
         self.lastState = state
         #raw_input("Press Any Key ")
         return state
-        
+
     def final(self, state):
         self.updater(state)
         self.lastState = None
@@ -375,43 +375,14 @@ class ReinforcementRAgent(game.Agent):
             self.episodesSoFar += 1
             print "Training " + str(self.episodesSoFar) + " of " + str (self.numTraining)
         else:
-#            self.epsilon = 0.0 
-#            self.alpha = 0.0
+            self.epsilon = 0.0
+            self.alpha = 0.0
             if state.isLose():
-                raw_input("Press Any Key ")
-            pass
-    
+                #raw_input("Press Any Key ")
+                pass
+
     def isInTraining(self):
         return self.episodesSoFar < self.numTraining
 
     def isInTesting(self):
         return not self.isInTraining()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
