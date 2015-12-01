@@ -179,8 +179,8 @@ class myDict(dict):
             for key in self.keys():
                 self[key] = newValue
         else:
-        	for key in self.keys():
-            	self[key] = self[key] / sumAlla
+            for key in self.keys():
+                self[key] = self[key] / sumAlla
     
     def divideAll(self, value):
         for key in self.keys():
