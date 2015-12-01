@@ -5,16 +5,19 @@ import random
 
 class AbstractQState():
     def __init__(self, state, direction):
-        self.state = state
-        self.direction = direction
+        #self.state = state
+        features = RuleGenerator().getStateSearch(state,direction)
+        self.ghostThreat = features['nearestGhostDistances']
+        self.foodDistance = features['nearestFoodDist']
+        #self.direction = direction
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
-            return self.state == other.state and self.direction == other.direction
+            return self.ghostThreat == other.ghostThreat and self.foodDistance == other.foodDistance
         else:
             return False
     def __hash__(self):
-        return hash(hash(self.state) + hash(self.direction))
+        return hash(hash(self.ghostThreat) + hash(self.foodDistance))    
 
 class Saving():
     def __init__(self, evalFn="scoreEvaluation"):
@@ -163,11 +166,22 @@ class myDict(dict):
         self.setdefault(key, self.default)
         return dict.__getitem__(self, key)
 
-    def normalize(self):
-        maxi = max(abs(i) for i in self.values())
+    def sumAll(self):
+        sumAllret = 0.0
         for key in self.keys():
-            self[key] = self[key] / maxi
+            sumAllret += self[key]
+        return sumAllret
 
+    def normalize(self):
+        sumAlla = self.sumAll()
+        if sumAlla == 0.0:
+            newValue = float(1)/len(self)
+            for key in self.keys():
+                self[key] = newValue
+        else:
+        	for key in self.keys():
+            	self[key] = self[key] / sumAlla
+    
     def divideAll(self, value):
         for key in self.keys():
             self[key] = float(self[key]) / value
@@ -228,7 +242,7 @@ class RuleGenerator():
             curX, curY, dist = openList.pop(0)
             if not (curX, curY) in closedList:
                 closedList.add((curX, curY))
-                if (not searchResult['nearestFoodDist'] is not None) and food[curX][curY]:
+                if (not searchResult['nearestFoodDist'] is not None) and food[curX][curY] and not (curX, curY) in ghosts:
                     searchResult['nearestFoodDist'] = dist
                     searchResult['nearestFoodPos'] = (curX, curY)
                 if (curX, curY) in ghosts:
@@ -250,11 +264,11 @@ class RuleGenerator():
         print "MaxDistance " + str(direction) + " " + str(maxDistance)
         if stateSearch['nearestFoodDist'] is not None:
             #print "FoodDist " +  str(stateSearch['nearestFoodDist'])
-            features['foodValuability'] = (float(stateSearch['nearestFoodDist']) + 1) / maxDistance #/ maxDistance
+            features['foodValuability'] = (float(stateSearch['nearestFoodDist'])) #/ maxDistance
         if stateSearch['nearestGhostDistances'] is not None:
-            features['ghostThreat'] = (maxDistance - float(stateSearch['nearestGhostDistances'])+1) / maxDistance#/ maxDistance
+            features['ghostThreat'] = (float(stateSearch['nearestGhostDistances'])) #/ maxDistance
         #features['maxDistance'] = maxDistance
-        features.divideAll(10)
+        features.normalize()
 
         #print str(features)
         return features
@@ -311,7 +325,7 @@ class ReinforcementRAgent(game.Agent):
         self.lastAction = self.chooseAction(state)
         print "Action Power: " + str(self.actionPower)
         if self.isInTesting():
-            #raw_input("Press Any Key ")
+#            raw_input("Press Any Key ")
             pass
         print "Chosen Acction: " + str(self.lastAction)
         print "Stop GetAction"
@@ -360,8 +374,9 @@ class ReinforcementRAgent(game.Agent):
             self.updater(state)
         else:
             if not self.isInTraining():
-               self.epsilon = 0.0
+               self.epsilon = 0.0 
                self.alpha = 0.0
+               pass
         self.lastState = state
         #raw_input("Press Any Key ")
         return state
@@ -379,7 +394,7 @@ class ReinforcementRAgent(game.Agent):
             self.alpha = 0.0
             if state.isLose():
                 #raw_input("Press Any Key ")
-                pass
+				pass
 
     def isInTraining(self):
         return self.episodesSoFar < self.numTraining
