@@ -28,7 +28,7 @@ Often used:
 
 ### Launcher
 
-Um den Programmstart einfacher zu machen, haben wir einen Launcher erstellt, mit dem man zu Programmbeginn sämtliche relevanten Konfigurationen angeben kann. Gestartet werden kann dieser über einen Doppelklick auf die Datei launcher.py oder auf der Konsole durch den Befehl `python launcher.py`. Für jede der Einstellungen im Launcher sind Standartwerte vorgeben, die jederzeit zurückgesetzt werden können. Weiterhin gibt es die Möglichkeit die aktuellen Konfigurationen zu speichern und wieder zu laden. Die Konfigurationen werden in der Datei `src/settings.ini` gespeichert, welche auch auf der `.gitignore` aufgeführt ist.
+Um den Programmstart einfacher zu machen, haben wir einen Launcher erstellt, mit dem man zu Programmbeginn sämtliche relevanten Konfigurationen angeben kann. Gestartet werden kann dieser über einen Doppelklick auf die Datei `launcher.py` oder auf der Konsole durch den Befehl `python launcher.py`. Für jede der Einstellungen im Launcher sind Standartwerte vorgeben, die jederzeit zurückgesetzt werden können. Weiterhin gibt es die Möglichkeit die aktuellen Konfigurationen zu speichern und wieder zu laden. Die Konfigurationen werden in der Datei `src/settings.ini` gespeichert, welche auch auf der `.gitignore` aufgeführt ist.
 
 Derzeit sind folgende Konfigurationen mit Launcher vorhanden:
 * **Spieleinstellungen**:
@@ -140,6 +140,23 @@ Es ist möglich die Spielgeschwindigkeit und die Einstellungen für den Learning
 Die Tastaturbelegungen können in der Datei `src/keyBindings.py` angepasst werden. Eine vollständige Liste aller möglichen Werte ist hier zu finden: http://infohost.nmt.edu/tcc/help/pubs/tkinter/web/key-names.html. Die Attribute der Klasse `KeyBindings` müssen dabei mit dem entsprechenden Wert aus der Tabelle in der Spalte `.keysym` gesetzt werden.
 
 Zur Anpassung der Einstellungen für den Learning-Algorithmus ist wie im Kapitel [Änderungen an Konfigurationswerten](#Änderungen-an-konfigurationswerten) vorzugehen, nur das bei den Einstellungen für den Learning-Algorithmus die Dateien `src/runtimeSettings.py` und `src/runtimeSettingsController.py` genutzt werden (statt `src/launcher.py` und `src/launcherController.py`).
+
+### Messung der Lernentwicklung
+
+Um die Lernentwicklung messbar zu machen, haben wir einen zusätzlichen Launcher erstellt, mit dem man zu Programmbeginn sämtliche für die Messung relevanten Konfigurationen angeben kann. Gestartet werden kann dieser über einen Doppelklick auf die Datei `statistics.py` oder auf der Konsole durch den Befehl `python statistics.py`. Für jede der Einstellungen im Launcher sind Standartwerte vorgeben, die jederzeit zurückgesetzt werden können. Weiterhin gibt es die Möglichkeit die aktuellen Konfigurationen zu speichern und wieder zu laden. Die Konfigurationen werden in der Datei `src/statistic_settings.ini` gespeichert, welche auch auf der `.gitignore` aufgeführt ist. Die generierte Ausgabedatei liegt nach Ausführung der Messung in dem Ordner `src/output`, mit dem entsprechenden Dateinamen.
+
+Derzeit sind folgende Konfigurationen mit Launcher vorhanden:
+* **Statistikeinstellungen**:
+  * **Maximale Anzahl der Trainings**: Gibt die maximale Anzahl der (ungewerteten) Trainingsspiele für den lernenden Agenten an. Die Anzahl Trainingsspiele fängt bei 0 an und steigert sich dann solange, bis der Wert dieser Option erreicht ist. Die Steigerung ist in der Option 'Abstufung der Trainings' angeben.
+  * **Abstufung der Trainings**: Gibt an, um viele Trainingsspiele sich der Anzahl der Trainingsspiele erhöhen soll.
+  * **Anzahl der Wertungsspiele**: Gibt die Anzahl der (gewerteten) Spiele an.
+  * **Ausgabedatei**: Gibt den Namen der Datei an, in der die Ergenisse gespeichert werden sollen. Die Dateiendung (.csv) muss ebenfalls angegeben werden, der Ausgabeordner `output` jedoch nicht.
+
+* **Spieleinstellungen**:
+  * **Anzahl der Geister**: Gibt die Anzahl der Geister an. Die maximale Anzahl der Geister ist abhängig von Spielfeld, darf allerdings in jedem Fall nicht größer als 5 sein.
+  * **Spielfeld**: Gibt an, auf welchem Spielfeld die Spiele durchgeführt werden sollen.
+  * **Pacman-Agent**: Gibt an, welcher Agent für Pacman genutzt werden soll.
+  * **Feste Random-Seed**: Wenn aktiviert, verhalten sich die Geister im Spiel immer aus gleiche Art und Weise. Kann (und sollte) genutzt werden, um verschiedene Agenten besser vergleichen zu können.
 
 ### Implementationsdetails
 
