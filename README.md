@@ -31,18 +31,18 @@ Often used:
 Um den Programmstart einfacher zu machen, haben wir einen Launcher erstellt, mit dem man zu Programmbeginn sämtliche relevanten Konfigurationen angeben kann. Gestartet werden kann dieser über einen Doppelklick auf die Datei launcher.py oder auf der Konsole durch den Befehl `python launcher.py`. Für jede der Einstellungen im Launcher sind Standartwerte vorgeben, die jederzeit zurückgesetzt werden können. Weiterhin gibt es die Möglichkeit die aktuellen Konfigurationen zu speichern und wieder zu laden. Die Konfigurationen werden in der Datei `src/settings.ini` gespeichert, welche auch auf der `.gitignore` aufgeführt ist.
 
 Derzeit sind folgende Konfigurationen mit Launcher vorhanden:
-* Spieleinstellungen:
-  * Anzahl der Trainings: Gibt die Anzahl der (ungewerteten) Trainingsspiele für den lernenden Agenten an (ZUR ZEIT NICHT VERFÜGBAR)
-  * Anzahl der Spiele: Gibt die Anzahl der (gewerteten) Spiele an.
-  * Anzahl der Geister: Gibt die Anzahl der Geister an. Die maximale Anzahl der Geister ist abhängig von Spielfeld, darf allerdings in jedem Fall nicht größer als 5 sein.
-  * Spielfeld: Gibt an, auf welchem Spielfeld die Spiele durchgeführt werden sollen.
-  * Pacman-Agent: Gibt an, welcher Agent für Pacman genutzt werden soll.
-  * Feste Random-Seed: Wenn aktiviert, verhalten sich die Geister im Spiel immer aus gleiche Art und Weise. Kann genutzt werden, um Agenten besser vergleichen zu können.
-* Anzeigeeinstellungen:
-  * Zoomfaktor: Gibt an, wie groß das Spielfeld dargestellt werden soll. Ein Wert größer als 1 sorgt dafür, dass das Spielfeld größer als standartmäßig darstellt wird. Ein Wert kleiner als 1 sorgt dafür, dass das Spielfeld kleiner als standartmäßig darstellt wird.
-  * Ausgabe als Text: Schaltet die GUI ab und stellt das Spielfeld in jedem Zug auf der Konsole dar.
-  * Minimale Ausgabe: Schaltet die GUI ab und stellt ausschließlich am Ende jeder Spiels die Punktezahl und ob das Spiel gewonnen wurde dar.
-  * Debug-Modus: Aktiviert Debug-Ausgaben und sorgt dafür, dass der nächste Zug nur durch Tastendruck ausgeführt wird.
+* **Spieleinstellungen**:
+  * **Anzahl der Trainings**: Gibt die Anzahl der (ungewerteten) Trainingsspiele für den lernenden Agenten an. Diese Option kann nur bei lernenden Pacman-Agenten gesetzt werden!
+  * **Anzahl der Spiele**: Gibt die Anzahl der (gewerteten) Spiele an.
+  * **Anzahl der Geister**: Gibt die Anzahl der Geister an. Die maximale Anzahl der Geister ist abhängig von Spielfeld, darf allerdings in jedem Fall nicht größer als 5 sein.
+  * **Spielfeld**: Gibt an, auf welchem Spielfeld die Spiele durchgeführt werden sollen.
+  * **Pacman-Agent**: Gibt an, welcher Agent für Pacman genutzt werden soll.
+  * **Feste Random-Seed**: Wenn aktiviert, verhalten sich die Geister im Spiel immer aus gleiche Art und Weise. Kann genutzt werden, um Agenten besser vergleichen zu können.
+* **Anzeigeeinstellungen**:
+  * **Zoomfaktor**: Gibt an, wie groß das Spielfeld dargestellt werden soll. Ein Wert größer als 1 sorgt dafür, dass das Spielfeld größer als standartmäßig darstellt wird. Ein Wert kleiner als 1 sorgt dafür, dass das Spielfeld kleiner als standartmäßig darstellt wird.
+  * **Ausgabe als Text**: Schaltet die GUI ab und stellt das Spielfeld in jedem Zug auf der Konsole dar.
+  * **Minimale Ausgabe**: Schaltet die GUI ab und stellt ausschließlich am Ende jeder Spiels die Punktezahl und ob das Spiel gewonnen wurde dar.
+  * **Debug-Modus**: Aktiviert Debug-Ausgaben und sorgt dafür, dass der nächste Zug nur durch Tastendruck ausgeführt wird.
 
 ##### Änderungen an Konfigurationswerten
 Sollten Änderungen an den Konfigurationswerten im Launcher durchgeführt werden (z.B. Hinzufügen weiterer Einstellungen oder Löschen bestehender Einstellungen), sind folgende Stellen im Programmcode anzupassen:
