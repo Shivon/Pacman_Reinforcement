@@ -17,7 +17,7 @@ class AbstractQState():
         else:
             return False
     def __hash__(self):
-        return hash(hash(self.ghostThreat) + hash(self.foodDistance))    
+        return hash(hash(self.ghostThreat) + hash(self.foodDistance))
 
 class Saving():
     def __init__(self, evalFn="scoreEvaluation"):
@@ -181,11 +181,10 @@ class myDict(dict):
         else:
             for key in self.keys():
                 self[key] = self[key] / sumAlla
-    
+
     def divideAll(self, value):
         for key in self.keys():
             self[key] = float(self[key]) / value
-
 
 class RuleGenerator():
     def directionToCoordinate(self, direction):
@@ -233,27 +232,34 @@ class RuleGenerator():
         food = state.getFood()
         walls = state.getWalls()
         ghosts = state.getGhostPositions()
+        powerPellets = state.getCapsules()
         openList = [(posX + vecX, posY + vecY, 0)]
         closedList = set()
         searchResult = myDict(None)
         maxDistance = -1
         searchResult['nearestFoodDist'] = None
+        searchResult['nearestPowerPelletDist'] = None
+        print "powerPellets = " + str(powerPellets)
         while openList:
             curX, curY, dist = openList.pop(0)
             if not (curX, curY) in closedList:
                 closedList.add((curX, curY))
-                if (not searchResult['nearestFoodDist'] is not None) and food[curX][curY] and not (curX, curY) in ghosts:
+                if (searchResult['nearestFoodDist'] is None) and food[curX][curY] and not (curX, curY) in ghosts:
                     searchResult['nearestFoodDist'] = dist
                     searchResult['nearestFoodPos'] = (curX, curY)
                 if (curX, curY) in ghosts:
                     if not searchResult.has_key('nearestGhostDistances'):
                         searchResult['nearestGhostDistances'] = dist
+                if (searchResult['nearestPowerPelletDist'] is None) and (curX, curY) in powerPellets and not (curX, curY) in ghosts:
+                    searchResult['nearestPowerPelletDist'] = dist
+                    searchResult['nearestPowerPelletPos'] = (curX, curY)
                 for (sucX, sucY) in self.getMovableDirections(curX, curY,walls):
                     openList.append((sucX, sucY, dist + 1))
                 maxDistance = max(maxDistance, dist)
         searchResult['maxDistance'] = maxDistance
         return searchResult
 
+    # TODO: insert features here
     def getfeatures(self, state, direction):
         features = myDict(0.0)
         #features['base'] = 1.0
@@ -267,6 +273,9 @@ class RuleGenerator():
             features['foodValuability'] = (float(stateSearch['nearestFoodDist'])) #/ maxDistance
         if stateSearch['nearestGhostDistances'] is not None:
             features['ghostThreat'] = (float(stateSearch['nearestGhostDistances'])) #/ maxDistance
+        if stateSearch['nearestPowerPelletDist'] is not None:
+            # print "PowerPelletDist " +  str(stateSearch['nearestPowerPelletDist'])
+            features['powerPelletValuability'] = (float(stateSearch['nearestPowerPelletDist'])) #/ maxDistance
         #features['maxDistance'] = maxDistance
         features.normalize()
 
@@ -374,7 +383,7 @@ class ReinforcementRAgent(game.Agent):
             self.updater(state)
         else:
             if not self.isInTraining():
-               self.epsilon = 0.0 
+               self.epsilon = 0.0
                self.alpha = 0.0
                pass
         self.lastState = state
