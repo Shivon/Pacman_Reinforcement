@@ -148,9 +148,9 @@ Um die Lernentwicklung messbar zu machen, haben wir einen zusätzlichen Launcher
 Derzeit sind folgende Konfigurationen mit Launcher vorhanden:
 * **Statistikeinstellungen**:
   * **Maximale Anzahl der Trainings**: Gibt die maximale Anzahl der (ungewerteten) Trainingsspiele für den lernenden Agenten an. Die Anzahl Trainingsspiele fängt bei 0 an und steigert sich dann solange, bis der Wert dieser Option erreicht ist. Die Steigerung ist in der Option 'Abstufung der Trainings' angeben.
-  * **Abstufung der Trainings**: Gibt an, um viele Trainingsspiele sich der Anzahl der Trainingsspiele erhöhen soll.
+  * **Abstufung der Trainings**: Gibt an, um viele Trainingsspiele sich der Anzahl der Trainingsspiele nach jedem Durchlauf erhöhen soll.
   * **Anzahl der Wertungsspiele**: Gibt die Anzahl der (gewerteten) Spiele an.
-  * **Ausgabedatei**: Gibt den Namen der Datei an, in der die Ergenisse gespeichert werden sollen. Die Dateiendung (.csv) muss ebenfalls angegeben werden, der Ausgabeordner `output` jedoch nicht.
+  * **Ausgabedatei**: Gibt den Namen der Datei an, in der die Ergenisse gespeichert werden sollen. Die Dateiendung (`.csv`) muss ebenfalls angegeben werden, der Ausgabeordner `src/output` jedoch nicht.
 
 * **Spieleinstellungen**:
   * **Anzahl der Geister**: Gibt die Anzahl der Geister an. Die maximale Anzahl der Geister ist abhängig von Spielfeld, darf allerdings in jedem Fall nicht größer als 5 sein.
