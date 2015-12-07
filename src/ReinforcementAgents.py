@@ -6,18 +6,20 @@ import random
 class AbstractQState():
     def __init__(self, state, direction):
         #self.state = state
+        # TODO: check this => these keys are not in featue but in stateSearch/ searchResult
         features = RuleGenerator().getStateSearch(state,direction)
         self.ghostThreat = features['nearestGhostDistances']
         self.foodDistance = features['nearestFoodDist']
+        self.powerPelletDist = features['nearestPowerPelletDist']
         #self.direction = direction
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
-            return self.ghostThreat == other.ghostThreat and self.foodDistance == other.foodDistance
+            return self.ghostThreat == other.ghostThreat and self.foodDistance == other.foodDistance and self.powerPelletDist == other.powerPelletDist
         else:
             return False
     def __hash__(self):
-        return hash(hash(self.ghostThreat) + hash(self.foodDistance))
+        return hash(hash(self.ghostThreat) + hash(self.foodDistance) + hash(self.powerPelletDist))
 
 class Saving():
     def __init__(self, evalFn="scoreEvaluation"):
