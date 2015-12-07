@@ -1,7 +1,9 @@
 from game import Directions
 import game
 import random
-
+from ReinforcementState import ReinforcementDirection, ReinforcementState
+from ReinforcementSave import *
+from bfsSearch import ReinforcementSearch
 
 class AbstractQState():
     def __init__(self, state, direction):
@@ -11,15 +13,16 @@ class AbstractQState():
         self.ghostThreat = features['nearestGhostDistances']
         self.foodDistance = features['nearestFoodDist']
         self.powerPelletDist = features['nearestPowerPelletDist']
+        self.eatableGhosts = features['nearestEatableGhostDistances']
         #self.direction = direction
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
-            return self.ghostThreat == other.ghostThreat and self.foodDistance == other.foodDistance and self.powerPelletDist == other.powerPelletDist
+            return self.ghostThreat == other.ghostThreat and self.foodDistance == other.foodDistance and self.powerPelletDist == other.powerPelletDist and self.eatableGhosts == other.eatableGhosts
         else:
             return False
     def __hash__(self):
-        return hash(hash(self.ghostThreat) + hash(self.foodDistance) + hash(self.powerPelletDist))
+        return hash(hash(self.ghostThreat) + hash(self.foodDistance) + hash(self.powerPelletDist) + hash(self.eatableGhosts))
 
 class Saving():
     def __init__(self, evalFn="scoreEvaluation"):
@@ -233,7 +236,8 @@ class RuleGenerator():
         posX, posY = state.getPacmanPosition()
         food = state.getFood()
         walls = state.getWalls()
-        ghosts = state.getGhostPositions()
+        eatableGhosts = self.getEatableGhosts(state)
+        nonEatableGhosts = self.getNonEatableGhosts(state)
         powerPellets = state.getCapsules()
         openList = [(posX + vecX, posY + vecY, 0)]
         closedList = set()
@@ -246,20 +250,45 @@ class RuleGenerator():
             curX, curY, dist = openList.pop(0)
             if not (curX, curY) in closedList:
                 closedList.add((curX, curY))
-                if (searchResult['nearestFoodDist'] is None) and food[curX][curY] and not (curX, curY) in ghosts:
+                if (searchResult['nearestFoodDist'] is None) and food[curX][curY] and not (curX, curY) in nonEatableGhosts:
                     searchResult['nearestFoodDist'] = dist
                     searchResult['nearestFoodPos'] = (curX, curY)
-                if (curX, curY) in ghosts:
+                if (curX, curY) in nonEatableGhosts:
+                    # print "###################################### nonEatableGhosts= " + str(nonEatableGhosts)
+                    # print "###################################### state.getGhostStates = " + str(not state.getGhostStates()[0].isScared())
                     if not searchResult.has_key('nearestGhostDistances'):
                         searchResult['nearestGhostDistances'] = dist
-                if (searchResult['nearestPowerPelletDist'] is None) and (curX, curY) in powerPellets and not (curX, curY) in ghosts:
+                if (searchResult['nearestPowerPelletDist'] is None) and (curX, curY) in powerPellets and not (curX, curY) in nonEatableGhosts:
                     searchResult['nearestPowerPelletDist'] = dist
                     searchResult['nearestPowerPelletPos'] = (curX, curY)
+                if (curX, curY) in eatableGhosts:
+                    # print "###################################### eatableGhosts= " + str(eatableGhosts)
+                    # print "###################################### state.getGhostStates = " + str(state.getGhostStates()[0].isScared())
+                    if not searchResult.has_key('nearestEatableGhostDistances'):
+                        searchResult['nearestEatableGhostDistances'] = dist
                 for (sucX, sucY) in self.getMovableDirections(curX, curY,walls):
                     openList.append((sucX, sucY, dist + 1))
                 maxDistance = max(maxDistance, dist)
         searchResult['maxDistance'] = maxDistance
         return searchResult
+
+    def getEatableGhosts(self, state):
+        eatableGhosts = []
+        ghostStates = state.getGhostStates()
+        for ghostState in ghostStates:
+            if ghostState.isScared():
+                eatableGhosts.append(ghostState.getPosition())
+        # print "############################################# eatableGhosts = " + str(eatableGhosts)
+        return eatableGhosts
+
+    def getNonEatableGhosts(self, state):
+        nonEatableGhosts = []
+        ghostStates = state.getGhostStates()
+        for ghostState in ghostStates:
+            if not ghostState.isScared():
+                nonEatableGhosts.append(ghostState.getPosition())
+        # print "############################################# nonEatableGhosts = " + str(nonEatableGhosts)
+        return nonEatableGhosts
 
     # TODO: insert features here
     def getfeatures(self, state, direction):
@@ -278,6 +307,8 @@ class RuleGenerator():
         if stateSearch['nearestPowerPelletDist'] is not None:
             # print "PowerPelletDist " +  str(stateSearch['nearestPowerPelletDist'])
             features['powerPelletValuability'] = (float(stateSearch['nearestPowerPelletDist'])) #/ maxDistance
+        if stateSearch['nearestEatableGhostDistances'] is not None:
+            features['eatableGhosts'] = (float(stateSearch['nearestEatableGhostDistances'])) #/ maxDistance
         #features['maxDistance'] = maxDistance
         features.normalize()
 
