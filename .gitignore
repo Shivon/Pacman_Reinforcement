@@ -102,4 +102,7 @@ crashlytics-build.properties
 fabric.properties
 /src/settingsRuntime.ini
 /src/settings.ini
+/src/statistic_settings.ini
+/src/runtime_settings.ini
 src/savedLearned/
+src/statistics/

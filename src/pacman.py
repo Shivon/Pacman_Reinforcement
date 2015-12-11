@@ -672,11 +672,7 @@ def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0
 
 def startByLauncher(arguments):
     args = readCommand(arguments) # Get game components based on input
-    runGames( **args )
-
-    # import cProfile
-    # cProfile.run("runGames( **args )")
-    pass
+    return runGames( **args )
 
 if __name__ == '__main__':
     """
