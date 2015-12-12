@@ -158,6 +158,10 @@ Derzeit sind folgende Konfigurationen mit Launcher vorhanden:
   * **Pacman-Agent**: Gibt an, welcher Agent für Pacman genutzt werden soll.
   * **Feste Random-Seed**: Wenn aktiviert, verhalten sich die Geister im Spiel immer aus gleiche Art und Weise. Kann (und sollte) genutzt werden, um verschiedene Agenten besser vergleichen zu können.
 
+Zur Anpassung der Einstellungen für den Statistik-Launcher ist wie im Kapitel [Änderungen an Konfigurationswerten](#Änderungen-an-konfigurationswerten) vorzugehen, nur das bei den Einstellungen für den Learning-Algorithmus die Dateien `src/statistics.py` und `src/statisticsController.py` genutzt werden (statt `src/launcher.py` und `src/launcherController.py`).
+
+Beim Hinzufügen weiterer Einstellungen muss gegebenenfalls die Methode `LauncherController.processGames(self)` angepasst werden.
+
 ### Implementationsdetails
 
 * Positionen werden als 2-dimensionale kartesisches Koordinaten (x,y) darstellt. Im Programmcode werden diese Werte als Tupel mit 2 Elementen umgesetzt. Der erste Wert ist die x-Koordinate und der zweite Wert ist die y-Koordinate. Die Benutzung von Tupeln in Python wird hier erläutert: http://www.tutorialspoint.com/python/python_tuples.htm.
