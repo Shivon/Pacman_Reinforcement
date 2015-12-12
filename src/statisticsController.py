@@ -5,6 +5,7 @@ from datatypeUtils import DatatypeUtils
 from pacman import startByLauncher
 from graphicsDisplay import *
 from pacmanGlobals import PacmanGlobals
+from pacman import GameState
 
 CONFIGURATION_FILE = "statistic_settings.ini"
 OUTPUT_DIR = "statistics"
@@ -88,8 +89,13 @@ class LauncherController:
         maxNumTraining = DatatypeUtils.stringToInteger(self.view.numTrainingVar.get())
         increment = DatatypeUtils.stringToInteger(self.view.incrementVar.get())
         
+        #from pympler import tracker
+        #memory_tracker = tracker.SummaryTracker()
+        
         for numTraining in range(0, maxNumTraining, increment):
             self.processGame(numTraining)
+            GameState.getAndResetExplored()
+            #memory_tracker.print_diff()
     
     def startApplication(self):
         if (not self.validateData('Fehlerhafte Einstellungen!', 'Einige Einstellungswerte sind ungueltig: ', False)):
