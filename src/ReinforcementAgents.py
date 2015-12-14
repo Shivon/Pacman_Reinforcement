@@ -388,7 +388,7 @@ class ReinforcementRAgent(game.Agent):
         self.safeListRemove(directions, Directions.LEFT)
         self.safeListRemove(directions, Directions.REVERSE)
         self.safeListRemove(directions, Directions.RIGHT)
-        self.safeListRemove(directions, Directions.STOP)
+        # self.safeListRemove(directions, Directions.STOP)
         return directions
 
     def getBestDirection(self, state, directions):
