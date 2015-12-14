@@ -197,6 +197,7 @@ class ReinforcementSearch:
     def generateResult(self):
         # generate food direction
         nearestFoodDirection = self.getDirection(self.nearestFoodPosition)
+        nearestFoodDistance = len(self.getPath(self.nearestFoodPosition))
         
         # generate ghost state
         ghostStates = []
@@ -208,10 +209,14 @@ class ReinforcementSearch:
             ghostStates.append(GhostState(direction, threat, eatable))
         
         # return result
-        return ReinforcementState(nearestFoodDirection, ghostStates)
+        return ReinforcementState(nearestFoodDirection, nearestFoodDistance, ghostStates)
     
     # Generates a ReinforcementState by using the BFS algorithm
     def getReinforcmentResult(self):
         self.initializeInput()
         self.executeBFS()
         return self.generateResult()
+
+
+    def getPacmanPosition(self):
+        return self.state.getPacmanPosition()

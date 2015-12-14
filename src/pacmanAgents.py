@@ -121,7 +121,7 @@ class BfsAgent(game.Agent):
                 return self.evade(evadeDirection, state)
 
         # GET NEAREST FOOD
-        return ReinforcementDirection.toGameDirection(reinforcementState.bestDirection)
+        return ReinforcementDirection.toGameDirection(reinforcementState.nextFoodDirection)
 
 def scoreEvaluation(state):
     return state.getScore()
@@ -130,51 +130,148 @@ def scoreEvaluation(state):
 class SarsaAgent(game.Agent):
 
     def __init__(self, evalFn="scoreEvaluation"):
-        # Config = ConfigParser.ConfigParser()
-        # Config.read(CONFIGURATIONSARSA_FILE)
-        self.steps = 4
-        self.alpha = 0.2
-        self.gammar = 0.2
-        # epsilon wird noch nicht gebraucht
-        self.epsilon = 0
-        self.ourLambda = 1
-        self.lastStateAction = None
+        # Number of indices in RingBuffer to save last StateActions
+        self.steps = 32
+        # learning rate (0 < alpha < 1)
+        self.alpha = 0.1
+        # Discount-rate
+        self.gamma = 0.8
+        # Exploration Rate
+        self.epsilon = 0.1
+        # decrease of qValues for older actions
+        self.ourLambda = 0.9
+        self.lastStateActionRating = None
         self.randomNum = random.Random()
+        # ringbuffer indices: [bestDirection, bestRating, reinforcemenState, pacmansPosition]
         self.ringBuffer = []
-        # self.ghostCount = PacmanGlobals.numGhostAgents
-        self.ghostCount = 1
+        self.ghostCount = PacmanGlobals.numGhostAgents
+        # self.ghostCount = 1
         self.ratingStorage = ReinforcementSave("ratingStorageFor" + str(self.ghostCount), self.ghostCount)
+        self.prevState = None
+        self.lastAction = None
+        self.pacmanPos = None
 
     def getAction(self, state):
-        reward = -0.4
         reinforcementState = ReinforcementSearch(state).getReinforcmentResult()
+        self.pacmanPos =  ReinforcementSearch(state).getPacmanPosition()
         legalActions = state.getLegalPacmanActions()
         legalActions.remove('Stop')
-        return self.sarsaAlgo(reinforcementState, legalActions, reward)
-
-    def sarsaAlgo(self, reinforcementState, legalActions, reward):
-        print legalActions
-        for direction in legalActions:
-            print direction
-            if not self.lastStateAction:
-                self.firstInit(direction, reinforcementState)
-            """momentan ohne explorationsrate"""
-            currentStateAction = self.ratingStorage.getRatingForNextState(direction, reinforcementState)
-            for index in range(0, len(self.ringBuffer)):
-                delta = reward + (self.gammar * currentStateAction) - self.lastStateAction
-                self.ringBuffer[index] += delta * self.alpha * pow(self.ourLambda, index)
-            self.lastStateAction = currentStateAction
-
-            if len(self.ringBuffer) >= self.steps:
-                # deletes last element in list, returns it
-                self.ringBuffer.pop()
-
-            self.ringBuffer.insert(0, currentStateAction)
-            return legalActions[0]
-
-    def firstInit(self, direction, reinforcementState):
-        currentStateAction = self.ratingStorage.getRatingForNextState(direction, reinforcementState)
-        self.lastStateAction = currentStateAction
-        self.ringBuffer.insert(0, currentStateAction)
+        # print "state " + str(state)
+        # print state.getPacmanPosition()
+        self.prevState = state
+        if (self.epsilon * 100) > (self.randomNum.random() * 100 + 1):
+            """ choose best next action. With 10% choose random action """
+            index = int(self.randomNum.random() * len(legalActions))
+            legalDirection = legalActions[index]
+            bestRating = self.ratingStorage.getRatingForNextState(legalDirection, reinforcementState)
+            nextBestAction = [legalDirection, bestRating, reinforcementState, self.pacmanPos]
+        else:
+            nextBestAction = self.getBestAction(legalActions, reinforcementState)
+        # print nextBestAction
+        self.lastAction = nextBestAction
+        return nextBestAction[0]
+        # return self.sarsaAlgo(reinforcementState, legalActions, reward)
 
 
+    """ choose best action for state """
+    def getBestAction(self, directions, state):
+        # getRatingForNextState(self, wentDirection, state):
+        bestDirection = directions[0]
+        bestRating = self.ratingStorage.getRatingForNextState(bestDirection, state)
+        for direction in directions:
+            ratingCurrDirection = self.ratingStorage.getRatingForNextState(direction, state)
+            if (bestRating < ratingCurrDirection):
+                bestDirection = direction
+                bestRating = ratingCurrDirection
+        # print "--- [bestDirection, bestRating, state, self.pacmanPos] --- " + str([bestDirection, bestRating, state, self.pacmanPos])
+        return [bestDirection, bestRating, state, self.pacmanPos]
+
+    def sarsaAlgo(self, currentBestAction, reward):
+        if not self.ringBuffer:
+            """ If ringBuffer has no items yet """
+            self.lastStateActionRating = 0
+            # self.lastStateActionRating = currentBestAction[1]
+
+        """ if more than steps items in buffer remove last (oldest) one """
+        if len(self.ringBuffer) >= self.steps:
+            self.ringBuffer.pop()
+
+        """ Add new item """
+        self.ringBuffer.insert(0, currentBestAction)
+        delta = reward + (self.gamma * self.ringBuffer[0][1]) - self.lastStateActionRating
+        self.updateRingBuffer(currentBestAction, delta)
+        """ choose first item from ringbuffer to be the last action """
+        self.lastStateActionRating = self.ringBuffer[0][1]
+
+
+    """ update ringbuffer in which last stateActions are hold """
+    def updateRingBuffer(self, currentBestAction, delta):
+        currentPacmanPos = self.ringBuffer[0][3]
+        # print currentPacmanPos
+        # print " this is the state   " + str(self.ringBuffer[0][2])
+        for index in range(1, len(self.ringBuffer)):
+            """ compute new rating """
+            self.ringBuffer[index][1] = delta * self.alpha * pow(self.ourLambda, index)
+            # print " current pos in buffer " + str(self.ringBuffer[index][3])
+            # print " pos of pacman " + str(currentPacmanPos)
+            # print " state in buffer " + str(self.ringBuffer[index][0])
+            # print " state pacman " + str(self.ringBuffer[0][0])
+            # """ If Pacman position now is not the same as the current one in buffer """
+            # if not (self.ringBuffer[index][3] == currentPacmanPos):
+            #     # print "different state " + str(self.ringBuffer[index][3]) + " AMD " + str(currentPacmanPos)
+            #     self.ringBuffer[index][1] = delta * self.alpha * pow(self.ourLambda, index)
+            #     # print self.ringBuffer[index][1]
+            #     """ Pacman position now is same as the current one in buffer and actions are not the same """
+            # elif (self.ringBuffer[index][3] == currentPacmanPos) and not (self.ringBuffer[index][0] == self.ringBuffer[0][0]):
+            #     # print "different action " + str(self.ringBuffer[index][0]) + " AMD " + str(self.ringBuffer[0][0])
+            #     self.ringBuffer[index][1] = 0
+            # elif (self.ringBuffer[index][3] == currentPacmanPos) and (self.ringBuffer[index][0] == self.ringBuffer[0][0]):
+            #     # print "same state action " + str(self.ringBuffer[index][3]) + " AMD " + str(currentPacmanPos) + " action: " + str(self.ringBuffer[index][0]) + " AMD " + str(self.ringBuffer[0][0])
+            #     self.ringBuffer[index][1] = delta * self.alpha * pow(self.ourLambda, index) + 1
+            self.ratingStorage.setRatingForState(self.ringBuffer[index][0], self.ringBuffer[index][2], self.ringBuffer[index][1])
+
+
+    def calcReward(self, state):
+        # pos reward fuer Grosse Punkt
+        # pos reward fuer Geister fressen wenn grosser Punkt
+        # pos reward win game
+        # neg reward loss game
+        reward = -5
+        rewardSmallPoints = (len(self.prevState.getFood().asList()) - len(state.getFood().asList())) * 20
+        rewardEatablePoint = (len(self.prevState.getCapsules()) - len(state.getCapsules())) * 20
+        rewardEatGhost = 0
+        rewardLose = 0
+        rewardWin = 0
+        PacmanPos = state.getPacmanPosition()
+        for ghostPos in state.getGhostPositions():
+            if (not state.isLose()) and ((int(ghostPos[0]) == PacmanPos[0]) and (int(ghostPos[1]) == PacmanPos[1])):
+                rewardEatGhost = 100
+
+        if state.isLose():
+            rewardLose = -300
+        elif state.isWin():
+            rewardWin = 300
+        reward += rewardSmallPoints + rewardEatablePoint + rewardEatGhost + rewardWin + rewardLose
+        # print reward
+        return reward
+
+    """ Is called after each step """
+    def observationFunction(self, state):
+        if self.lastAction:
+            reward = self.calcReward(state)
+            # reward = state.getScore() - self.prevState.getScore()
+            # print "--- reward --- " + str(reward)
+            self.sarsaAlgo(self.lastAction, reward)
+        return state
+
+    """ Is calles at the end of game """
+    def final(self, state):
+        reward = self.calcReward(state)
+        # reward = state.getScore() - self.prevState.getScore()
+        # print [method for method in dir(object) if callable(getattr(object, method))]
+        self.sarsaAlgo(self.lastAction, reward)
+        self.lastAction = None
+        self.ringBuffer = []
+        self.prevState = None
+        self.lastStateActionRating = None
+        print state.isLose()

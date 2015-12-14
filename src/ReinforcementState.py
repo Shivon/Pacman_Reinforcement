@@ -113,13 +113,17 @@ class GhostState(object):
 
 class ReinforcementState(object):
     """Der ReinforcementState repraesentiert den gesamten fuer die Reinforcementberechnung noetigen Spielstatus."""
-    def __init__(self, nextFoodDirection, ghosts):
+    def __init__(self, nextFoodDirection, nextFoodDistance, ghosts):
         """
         :param nextFoodDirection: ReinforcementDirection Richtung, in der der naechste Fresspunkt liegt.
+        :param nextFoodDistance: Distanz zum naechsten Fresspunkt, maximal 32
         :param ghosts: Liste von GhostState.
         """
         self.ghosts = ghosts
         self.nextFoodDirection = nextFoodDirection
+        self.nextFoodDistance = nextFoodDistance
+        if self.nextFoodDistance > 32:
+            self.nextFoodDistance = 32
 
     def __repr__(self):
         """
@@ -129,7 +133,7 @@ class ReinforcementState(object):
         for ghost in self.ghosts:
             ghostStrings += str(ghost) + ','
         ghostStrings = ghostStrings[:-1] + ']'
-        return ('GhostState[direction=' + str(self.nextFoodDirection) + ',ghosts=' + ghostStrings + ']')
+        return ('GhostState[direction=' + str(self.nextFoodDirection) + ',nextFoodDistance=' + str(self.nextFoodDistance)+ ',ghosts=' + ghostStrings + ']')
 
     def toBin(self):
         """
@@ -138,9 +142,14 @@ class ReinforcementState(object):
         binVal = 0
         for ghost in self.ghosts:
             binVal = binVal << 5 | ghost.toBin()
+        binVal = binVal << 5 | self.nextFoodDistance
         return binVal << 2 | self.nextFoodDirection
-
-
+        
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.toBin() == other.toBin()
+        else:
+            return False
 
 #print bin(GhostState(Directions.WEST, Threat.DANGER, True).toBin())
 
