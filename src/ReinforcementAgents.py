@@ -23,7 +23,8 @@ class AbstractQState():
         else:
             return False
     def __hash__(self):
-        return hash(hash(self.ghostThreat) + hash(self.foodDistance) + hash(self.powerPelletDist) + hash(self.eatableGhosts))
+        # return hash(hash(self.ghostThreat) + hash(self.foodDistance) + hash(self.powerPelletDist) + hash(self.eatableGhosts))
+        return hash(hash(self.ghostThreat) + hash(self.foodDistance) + hash(self.powerPelletDist))
 
 class Saving():
     def __init__(self, evalFn="scoreEvaluation"):
@@ -305,6 +306,8 @@ class RuleGenerator():
             features['foodValuability'] = (float(stateSearch['nearestFoodDist'])) #/ maxDistance
         if stateSearch['nearestGhostDistances'] is not None:
             features['ghostThreat'] = (float(stateSearch['nearestGhostDistances'])) #/ maxDistance
+        else:
+            features['ghostThreat'] = maxDistance
         if stateSearch['nearestPowerPelletDist'] is not None:
             # print "PowerPelletDist " +  str(stateSearch['nearestPowerPelletDist'])
             features['powerPelletValuability'] = (float(stateSearch['nearestPowerPelletDist'])) #/ maxDistance
