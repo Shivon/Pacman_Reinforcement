@@ -76,7 +76,7 @@ class ReinforcementQAgent(game.Agent):
          self.episodesSoFar = 0
 
     def getAction(self, state):
-        #print str(state)
+        logging.debug(str(state))
         self.lastAction = self.chooseAction(state)
 
         return self.lastAction
@@ -85,7 +85,7 @@ class ReinforcementQAgent(game.Agent):
         directions = self.legaldirections(state)
         rnd = self.random.random()
         if self.epsilon > rnd:
-            #print "random " + str(rnd) + " gamma " + str(self.epsilon)
+            logging.debug("random " + str(rnd) + " gamma " + str(self.epsilon))
             return self.random.choice(directions)
         else:
             return self.saving.getBestDirection(self.lastState, directions)
@@ -153,13 +153,13 @@ class ReinforcementSAgent(ReinforcementQAgent):
         reward = self.calcReward(state)
         currentValue = self.saving.getRatingForNextState(self.lastAction, self.lastState)
         if state.isLose() or state.isWin():
-            #print "end" + str(self.epsilon)
+            logging.debug("end" + str(self.epsilon))
             maxPossibleFutureValue = 0
         else:
             self.chosenAction = self.chooseAction(state)
             maxPossibleFutureValue = self.saving.getRatingForNextState(self.chosenAction, state)
         calcVal =  currentValue + self.alpha * (reward + self.gamma * maxPossibleFutureValue - currentValue)
-        #print "Calc " + str(calcVal)
+        logging.debug("Calc " + str(calcVal))
         self.saving.setRatingForState(self.lastAction, self.lastState, calcVal)
 
     def final(self, state):
@@ -248,8 +248,7 @@ class RuleGenerator():
         maxDistance = -1
         searchResult['nearestFoodDist'] = None
         searchResult['nearestPowerPelletDist'] = None
-        #print "powerPellets = " + str(powerPellets)
-        # logging.info("powerPellets = " + str(powerPellets))
+        logging.debug("powerPellets = " + str(powerPellets))
         while openList:
             curX, curY, dist = openList.pop(0)
             if not (curX, curY) in closedList:
@@ -258,16 +257,16 @@ class RuleGenerator():
                     searchResult['nearestFoodDist'] = dist
                     searchResult['nearestFoodPos'] = (curX, curY)
                 if (curX, curY) in nonEatableGhosts:
-                    # print "###################################### nonEatableGhosts= " + str(nonEatableGhosts)
-                    # print "###################################### state.getGhostStates = " + str(not state.getGhostStates()[0].isScared())
+                    logging.debug("###################################### nonEatableGhosts= " + str(nonEatableGhosts))
+                    logging.debug("###################################### state.getGhostStates = " + str(not state.getGhostStates()[0].isScared()))
                     if not searchResult.has_key('nearestGhostDistances'):
                         searchResult['nearestGhostDistances'] = dist
                 if (searchResult['nearestPowerPelletDist'] is None) and (curX, curY) in powerPellets and not (curX, curY) in nonEatableGhosts:
                     searchResult['nearestPowerPelletDist'] = dist
                     searchResult['nearestPowerPelletPos'] = (curX, curY)
                 # if (curX, curY) in eatableGhosts:
-                #     # print "###################################### eatableGhosts= " + str(eatableGhosts)
-                #     # print "###################################### state.getGhostStates = " + str(state.getGhostStates()[0].isScared())
+                #      logging.debug("###################################### eatableGhosts= " + str(eatableGhosts))
+                #      logging.debug("###################################### state.getGhostStates = " + str(state.getGhostStates()[0].isScared()))
                 #     if not searchResult.has_key('nearestEatableGhostDistances'):
                 #         searchResult['nearestEatableGhostDistances'] = dist
                 for (sucX, sucY) in self.getMovableDirections(curX, curY,walls):
@@ -282,7 +281,7 @@ class RuleGenerator():
         for ghostState in ghostStates:
             if ghostState.isScared():
                 eatableGhosts.append(ghostState.getPosition())
-        # print "############################################# eatableGhosts = " + str(eatableGhosts)
+        logging.debug("############################################# eatableGhosts = " + str(eatableGhosts))
         return eatableGhosts
 
     def getNonEatableGhosts(self, state):
@@ -291,34 +290,34 @@ class RuleGenerator():
         for ghostState in ghostStates:
             if not ghostState.isScared():
                 nonEatableGhosts.append(ghostState.getPosition())
-        # print "############################################# nonEatableGhosts = " + str(nonEatableGhosts)
+        logging.debug("############################################# nonEatableGhosts = " + str(nonEatableGhosts))
         return nonEatableGhosts
 
     # TODO: insert features here
     def getfeatures(self, state, direction):
         features = myDict(0.0)
         #features['base'] = 1.0
-        #print "str " + str(state)
-        #print "dir " + str(direction)
+        logging.debug("str " + str(state))
+        logging.debug("dir " + str(direction))
         stateSearch = self.getStateSearch(state, direction)
         maxDistance = stateSearch['maxDistance'] #state.getWalls().width + state.getWalls().height#
-        print "MaxDistance " + str(direction) + " " + str(maxDistance)
+        logging.info("MaxDistance " + str(direction) + " " + str(maxDistance))
         if stateSearch['nearestFoodDist'] is not None:
-            #print "FoodDist " +  str(stateSearch['nearestFoodDist'])
+            logging.debug("FoodDist " +  str(stateSearch['nearestFoodDist']))
             features['foodValuability'] = (float(stateSearch['nearestFoodDist'])) #/ maxDistance
         if stateSearch['nearestGhostDistances'] is not None:
             features['ghostThreat'] = (float(stateSearch['nearestGhostDistances'])) #/ maxDistance
         else:
             features['ghostThreat'] = maxDistance
         if stateSearch['nearestPowerPelletDist'] is not None:
-            # print "PowerPelletDist " +  str(stateSearch['nearestPowerPelletDist'])
+            logging.debug("PowerPelletDist " +  str(stateSearch['nearestPowerPelletDist']))
             features['powerPelletValuability'] = (float(stateSearch['nearestPowerPelletDist'])) #/ maxDistance
         # if stateSearch['nearestEatableGhostDistances'] is not None:
         #     features['eatableGhosts'] = (float(stateSearch['nearestEatableGhostDistances'])) #/ maxDistance
         #features['maxDistance'] = maxDistance
         features.normalize()
 
-        #print str(features)
+        logging.debug(str(features))
         return features
 
 class ReinforcementRAgent(game.Agent):
@@ -343,46 +342,46 @@ class ReinforcementRAgent(game.Agent):
     def getCombinedValue(self,state, direction):
         combinedValue = 0.0
         features = self.ruleGenerator.getfeatures(state, direction)
-        print "Features " + str(direction) + " " + str(features)
+        logging.info("Features " + str(direction) + " " + str(features))
         for featureKey in features.keys():
             combinedValue += features[featureKey] * self.actionPower[featureKey]
         return combinedValue
 
     def updater(self,nextState):
-        print "Start Updating"
+        logging.info("Start Updating")
         reward = self.calcReward(nextState)
         features = self.ruleGenerator.getfeatures(self.lastState, self.lastAction)
         combinatedValue = self.getCombinedValue(self.lastState, self.lastAction)
         maxPossibleFutureValue = self.getBestValue(nextState, self.legaldirections(nextState))
         for ruleKey in features.keys():
             difference = reward + self.gamma * maxPossibleFutureValue - combinatedValue
-            print "Difference: " + str(difference)
+            logging.info("Difference: " + str(difference))
             self.actionPower[ruleKey] = self.actionPower[ruleKey] + self.alpha * difference * features[ruleKey]
             #zur demo orginal QLearning
             #different = (reward + self.gamma * maxPossibleFutureValue - currentValue)
             #calcVal =  currentValue + self.alpha * different
-        print "ActionPower: " + str(self.actionPower)
+        logging.info("ActionPower: " + str(self.actionPower))
         #self.saving.setRatingForState(self.lastAction, self.lastState, calcVal)
-        print "Stop Updating"
+        logging.info("Stop Updating")
 
     def calcReward(self, state):
         return state.getScore() - self.lastState.getScore()
 
     def getAction(self, state):
-        print "Start GetAction"
+        logging.info("Start GetAction")
         self.lastAction = self.chooseAction(state)
-        print "Action Power: " + str(self.actionPower)
+        logging.info("Action Power: " + str(self.actionPower))
         if self.isInTesting():
 #            raw_input("Press Any Key ")
             pass
-        print "Chosen Acction: " + str(self.lastAction)
-        print "Stop GetAction"
-        #print str(self.lastAction)
+        logging.info("Chosen Acction: " + str(self.lastAction))
+        logging.info("Stop GetAction")
+        logging.debug(str(self.lastAction))
         return self.lastAction
 
     def chooseAction(self, state):
         directions = self.legaldirections(state)
-        #print str(directions)
+        logging.debug(str(directions))
         rnd = self.random.random()
         if self.epsilon > rnd:
             return self.random.choice(directions)
@@ -400,11 +399,11 @@ class ReinforcementRAgent(game.Agent):
     def getBestDirection(self, state, directions):
         bestVal = float('-inf')
         bestDirection = None
-        print "Possible Directions" + str(directions)
+        logging.info("Possible Directions" + str(directions))
         for direction in directions:
             tmpValue = self.getCombinedValue(state, direction)
-            print "Combinated Value " + str(direction) + " " + str(tmpValue)
-            #print str(tmpValue)
+            logging.info("Combinated Value " + str(direction) + " " + str(tmpValue))
+            logging.debug(str(tmpValue))
             if bestVal < tmpValue:
                 bestVal = tmpValue
                 bestDirection = direction
@@ -436,7 +435,7 @@ class ReinforcementRAgent(game.Agent):
         #raw_input("Press Any Key ")
         if self.isInTraining():
             self.episodesSoFar += 1
-            print "Training " + str(self.episodesSoFar) + " of " + str (self.numTraining)
+            logging.info("Training " + str(self.episodesSoFar) + " of " + str (self.numTraining))
         else:
             self.epsilon = 0.0
             self.alpha = 0.0
