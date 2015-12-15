@@ -43,20 +43,35 @@ Derzeit sind folgende Konfigurationen mit Launcher vorhanden:
   * **Ausgabe als Text**: Schaltet die GUI ab und stellt das Spielfeld in jedem Zug auf der Konsole dar.
   * **Minimale Ausgabe**: Schaltet die GUI ab und stellt ausschließlich am Ende jeder Spiels die Punktezahl und ob das Spiel gewonnen wurde dar.
   * **Debug-Modus**: Aktiviert Debug-Ausgaben und sorgt dafür, dass der nächste Zug nur durch Tastendruck ausgeführt wird.
+  * **Debug-Modus-CHeckbox**: Aktiviert die debug logs auf der Konsole, als default ist im Logger der INFO modus eingestellt.
+  
+##### Logging Funktion benutzen im Code
+* Der Logger hat folgene Modi:
+  * **CRITICAL**	
+  * **ERROR**
+  * **WARNING**	
+  * **INFO**	
+  * **DEBUG**
+  * **NOTSET**
 
-Derzeit sind folgende Konfigurationen mit Launcher vorhanden:
-* Spieleinstellungen:
-  * Anzahl der Trainings: Gibt die Anzahl der (ungewerteten) Trainingsspiele für den lernenden Agenten an (ZUR ZEIT NICHT VERFÜGBAR)
-  * Anzahl der Spiele: Gibt die Anzahl der (gewerteten) Spiele an.
-  * Anzahl der Geister: Gibt die Anzahl der Geister an. Die maximale Anzahl der Geister ist abhängig von Spielfeld, darf allerdings in jedem Fall nicht größer als 5 sein.
-  * Spielfeld: Gibt an, auf welchem Spielfeld die Spiele durchgeführt werden sollen.
-  * Pacman-Agent: Gibt an, welcher Agent für Pacman genutzt werden soll.
-  * Feste Random-Seed: Wenn aktiviert, verhalten sich die Geister im Spiel immer aus gleiche Art und Weise. Kann genutzt werden, um Agenten besser vergleichen zu können.
-* Anzeigeeinstellungen:
-  * Zoomfaktor: Gibt an, wie groß das Spielfeld dargestellt werden soll. Ein Wert größer als 1 sorgt dafür, dass das Spielfeld größer als standartmäßig darstellt wird. Ein Wert kleiner als 1 sorgt dafür, dass das Spielfeld kleiner als standartmäßig darstellt wird.
-  * Ausgabe als Text: Schaltet die GUI ab und stellt das Spielfeld in jedem Zug auf der Konsole dar.
-  * Minimale Ausgabe: Schaltet die GUI ab und stellt ausschließlich am Ende jeder Spiels die Punktezahl und ob das Spiel gewonnen wurde dar.
-  * Debug-Modus: Aktiviert Debug-Ausgaben und sorgt dafür, dass der nächste Zug nur durch Tastendruck ausgeführt wird.
+dabei gilt, dass der Modus den man wählt alle oberen Modi beeinhaltet (die Logs aus den oberen Modi werden ebenfalls ausgegeben). 
+Z.B. wählt man INFO so werden auch WARNING, ERROR, und CRITICAL ausgegeben.
+
+  Ein Log wird wie folgt geschrieben:
+
+  **Beispiel**
+
+  ``` python
+    logging.debug("Any String")
+  ```
+
+  bzw.
+
+  ``` python
+    logging.info("Any String")
+  ```
+
+  wobei **.debug** und **.info** die Modi sind
 
 ##### Änderungen an Konfigurationswerten
 Sollten Änderungen an den Konfigurationswerten im Launcher durchgeführt werden (z.B. Hinzufügen weiterer Einstellungen oder Löschen bestehender Einstellungen), sind folgende Stellen im Programmcode anzupassen:
