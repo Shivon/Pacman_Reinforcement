@@ -4,6 +4,7 @@ import random
 from ReinforcementState import ReinforcementDirection, ReinforcementState
 from ReinforcementSave import *
 from bfsSearch import ReinforcementSearch
+import logging
 
 class AbstractQState():
     def __init__(self, state, direction):
@@ -123,7 +124,7 @@ class ReinforcementQAgent(game.Agent):
         self.lastAction = None
         if self.isInTraining():
             self.episodesSoFar += 1
-            print "Training " + str(self.episodesSoFar) + " of " + str (self.numTraining)
+            logging.info("Training " + str(self.episodesSoFar) + " of " + str(self.numTraining))
         else:
             self.epsilon = 0.0
             self.alpha = 0.0
@@ -138,7 +139,7 @@ class ReinforcementQAgent(game.Agent):
 class ReinforcementSAgent(ReinforcementQAgent):
     def __init__(self, numTraining = 0):
         ReinforcementQAgent.__init__(self, numTraining)
-        self.chosenAction = None;
+        self.chosenAction = None
 
     def getAction(self, state):
         if not self.chosenAction:
@@ -151,7 +152,7 @@ class ReinforcementSAgent(ReinforcementQAgent):
         currentValue = self.saving.getRatingForNextState(self.lastAction, self.lastState)
         if state.isLose() or state.isWin():
             #print "end" + str(self.epsilon)
-            maxPossibleFutureValue = 0;
+            maxPossibleFutureValue = 0
         else:
             self.chosenAction = self.chooseAction(state)
             maxPossibleFutureValue = self.saving.getRatingForNextState(self.chosenAction, state)
@@ -245,7 +246,8 @@ class RuleGenerator():
         maxDistance = -1
         searchResult['nearestFoodDist'] = None
         searchResult['nearestPowerPelletDist'] = None
-        print "powerPellets = " + str(powerPellets)
+        #print "powerPellets = " + str(powerPellets)
+        # logging.info("powerPellets = " + str(powerPellets))
         while openList:
             curX, curY, dist = openList.pop(0)
             if not (curX, curY) in closedList:
@@ -443,3 +445,4 @@ class ReinforcementRAgent(game.Agent):
 
     def isInTesting(self):
         return not self.isInTraining()
+

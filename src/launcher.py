@@ -177,6 +177,10 @@ class LauncherView(Tkinter.Tk):
         self.createLabel("Minimale Ausgabe", self.nextRow)
         self.quietTextGraphicsVar = self.createCheckBox(self.nextRow)
         self.finishRow()
+
+        self.createLabel("DEBUG modus", self.nextRow)
+        self.displayDebugVar = self.createCheckBox(self.nextRow)
+        self.finishRow()
         
         # Button to apply default settings
         defaultSettingsButton = Tkinter.Button(self,

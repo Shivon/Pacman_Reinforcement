@@ -48,6 +48,7 @@ from util import manhattanDistance
 from pacmanGlobals import PacmanGlobals
 import util, layout
 import sys, types, time, random, os
+import logging
 
 ###################################################
 # YOUR INTERFACE TO THE PACMAN WORLD: A GameState #
@@ -672,6 +673,17 @@ def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0
 
 def startByLauncher(arguments):
     args = readCommand(arguments) # Get game components based on input
+    # decides if debug output is displayed or not
+    debug = PacmanGlobals.debugModeBool
+    if debug:
+        debug_log = logging.DEBUG
+    else:
+        debug_log = logging.INFO
+    logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%d.%m.%Y %H:%M:%S --', level=debug_log)
+    """ if you want to log to file and append message to messages from successive runs """
+    #logging.basicConfig(filename='logfile.log',level=logging.DEBUG)
+    """ if you want to log to file and open a new file every time """
+    #logging.basicConfig(filename='logfile.log', filemode='w', level=logging.DEBUG)
     return runGames( **args )
 
 if __name__ == '__main__':
@@ -691,3 +703,5 @@ if __name__ == '__main__':
     # import cProfile
     # cProfile.run("runGames( **args )")
     pass
+
+    logging.basicConfig(level=logging.DEBUG)

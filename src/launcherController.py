@@ -49,6 +49,9 @@ class LauncherController:
         numGhostsValue = DatatypeUtils.stringToInteger(self.view.numGhostsVar.get())
         PacmanGlobals.numGhostAgents = numGhostsValue
 
+        debugModeSet = DatatypeUtils.stringToBoolean((self.view.displayDebugVar.get()))
+        PacmanGlobals.debugModeBool = debugModeSet
+
         self.saveSettingsToConfigFile()
 
         self.view.destroy()
@@ -166,6 +169,7 @@ class LauncherController:
         self.view.frameTimeVar.set("0.1")
         self.view.textGraphicsVar.set("False")
         self.view.quietTextGraphicsVar.set("False")
+        self.view.displayDebugVar.set("False")
 
         self.validateData('Fehlerhafte Einstellungen!', 'Einige Standard-Einstellungswerte sind ungueltig: ')
 
@@ -185,6 +189,7 @@ class LauncherController:
             self.view.frameTimeVar.set(Config.get('DisplaySettings', 'frameTime'))
             self.view.textGraphicsVar.set(Config.get('DisplaySettings', 'textGraphics'))
             self.view.quietTextGraphicsVar.set(Config.get('DisplaySettings', 'quietTextGraphics'))
+            self.view.displayDebugVar.set(Config.get('DisplaySettings', 'displayDebugMode'))
 
             self.validateData('Fehlerhafte Einstellungen!', 'Einige Einstellungswerte sind ungueltig: ')
         except Exception, e:
@@ -216,6 +221,7 @@ class LauncherController:
         Config.set('DisplaySettings', 'frameTime', self.view.frameTimeVar.get())
         Config.set('DisplaySettings', 'textGraphics', self.view.textGraphicsVar.get())
         Config.set('DisplaySettings', 'quietTextGraphics', self.view.quietTextGraphicsVar.get())
+        Config.set('DisplaySettings', 'displayDebugMode', self.view.displayDebugVar.get())
         Config.write(cfgfile)
 
         cfgfile.close()
