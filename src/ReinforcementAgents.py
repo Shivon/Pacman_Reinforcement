@@ -234,7 +234,7 @@ class RuleGenerator():
 
         return lst
         
-    def abstractBroadSearch(self,state, startingPosition, stopCondition):
+    def abstractBroadSearch(self,field, startingPosition, stopCondition):
         startX, startY = startingPosition
         openList = [(startX, startY, 0)]
         closedList = set()
@@ -243,23 +243,49 @@ class RuleGenerator():
             if not (curX, curY) in closedList:
                 closedList.add((curX, curY))
                 if stopCondition(curX, curY):
-                    return dist
-                for (sucX, sucY) in self.getMovableDirections(curX, curY,state.getWalls()):
+                    return [dist,(curX, curY)]
+                for (sucX, sucY) in self.getMovableDirections(curX, curY,field):
                     openList.append((sucX, sucY, dist + 1))
-        return None
+        return [None,None]
         
     def getNearestFoodPosition(self,state, pacmanSpositionAfterMoving):
         food = state.getFood()
         nonEatableGhosts = self.getNonEatableGhosts(state)
         def stopCondition(curX,curY):
             return food[curX][curY] and not (curX, curY) in nonEatableGhosts        
-        return self.abstractBroadSearch(state, pacmanSpositionAfterMoving, stopCondition)
+        return self.abstractBroadSearch(state.getWalls(), pacmanSpositionAfterMoving, stopCondition)[0]
     
     def getNextNonEatableGhost(self,state,pacmanSpositionAfterMoving):
         nonEatableGhosts = self.getNonEatableGhosts(state)
         def stopCondition(curX,curY):
             return (curX, curY) in nonEatableGhosts        
-        return self.abstractBroadSearch(state, pacmanSpositionAfterMoving, stopCondition)        
+        return self.abstractBroadSearch(state.getWalls(), pacmanSpositionAfterMoving, stopCondition)[0]    
+        
+    def getNextEatableGhost(self, state, pacmanSpositionAfterMoving):
+        powerPellets = state.getCapsules()
+        nonEatableGhosts = self.getNonEatableGhosts(state)
+        eatableGhosts = self.getEatableGhosts(state)
+        field = state.getWalls()
+        for ghost in nonEatableGhosts:
+            #print ghost
+            x,y = ghost
+            field[int(x)][int(y)]=False
+        if len(eatableGhosts) != 0:
+            def stopConditionEatableGhost(curX,curY):
+                return (curX, curY) in eatableGhosts
+            return self.abstractBroadSearch(field, pacmanSpositionAfterMoving, stopConditionEatableGhost)[0]
+        elif len(powerPellets) != 0:
+            def stopConditionPallet(curX,curY):
+                if (curX, curY) in powerPellets and not (curX, curY) in nonEatableGhosts:
+                    return True
+                else:
+                    return False
+            pallet = self.abstractBroadSearch(field, pacmanSpositionAfterMoving, stopConditionPallet)
+            dist = pallet[0]
+            pos = pallet[1] 
+            if pos:
+                return self.getNextNonEatableGhost(state,pos) + dist
+        return None        
         
     def getStateSearch(self, state, direction):
         vecX, vecY = self.directionToCoordinate(direction)
@@ -297,6 +323,7 @@ class RuleGenerator():
                 #for (sucX, sucY) in self.getMovableDirections(curX, curY,walls):
                 #    openList.append((sucX, sucY, dist + 1))
                 #maxDistance = max(maxDistance, dist)
+        searchResult['nearestPowerPelletDist'] = self.getNextEatableGhost(state, pacmanSpositionAfterMoving)       
         searchResult['nearestGhostDistances'] = self.getNextNonEatableGhost(state, pacmanSpositionAfterMoving)
         searchResult['nearestFoodDist'] = self.getNearestFoodPosition(state,pacmanSpositionAfterMoving)
         #searchResult['maxDistance'] = maxDistance
@@ -335,15 +362,17 @@ class RuleGenerator():
         if stateSearch['nearestGhostDistances'] is not None:
             features['ghostThreat'] = (float(stateSearch['nearestGhostDistances'])) #/ maxDistance
         else:
-            features['ghostThreat'] = maxDistance
-        if stateSearch['nearestPowerPelletDist'] is not None:
-            logging.debug("PowerPelletDist " +  str(stateSearch['nearestPowerPelletDist']))
-            features['powerPelletValuability'] = (float(stateSearch['nearestPowerPelletDist'])) #/ maxDistance
+            features['ghostThreat'] = float(maxDistance)
+#        if stateSearch['nearestPowerPelletDist'] is not None:
+#            logging.debug("PowerPelletDist " +  str(stateSearch['nearestPowerPelletDist']))
+#            features['powerPelletValuability'] = (float(stateSearch['nearestPowerPelletDist'])) #/ maxDistance
+#        else: 
+#            features['powerPelletValuability'] = 0.0    
         # if stateSearch['nearestEatableGhostDistances'] is not None:
         #     features['eatableGhosts'] = (float(stateSearch['nearestEatableGhostDistances'])) #/ maxDistance
         #features['maxDistance'] = maxDistance
         features.normalize()
-
+        #features.divideAll(maxDistance)
         logging.debug(str(features))
         return features
 
