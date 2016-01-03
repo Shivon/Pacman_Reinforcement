@@ -44,17 +44,17 @@ Derzeit sind folgende Konfigurationen mit Launcher vorhanden:
   * **Minimale Ausgabe**: Schaltet die GUI ab und stellt ausschließlich am Ende jeder Spiels die Punktezahl und ob das Spiel gewonnen wurde dar.
   * **Debug-Modus**: Aktiviert Debug-Ausgaben und sorgt dafür, dass der nächste Zug nur durch Tastendruck ausgeführt wird.
   * **Debug-Modus-CHeckbox**: Aktiviert die debug logs auf der Konsole, als default ist im Logger der INFO modus eingestellt.
-  
+
 ##### Logging Funktion benutzen im Code
 * Der Logger hat folgene Modi:
-  * **CRITICAL**	
+  * **CRITICAL**
   * **ERROR**
-  * **WARNING**	
-  * **INFO**	
+  * **WARNING**
+  * **INFO**
   * **DEBUG**
   * **NOTSET**
 
-dabei gilt, dass der Modus den man wählt alle oberen Modi beeinhaltet (die Logs aus den oberen Modi werden ebenfalls ausgegeben). 
+dabei gilt, dass der Modus den man wählt alle oberen Modi beeinhaltet (die Logs aus den oberen Modi werden ebenfalls ausgegeben).
 Z.B. wählt man INFO so werden auch WARNING, ERROR, und CRITICAL ausgegeben.
 
   Ein Log wird wie folgt geschrieben:
@@ -228,6 +228,17 @@ Zur Bestimmung aller benachbarten Positionen einer gegebenen Position `position`
 Der schnellste Weg von Pacman zu einer Position `targetPosition` kann durch die Methode `getPath(self, targetPosition)` bestimmt werden (jedoch erst nach Ausführung der Methode `executeBFS(self)`). Geliefert wird eine Liste von 1-dimensionalen Punkten, die den Weg darstellen. Dabei ist das erste Element die Position `targetPosition` und das letzte Element die Position von Pacman selbst. Der nächste Schritt für Pacman zum Ziel ist damit das vorletzte Element, welches durch den Index `-2` bestimmt werden kann.
 * `generateResult(self)`:  
 Generierung eines Objekt der Klasse `ReinforcementState` mit dem Ergebnis der Suche.
+
+### Rewards/Belohnung
+
+|  Type            | Rewards |
+| :--------------- | -------:|
+| Step/Schritt     |    -5   |
+| Kleine Punkte    |   +20   |  
+| Power Pellet     |   +20   |   
+| Win              |  +300   |  
+| Lose             |  -300   |   
+
 
 ### Open tasks and bugs
 

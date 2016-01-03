@@ -444,7 +444,6 @@ class ReinforcementRAgent(game.Agent):
         logging.debug("Stop Updating")
 
     def calcReward(self, state):
-        # return state.getScore() - self.lastState.getScore()
         # pos reward for eatable points
         # pos reward for eat ghost if eatable
         # pos reward win game
