@@ -91,7 +91,30 @@ class ReinforcementQAgent(game.Agent):
             return self.saving.getBestDirection(self.lastState, directions)
 
     def calcReward(self, state):
-        return state.getScore() - self.lastState.getScore()
+        # pos reward for eatable points
+        # pos reward for eat ghost if eatable
+        # pos reward win game
+        # neg reward loss game
+        reward = -5
+        rewardSmallPoints = (len(self.lastState.getFood().asList()) - len(state.getFood().asList())) * 20
+        rewardEatablePoint = (len(self.lastState.getCapsules()) - len(state.getCapsules())) * 20
+        logging.debug("rewardSmallPoints " + str(rewardSmallPoints))
+        logging.debug("rewardEatablePoint " + str(rewardEatablePoint))
+        rewardEatGhost = 0
+        rewardLose = 0
+        rewardWin = 0
+        PacmanPos = state.getPacmanPosition()
+        for ghostPos in state.getGhostPositions():
+            if (not state.isLose()) and ((int(ghostPos[0]) == PacmanPos[0]) and (int(ghostPos[1]) == PacmanPos[1])):
+                rewardEatGhost = 100
+
+        if state.isLose():
+            rewardLose = -300
+        elif state.isWin():
+            rewardWin = 300
+        reward += rewardSmallPoints + rewardEatablePoint + rewardEatGhost + rewardWin + rewardLose
+        logging.debug("rewards " + str(reward))
+        return reward
 
     def legaldirections(self, state):
         directions = state.getLegalPacmanActions()
@@ -111,7 +134,7 @@ class ReinforcementQAgent(game.Agent):
         reward = self.calcReward(state)
         currentValue = self.saving.getRatingForNextState(self.lastAction, self.lastState)
         maxPossibleFutureValue = self.saving.getBestValue(state, self.legaldirections(state))
-        calcVal =  currentValue + self.alpha * (reward + self.gamma * maxPossibleFutureValue - currentValue)
+        calcVal = currentValue + self.alpha * (reward + self.gamma * maxPossibleFutureValue - currentValue)
         self.saving.setRatingForState(self.lastAction, self.lastState, calcVal)
 
     def observationFunction(self, state):
@@ -355,7 +378,7 @@ class RuleGenerator():
         logging.debug("dir " + str(direction))
         stateSearch = self.getStateSearch(state, direction)
         maxDistance = state.getWalls().width + state.getWalls().height #stateSearch['maxDistance'] #
-        logging.info("MaxDistance " + str(direction) + " " + str(maxDistance))
+        logging.debug("MaxDistance " + str(direction) + " " + str(maxDistance))
         if stateSearch['nearestFoodDist'] is not None:
             logging.debug("FoodDist " +  str(stateSearch['nearestFoodDist']))
             features['foodValuability'] = (float(stateSearch['nearestFoodDist'])) #/ maxDistance
@@ -398,46 +421,70 @@ class ReinforcementRAgent(game.Agent):
     def getCombinedValue(self,state, direction):
         combinedValue = 0.0
         features = self.ruleGenerator.getfeatures(state, direction)
-        logging.info("Features " + str(direction) + " " + str(features))
+        logging.debug("Features " + str(direction) + " " + str(features))
         for featureKey in features.keys():
             combinedValue += features[featureKey] * self.actionPower[featureKey]
         return combinedValue
 
     def updater(self,nextState):
-        logging.info("Start Updating")
+        logging.debug("Start Updating")
         reward = self.calcReward(nextState)
         features = self.ruleGenerator.getfeatures(self.lastState, self.lastAction)
         combinatedValue = self.getCombinedValue(self.lastState, self.lastAction)
         maxPossibleFutureValue = self.getBestValue(nextState, self.legaldirections(nextState))
         for ruleKey in features.keys():
             difference = reward + self.gamma * maxPossibleFutureValue - combinatedValue
-            logging.info("Difference: " + str(difference))
+            logging.debug("Difference: " + str(difference))
             self.actionPower[ruleKey] = self.actionPower[ruleKey] + self.alpha * difference * features[ruleKey]
             #zur demo orginal QLearning
             #different = (reward + self.gamma * maxPossibleFutureValue - currentValue)
             #calcVal =  currentValue + self.alpha * different
-        logging.info("ActionPower: " + str(self.actionPower))
+        logging.debug("ActionPower: " + str(self.actionPower))
         #self.saving.setRatingForState(self.lastAction, self.lastState, calcVal)
-        logging.info("Stop Updating")
+        logging.debug("Stop Updating")
 
     def calcReward(self, state):
-        return state.getScore() - self.lastState.getScore()
+        # return state.getScore() - self.lastState.getScore()
+        # pos reward for eatable points
+        # pos reward for eat ghost if eatable
+        # pos reward win game
+        # neg reward loss game
+        reward = -5
+        rewardSmallPoints = (len(self.lastState.getFood().asList()) - len(state.getFood().asList())) * 20
+        rewardEatablePoint = (len(self.lastState.getCapsules()) - len(state.getCapsules())) * 20
+        logging.debug("rewardSmallPoints " + str(rewardSmallPoints))
+        logging.debug("rewardEatablePoint " + str(rewardEatablePoint))
+        rewardEatGhost = 0
+        rewardLose = 0
+        rewardWin = 0
+        PacmanPos = state.getPacmanPosition()
+        for ghostPos in state.getGhostPositions():
+            if (not state.isLose()) and ((int(ghostPos[0]) == PacmanPos[0]) and (int(ghostPos[1]) == PacmanPos[1])):
+                rewardEatGhost = 100
+
+        if state.isLose():
+            rewardLose = -300
+        elif state.isWin():
+            rewardWin = 300
+        reward += rewardSmallPoints + rewardEatablePoint + rewardEatGhost + rewardWin + rewardLose
+        logging.debug("-------- rewards " + str(reward))
+        return reward
 
     def getAction(self, state):
-        logging.info("Start GetAction")
+        logging.debug("Start GetAction")
         self.lastAction = self.chooseAction(state)
-        logging.info("Action Power: " + str(self.actionPower))
+        logging.debug("Action Power: " + str(self.actionPower))
         if self.isInTesting():
 #            raw_input("Press Any Key ")
             pass
-        logging.info("Chosen Acction: " + str(self.lastAction))
-        logging.info("Stop GetAction")
+        logging.debug("Chosen Acction: " + str(self.lastAction))
+        logging.debug("Stop GetAction")
         logging.debug(str(self.lastAction))
         return self.lastAction
 
     def chooseAction(self, state):
         directions = self.legaldirections(state)
-        logging.debug(str(directions))
+        logging.debug("directions " + str(directions))
         rnd = self.random.random()
         if self.epsilon > rnd:
             return self.random.choice(directions)
@@ -455,11 +502,11 @@ class ReinforcementRAgent(game.Agent):
     def getBestDirection(self, state, directions):
         bestVal = float('-inf')
         bestDirection = None
-        logging.info("Possible Directions" + str(directions))
+        logging.debug("Possible Directions" + str(directions))
         for direction in directions:
             tmpValue = self.getCombinedValue(state, direction)
-            logging.info("Combinated Value " + str(direction) + " " + str(tmpValue))
-            logging.debug(str(tmpValue))
+            logging.debug("Combinated Value " + str(direction) + " " + str(tmpValue))
+            logging.debug("getCombinedValue tmpValue " + str(tmpValue))
             if bestVal < tmpValue:
                 bestVal = tmpValue
                 bestDirection = direction
