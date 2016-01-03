@@ -14,18 +14,19 @@ class AbstractQState():
         self.ghostThreat = features['nearestGhostDistances']
         self.foodDistance = features['nearestFoodDist']
         self.powerPelletDist = features['nearestPowerPelletDist']
+        self.safeJunction = features['nearestSafeJunction']
         # self.eatableGhosts = features['nearestEatableGhostDistances']
         #self.direction = direction
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
             # return self.ghostThreat == other.ghostThreat and self.foodDistance == other.foodDistance and self.powerPelletDist == other.powerPelletDist and self.eatableGhosts == other.eatableGhosts
-            return self.ghostThreat == other.ghostThreat and self.foodDistance == other.foodDistance and self.powerPelletDist == other.powerPelletDist
+            return self.ghostThreat == other.ghostThreat and self.foodDistance == other.foodDistance and self.powerPelletDist == other.powerPelletDist and self.safeJunction == other.safeJunction
         else:
             return False
     def __hash__(self):
         # return hash(hash(self.ghostThreat) + hash(self.foodDistance) + hash(self.powerPelletDist) + hash(self.eatableGhosts))
-        return hash(hash(self.ghostThreat) + hash(self.foodDistance) + hash(self.powerPelletDist))
+        return hash(hash(self.ghostThreat) + hash(self.foodDistance) + hash(self.powerPelletDist)) + hash(self.safeJunction)
 
 class Saving():
     def __init__(self, evalFn="scoreEvaluation"):
@@ -233,13 +234,14 @@ class RuleGenerator():
             pass
 
         return lst
-        
+
     def abstractBroadSearch(self,field, startingPosition, stopCondition):
         startX, startY = startingPosition
         openList = [(startX, startY, 0)]
         closedList = set()
         while openList:
             curX, curY, dist = openList.pop(0)
+            # print "in abstractBroadSearch at curx, " + str(curX) + ", cury: " + str(curY) + ", getMovableDirections: " + str(self.getMovableDirections(curX, curY,field))
             if not (curX, curY) in closedList:
                 closedList.add((curX, curY))
                 if stopCondition(curX, curY):
@@ -247,20 +249,31 @@ class RuleGenerator():
                 for (sucX, sucY) in self.getMovableDirections(curX, curY,field):
                     openList.append((sucX, sucY, dist + 1))
         return [None,None]
-        
+
+    def getNextSafeJunction(self, state, pacmanSpositionAfterMoving):
+        # state.getLegalPacmanActions returns e.g. ['West', 'Stop', 'East', 'North', 'South']
+        # self.getMovableDirections(curX, curY,field) returns e.g [(0, 0), (15, 8), (14, 7), (16, 7)]
+        nonEatableGhosts = self.getNonEatableGhosts(state)
+        field = state.getWalls()
+        def stopCondition(curX, curY):
+            return self.isJunction(curX, curY, field) and not (curX, curY) in nonEatableGhosts
+            # return len(state.getLegalPacmanActions()) == 4 or len(state.getLegalPacmanActions()) == 5
+        return self.abstractBroadSearch(field, pacmanSpositionAfterMoving, stopCondition)[0]
+
     def getNearestFoodPosition(self,state, pacmanSpositionAfterMoving):
         food = state.getFood()
         nonEatableGhosts = self.getNonEatableGhosts(state)
         def stopCondition(curX,curY):
-            return food[curX][curY] and not (curX, curY) in nonEatableGhosts        
+            # returns true or false
+            return food[curX][curY] and not (curX, curY) in nonEatableGhosts
         return self.abstractBroadSearch(state.getWalls(), pacmanSpositionAfterMoving, stopCondition)[0]
-    
+
     def getNextNonEatableGhost(self,state,pacmanSpositionAfterMoving):
         nonEatableGhosts = self.getNonEatableGhosts(state)
         def stopCondition(curX,curY):
-            return (curX, curY) in nonEatableGhosts        
-        return self.abstractBroadSearch(state.getWalls(), pacmanSpositionAfterMoving, stopCondition)[0]    
-        
+            return (curX, curY) in nonEatableGhosts
+        return self.abstractBroadSearch(state.getWalls(), pacmanSpositionAfterMoving, stopCondition)[0]
+
     def getNextEatableGhost(self, state, pacmanSpositionAfterMoving):
         powerPellets = state.getCapsules()
         nonEatableGhosts = self.getNonEatableGhosts(state)
@@ -282,11 +295,11 @@ class RuleGenerator():
                     return False
             pallet = self.abstractBroadSearch(field, pacmanSpositionAfterMoving, stopConditionPallet)
             dist = pallet[0]
-            pos = pallet[1] 
+            pos = pallet[1]
             if pos:
                 return self.getNextNonEatableGhost(state,pos) + dist
-        return None        
-        
+        return None
+
     def getStateSearch(self, state, direction):
         vecX, vecY = self.directionToCoordinate(direction)
         posX, posY = state.getPacmanPosition()
@@ -323,11 +336,18 @@ class RuleGenerator():
                 #for (sucX, sucY) in self.getMovableDirections(curX, curY,walls):
                 #    openList.append((sucX, sucY, dist + 1))
                 #maxDistance = max(maxDistance, dist)
-        searchResult['nearestPowerPelletDist'] = self.getNextEatableGhost(state, pacmanSpositionAfterMoving)       
+
+        # !!!!!!!!!!!!!!!!!!!!! TODO: this doesn't make sense: nearestPowerPelletDist != nextEatableGhost !!!!!!!!!!!!!!!!!!!
+        searchResult['nearestPowerPelletDist'] = self.getNextEatableGhost(state, pacmanSpositionAfterMoving)
         searchResult['nearestGhostDistances'] = self.getNextNonEatableGhost(state, pacmanSpositionAfterMoving)
         searchResult['nearestFoodDist'] = self.getNearestFoodPosition(state,pacmanSpositionAfterMoving)
+        searchResult['nearestSafeJunction'] = self.getNextSafeJunction(state, pacmanSpositionAfterMoving)
         #searchResult['maxDistance'] = maxDistance
         return searchResult
+
+    # junction is defined by having 4 or 5 possible moves including 'stop'
+    def isJunction(self, curX, curY, field):
+        return len(self.getMovableDirections(curX, curY, field)) == 4 or len(self.getMovableDirections(curX, curY, field)) == 5
 
     def getEatableGhosts(self, state):
         eatableGhosts = []
@@ -350,15 +370,19 @@ class RuleGenerator():
     # TODO: insert features here
     def getfeatures(self, state, direction):
         features = myDict(0.0)
+        # print "LegalPacmanActions: " + str(state.getLegalPacmanActions())
         #features['base'] = 1.0
         logging.debug("str " + str(state))
         logging.debug("dir " + str(direction))
         stateSearch = self.getStateSearch(state, direction)
         maxDistance = state.getWalls().width + state.getWalls().height #stateSearch['maxDistance'] #
         logging.info("MaxDistance " + str(direction) + " " + str(maxDistance))
+
         if stateSearch['nearestFoodDist'] is not None:
             logging.debug("FoodDist " +  str(stateSearch['nearestFoodDist']))
             features['foodValuability'] = (float(stateSearch['nearestFoodDist'])) #/ maxDistance
+        # if stateSearch['nearestSafeJunction'] is not None:
+        #     features['safeJunction'] = (float(stateSearch['nearestSafeJunction'])) #/ maxDistance
         if stateSearch['nearestGhostDistances'] is not None:
             features['ghostThreat'] = (float(stateSearch['nearestGhostDistances'])) #/ maxDistance
         else:
@@ -366,12 +390,13 @@ class RuleGenerator():
 #        if stateSearch['nearestPowerPelletDist'] is not None:
 #            logging.debug("PowerPelletDist " +  str(stateSearch['nearestPowerPelletDist']))
 #            features['powerPelletValuability'] = (float(stateSearch['nearestPowerPelletDist'])) #/ maxDistance
-#        else: 
-#            features['powerPelletValuability'] = 0.0    
+#        else:
+#            features['powerPelletValuability'] = 0.0
         # if stateSearch['nearestEatableGhostDistances'] is not None:
         #     features['eatableGhosts'] = (float(stateSearch['nearestEatableGhostDistances'])) #/ maxDistance
         #features['maxDistance'] = maxDistance
         features.normalize()
+        # print "normalized features: " + str(features)
         #features.divideAll(maxDistance)
         logging.debug(str(features))
         return features
