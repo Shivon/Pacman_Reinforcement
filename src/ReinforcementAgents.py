@@ -381,8 +381,8 @@ class RuleGenerator():
         if stateSearch['nearestFoodDist'] is not None:
             logging.debug("FoodDist " +  str(stateSearch['nearestFoodDist']))
             features['foodValuability'] = (float(stateSearch['nearestFoodDist'])) #/ maxDistance
-        # if stateSearch['nearestSafeJunction'] is not None:
-        #     features['safeJunction'] = (float(stateSearch['nearestSafeJunction'])) #/ maxDistance
+        if stateSearch['nearestSafeJunction'] is not None:
+            features['safeJunction'] = (float(stateSearch['nearestSafeJunction'])) #/ maxDistance
         if stateSearch['nearestGhostDistances'] is not None:
             features['ghostThreat'] = (float(stateSearch['nearestGhostDistances'])) #/ maxDistance
         else:
@@ -396,7 +396,7 @@ class RuleGenerator():
         #     features['eatableGhosts'] = (float(stateSearch['nearestEatableGhostDistances'])) #/ maxDistance
         #features['maxDistance'] = maxDistance
         features.normalize()
-        # print "normalized features: " + str(features)
+        print "normalized features: " + str(features)
         #features.divideAll(maxDistance)
         logging.debug(str(features))
         return features
