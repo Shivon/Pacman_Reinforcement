@@ -318,8 +318,8 @@ class RuleGenerator():
                     searchResult['nearestFoodDist'] = dist
 #                if searchResult['nearestGhostDistances'] is None and (curX, curY) in nonEatableGhosts:
 #                    searchResult['nearestGhostDistances'] = dist
-#                if searchResult['nearestEatableGhostDist'] is None and (curX, curY) in eatableGhosts and not (curX, curY) in nonEatableGhosts:
-#                    searchResult['nearestEatableGhostDist'] = dist
+                if searchResult['nearestEatableGhostDist'] is None and (curX, curY) in eatableGhosts and not (curX, curY) in nonEatableGhosts:
+                    searchResult['nearestEatableGhostDist'] = dist
                 if searchResult['nearestCapsul'] is None and (curX, curY) in capsules and not (curX, curY) in nonEatableGhosts:
                     searchResult['nearestCapsul'] = dist 
 #                if searchResult['nearestCapsul'] is None:
@@ -395,8 +395,8 @@ class RuleGenerator():
 #            features['powerPelletValuability'] = 0.0    
         # if stateSearch['nearestEatableGhostDistances'] is not None:
         #     features['eatableGhosts'] = (float(stateSearch['nearestEatableGhostDistances'])) #/ maxDistance
-        #features['BIAS'] = -1.0 
-        #features['BIAS'] = -1.0
+        features['BIAS'] = -1.0 
+        features['BIAS2'] = 1.0
         #features.divideAll(100)
         features.normalize()
         logging.debug(str(features))
