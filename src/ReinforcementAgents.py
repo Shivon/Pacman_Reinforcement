@@ -458,6 +458,8 @@ class ReinforcementRAgent(game.Agent):
         rewardWin = 0
         PacmanPos = state.getPacmanPosition()
         for ghostPos in state.getGhostPositions():
+            logging.info("ghostPos " + str(ghostPos))
+            logging.info("gostpositions " + str(self.lastState.getGhostPositions()))
             if (not state.isLose()) and ((int(ghostPos[0]) == PacmanPos[0]) and (int(ghostPos[1]) == PacmanPos[1])):
                 rewardEatGhost = 100
 
