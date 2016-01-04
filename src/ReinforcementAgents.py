@@ -424,8 +424,13 @@ class ReinforcementRAgent(game.Agent):
         combinedValue = 0.0
         features = self.ruleGenerator.getfeatures(state, direction)
         logging.info("Features " + str(direction) + " " + str(features))
+        weightedActionPower = []
         for featureKey in features.keys():
-            combinedValue += features[featureKey] * self.actionPower[featureKey]
+            currentFeature = features[featureKey] * self.actionPower[featureKey]
+            weightedActionPower.append(str(featureKey) + ": " + str(currentFeature))
+            combinedValue += currentFeature
+            # combinedValue += features[featureKey] * self.actionPower[featureKey]
+        print str(weightedActionPower)
         return combinedValue
 
     def updater(self,nextState):
