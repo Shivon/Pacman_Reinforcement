@@ -283,7 +283,7 @@ class RuleGenerator():
             def stopConditionEatableGhost(curX,curY):
                 return (curX, curY) in eatableGhosts
             dist = self.abstractBroadSearch(state.getWalls(), pacmanSpositionAfterMoving, stopConditionEatableGhost)[0]
-            print dist
+            logging.debug("dist " + str(dist))
             #print eatableGhosts
             return dist
         elif len(powerPellets) != 0:
@@ -377,7 +377,7 @@ class RuleGenerator():
         logging.debug("dir " + str(direction))
         stateSearch = self.getStateSearch(state, direction)
         maxDistance = state.getWalls().width + state.getWalls().height #stateSearch['maxDistance'] #
-        logging.info("MaxDistance " + str(direction) + " " + str(maxDistance))
+        logging.debug("MaxDistance " + str(direction) + " " + str(maxDistance))
 
         if stateSearch['nearestFoodDist'] is not None:
             logging.debug("FoodDist " +  str(stateSearch['nearestFoodDist']))
@@ -397,7 +397,7 @@ class RuleGenerator():
         #     features['eatableGhosts'] = (float(stateSearch['nearestEatableGhostDistances'])) #/ maxDistance
         #features['maxDistance'] = maxDistance
         features.normalize()
-        print "normalized features: " + str(features)
+        logging.debug("normalized features: " + str(features))
         #features.divideAll(maxDistance)
         logging.debug(str(features))
         return features
@@ -434,7 +434,7 @@ class ReinforcementRAgent(game.Agent):
     def getCombinedValue(self,state, direction):
         combinedValue = 0.0
         features = self.ruleGenerator.getfeatures(state, direction)
-        logging.info("Features " + str(direction) + " " + str(features))
+        logging.debug("Features " + str(direction) + " " + str(features))
         actionPower = self.getActionPower(features.keys())
         #if self.isInTesting() and len(features.keys()) == 1:
             #raw_input("Only One Feature ")
@@ -444,11 +444,11 @@ class ReinforcementRAgent(game.Agent):
             weightedActionPower.append(str(featureKey) + ": " + str(currentFeature))
             combinedValue += currentFeature
             # combinedValue += features[featureKey] * self.actionPower[featureKey]
-        print str(weightedActionPower)
+        logging.debug("weightedActionPower " + str(weightedActionPower))
         return combinedValue
 
     def updater(self,nextState):
-        logging.info("Start Updating")
+        logging.debug("Start Updating")
         reward = self.calcReward(nextState)
         features = self.ruleGenerator.getfeatures(self.lastState, self.lastAction)
         combinatedValue = self.getCombinedValue(self.lastState, self.lastAction)
@@ -456,27 +456,27 @@ class ReinforcementRAgent(game.Agent):
         actionPower = self.getActionPower(features.keys())
         for ruleKey in features.keys():
             difference = reward + self.gamma * maxPossibleFutureValue - combinatedValue
-            logging.info("Difference: " + str(difference))
+            logging.debug("Difference: " + str(difference))
             actionPower[ruleKey] = actionPower[ruleKey] + self.alpha * difference * features[ruleKey]
             #zur demo orginal QLearning
             #different = (reward + self.gamma * maxPossibleFutureValue - currentValue)
             #calcVal =  currentValue + self.alpha * different
-        logging.info("ActionPower: " + str(actionPower))
+        logging.debug("ActionPower: " + str(actionPower))
         #self.saving.setRatingForState(self.lastAction, self.lastState, calcVal)
-        logging.info("Stop Updating")
+        logging.debug("Stop Updating")
 
     def calcReward(self, state):
         return state.getScore() - self.lastState.getScore()
 
     def getAction(self, state):
-        logging.info("Start GetAction")
+        logging.debug("Start GetAction")
         self.lastAction = self.chooseAction(state)
-        logging.info("Action Power: " + str(self.actionPowerDict))
+        logging.debug("Action Power: " + str(self.actionPowerDict))
         if self.isInTesting():
 #            raw_input("Press Any Key ")
             pass
-        logging.info("Chosen Acction: " + str(self.lastAction))
-        logging.info("Stop GetAction")
+        logging.debug("Chosen Acction: " + str(self.lastAction))
+        logging.debug("Stop GetAction")
         logging.debug(str(self.lastAction))
         return self.lastAction
 
@@ -500,10 +500,10 @@ class ReinforcementRAgent(game.Agent):
     def getBestDirection(self, state, directions):
         bestVal = float('-inf')
         bestDirection = None
-        logging.info("Possible Directions" + str(directions))
+        logging.debug("Possible Directions" + str(directions))
         for direction in directions:
             tmpValue = self.getCombinedValue(state, direction)
-            logging.info("Combinated Value " + str(direction) + " " + str(tmpValue))
+            logging.debug("Combinated Value " + str(direction) + " " + str(tmpValue))
             logging.debug(str(tmpValue))
             if bestVal < tmpValue:
                 bestVal = tmpValue
