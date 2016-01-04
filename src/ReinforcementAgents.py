@@ -381,16 +381,16 @@ class RuleGenerator():
 
         if stateSearch['nearestFoodDist'] is not None:
             logging.debug("FoodDist " +  str(stateSearch['nearestFoodDist']))
-            features['foodValuability'] = (float(stateSearch['nearestFoodDist'])) #/ maxDistance
+            features['foodValuability'] = -(float(stateSearch['nearestFoodDist'])) #/ maxDistance
         if stateSearch['nearestSafeJunction'] is not None:
-            features['safeJunction'] = (float(stateSearch['nearestSafeJunction'])) #/ maxDistance
+            features['safeJunction'] = -(float(stateSearch['nearestSafeJunction'])) #/ maxDistance
         if stateSearch['nearestGhostDistances'] is not None:
-            features['ghostThreat'] = (float(stateSearch['nearestGhostDistances'])) #/ maxDistance
+            features['ghostThreat'] = -(float(stateSearch['nearestGhostDistances'])) #/ maxDistance
 #        else:
-#            features['ghostThreat'] = float(maxDistance)
+#            features['ghostThreat'] = -float(maxDistance)
         if stateSearch['nearestPowerPelletDist'] is not None:
             logging.debug("PowerPelletDist " +  str(stateSearch['nearestPowerPelletDist']))
-            features['powerPelletValuability'] = (float(stateSearch['nearestPowerPelletDist'])) #/ maxDistance
+            features['powerPelletValuability'] = -(float(stateSearch['nearestPowerPelletDist'])) #/ maxDistance
 #        else:
 #            features['powerPelletValuability'] = 0.0
         # if stateSearch['nearestEatableGhostDistances'] is not None:
@@ -466,7 +466,13 @@ class ReinforcementRAgent(game.Agent):
         logging.debug("Stop Updating")
 
     def calcReward(self, state):
-        return state.getScore() - self.lastState.getScore()
+        score = state.getScore() - self.lastState.getScore()
+        if (len(state.getCapsules()) != len(self.lastState.getCapsules())):
+            score += 15
+#        if state.isLose():
+#            score -=1000
+        return score
+        # return state.getScore() - self.lastState.getScore()
 
     def getAction(self, state):
         logging.debug("Start GetAction")
