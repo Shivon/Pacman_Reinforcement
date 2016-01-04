@@ -326,9 +326,16 @@ class RuleGenerator():
         searchResult['nearestPowerPelletDist'] = self.getNextEatableGhost(state, pacmanSpositionAfterMoving)       
         searchResult['nearestGhostDistances'] = self.getNextNonEatableGhost(state, pacmanSpositionAfterMoving)
         searchResult['nearestFoodDist'] = self.getNearestFoodPosition(state,pacmanSpositionAfterMoving)
-        #searchResult['maxDistance'] = maxDistance
+        #searchResult['maximumDistance'] = self.getMaximumDistance(state)
+        
         return searchResult
-
+    
+    maxDistance = None
+    def getMaximumDistance(self, state):
+        if (RuleGenerator.maxDistance == None):
+            RuleGenerator.maxDistance = (ReinforcementSearch(state)).getMaximumDistance()
+        return RuleGenerator.maxDistance
+        
     def getEatableGhosts(self, state):
         eatableGhosts = []
         ghostStates = state.getGhostStates()
