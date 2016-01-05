@@ -1,7 +1,5 @@
-from game import Directions
 import game
 import random
-from ReinforcementState import ReinforcementDirection, ReinforcementState
 from ReinforcementSave import *
 from bfsSearch import ReinforcementSearch
 import logging
@@ -136,35 +134,6 @@ class ReinforcementQAgent(game.Agent):
 
     def isInTesting(self):
         return not self.isInTraining()
-
-
-class ReinforcementSAgent(ReinforcementQAgent):
-    def __init__(self, numTraining = 0):
-        ReinforcementQAgent.__init__(self, numTraining)
-        self.chosenAction = None
-
-    def getAction(self, state):
-        if not self.chosenAction:
-            self.chosenAction = self.chooseAction(state)
-        self.lastAction = self.chosenAction
-        return self.lastAction
-
-    def updater(self, state):
-        reward = self.calcReward(state)
-        currentValue = self.saving.getRatingForNextState(self.lastAction, self.lastState)
-        if state.isLose() or state.isWin():
-            logging.debug("end" + str(self.epsilon))
-            maxPossibleFutureValue = 0
-        else:
-            self.chosenAction = self.chooseAction(state)
-            maxPossibleFutureValue = self.saving.getRatingForNextState(self.chosenAction, state)
-        calcVal =  currentValue + self.alpha * (reward + self.gamma * maxPossibleFutureValue - currentValue)
-        logging.debug("Calc " + str(calcVal))
-        self.saving.setRatingForState(self.lastAction, self.lastState, calcVal)
-
-    def final(self, state):
-        ReinforcementQAgent.final(self, state)
-        self.chosenAction = None
 
 class myDict(dict):
     def __init__(self, default):
