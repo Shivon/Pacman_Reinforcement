@@ -144,7 +144,7 @@ class ReinforcementState(object):
             binVal = binVal << 5 | ghost.toBin()
         binVal = binVal << 5 | self.nextFoodDistance
         return binVal << 2 | self.nextFoodDirection
-        
+
     def __eq__(self, other):
         if isinstance(other, self.__class__):
             return self.toBin() == other.toBin()

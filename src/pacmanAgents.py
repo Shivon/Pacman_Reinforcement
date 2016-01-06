@@ -15,8 +15,10 @@ import ConfigParser
 from bfsSearch import ReinforcementSearch
 import random
 import game
+from game import Directions
 import util
-from ReinforcementSave import *
+from ReinforcementState import ReinforcementDirection
+# from ReinforcementSave import *
 
 CONFIGURATIONSARSA_FILE = "sarsasettings.ini"
 

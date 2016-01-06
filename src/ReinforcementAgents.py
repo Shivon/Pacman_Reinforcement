@@ -1,6 +1,6 @@
+from game import Directions
 import game
 import random
-from ReinforcementSave import *
 from bfsSearch import ReinforcementSearch
 import logging
 
