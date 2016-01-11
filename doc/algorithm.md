@@ -15,23 +15,25 @@ Die Spielfigur Pac-Man muss Punkte in einem Labyrinth fressen, während sie von 
 Wir haben in Python unter Verwendung der UC Berkeley API einen Agenten für Pacman implementiert, die Geister selber werden momentan von einem Random-Agenten gesteuert.
 Um unseren Agenten zu trainieren, haben wir den Q-Learning-Algorithmus gewählt und arbeiten zur Vereinfachung des States mit linearer Approximation. Dies heißt im Konkreten, dass wir uns im State auf ein paar wesentliche Features beschränken, anstatt den gesamten State abzuspeichern. Momentan werden die Features "nearestFoodDist" und "nearestGhostDistance" im Masterbranch verwendet. Es gibt noch separate Branches, in denen jeweils die Features "nearestEatableGhost" und "nearestSafeJunction" implementiert, aber noch nicht ausgereift sind. Hier unser [Git-Repo](https://github.com/Shivon/Pacman_Reinforcement).
 
-#### Grobe Beschreibung:
-Wir arbeiten mit Feature. Ein Feature ist z.B. die Entfernung zu dem nächsten Punkt oder zum nächsten Geist.
-Diese Zahlen werden dann miteinander verechnet und Pacman lernt in welchem Verhältnis die Features sein müssen.  
+#### Vorgehen während des Semesters    
+__Erster Ansatz__    
+Da von Anfang an klar war, dass der Speicherbedarf zu groß wird, wenn wir den gesamten State speichern, haben wir versucht selbigen zu abstrahieren. Dafür haben wir einen eigenen Zustandsraum definiert, wofür wir, uns da noch unbewusst, auf Features zurückgegriffen haben. Wir haben zB die Distanz der Geister gespeichert und in welcher von 4 Gefahrenkategorien sie sich befinden. Da aber auch der vereinfachte State zu groß für das Handling im RAM wurde, haben wir eine eigene Speicherverwaltung implementiert.
+Zu diesem State haben wir je einen Sarsa-Lambda-Agent und einen Q-Learning-Agent implementiert. Dies wurde immernoch zu komplex und führte nicht zu dem gewünschten Ergebnis, weshalb wir diesen State nicht mehr verwenden. Der State ist nun ausgelagert und noch in dem [Git-Branch](https://github.com/Shivon/Pacman_Reinforcement/tree/StateSaveAlternative) in den Dateien ReinforcementSave.py und ReinforcementState.py zu finden.    
 
-#### Genauere Beschreibung:
-Unsere Features lauten:
-* Entfernung zum nächsten Fresspunkt (Kleine Punkte im Spiel)
-* Entfernung zum nächsten Geist (Nicht fressbare Geister)
-* Entfernung zur nächsten Safe Junction (Safe Junction ist eine Kreuzung mit mehr als zwei/drei Richtungen)
-* Entfernung zum nächsten Powerpellit (Große Punkte im Spiel)
+__Zweiter Ansatz__    
+Bei unserem ersten Ansatz gab es das Problem, dass immernoch zu viele Kombinationsmöglichkeiten der verschiedenen Features und somit zu viele Zustände vorhanden waren. Dadurch kam Pacman nicht häufig genug in die verschiedenen Zustände und konnte so kaum lernen.
+Auf der Suche nach anderen oder ergänzenden Ansätzen fanden wir die unten aufgeführten Paper. Daraus ergab sich, dass Pacmans Zustandsraum zu groß wird, um ihn zum Lernen zu verwenden. Durch das [Paper](#Paper_Approx)
 
 Berechnung eines Feature Wertes:
 Beispiel: Sei die Entfernung von Pacman zum nächsten fressbaren Punkt 5 Schritte.
 Am Anfang werden alle Features gleich bewertet. Haben wir also vier Features, werden alle mit 25% bewertet.
 
+TODO: eigenes Vorgehen während Semester, Erkenntnisse (wieso Approx), Abhängigkeiten von Features (nicht!), Suche (Art),
+zweiteilung berechnung + update => Combines Value
 
 #### Links
 * [Unser Git-Repo](https://github.com/Shivon/Pacman_Reinforcement)
 * [UC Berkeley API](http://ai.berkeley.edu/project_overview.html)
-* [Was uns auf lineare Approximation gebracht hat](http://www.jair.org/media/2368/live-2368-3623-jair.pdf)
+* [Sutton Buch zu Machine Learning](https://webdocs.cs.ualberta.ca/~sutton/book/ebook/node1.html)
+* <a name="Paper_Approx"></a>[Was uns auf lineare Approximation gebracht hat](http://www.jair.org/media/2368/live-2368-3623-jair.pdf)
+* [Paper, ähnlich zu unserer Lösung, leider zu spät gefunden](https://www.cs.cf.ac.uk/PATS2/@archive_file?c=&p=file&p=263&n=final&f=1-FYP.pdf)
