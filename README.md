@@ -229,26 +229,6 @@ Der schnellste Weg von Pacman zu einer Position `targetPosition` kann durch die 
 * `generateResult(self)`:  
 Generierung eines Objekt der Klasse `ReinforcementState` mit dem Ergebnis der Suche.
 
-### Reinforcement Algorithmus: Linear Approximation
-
-#### Grobe Beschreibung:
-Wir arbeiten mit Feature. Ein Feature ist z.B. die Entfernung zu dem nächsten Punkt oder zum nächsten Geist.
-Diese Zahlen werden dann miteinander verechnet und Pacman lernt in welchem Verhältnis die Features sein müssen.  
-
-#### Genauere Beschreibung:
-Unsere Features lauten:
-* Entfernung zum nächsten Fresspunkt (Kleine Punkte im Spiel)
-* Entfernung zum nächsten Geist (Nicht fressbare Geister)
-* Entfernung zur nächsten Safe Junction (Safe Junction ist eine Kreuzung mit mehr als zwei/drei Richtungen)
-* Entfernung zum nächsten Powerpellit (Große Punkte im Spiel)
-
-Berechnung eines Feature Wertes:
-Beispiel: Sei die Entfernung von Pacman zum nächsten fressbaren Punkt 5 Schritte.
-Am Anfang werden alle Features gleich bewertet. Haben wir also vier Features, werden alle mit 25% bewertet.
-
-
-
-
 
 ### Open tasks and bugs
 
