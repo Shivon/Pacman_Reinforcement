@@ -22,18 +22,18 @@ Zu diesem State haben wir je einen Sarsa-Lambda-Agent und einen Q-Learning-Agent
 
 __Zweiter Ansatz__    
 Bei unserem ersten Ansatz gab es das Problem, dass immernoch zu viele Kombinationsmöglichkeiten der verschiedenen Features und somit zu viele Zustände vorhanden waren. Dadurch kam Pacman nicht häufig genug in die verschiedenen Zustände und konnte so kaum lernen.
-Auf der Suche nach anderen oder ergänzenden Ansätzen fanden wir die unten aufgeführten Paper. Daraus ergab sich, dass Pacmans Zustandsraum zu groß wird, um ihn zum Lernen zu verwenden. Durch das [Paper](#Paper_Approx)
+Auf der Suche nach anderen oder ergänzenden Ansätzen fanden wir zunächst das unten aufgeführte [Paper1](#Paper_Approx). Daraus ergab sich, dass Pacmans Zustandsraum zu groß wird, um ihn zum Lernen zu verwenden und lineare Approximation unser Problem lösen könnte. Das Paper selbst verwendet statt Features ein regelbasiertes System, uns erschienen Features in Kombination mit einem Q-Learning-Agent aber passender.    
 
 Berechnung eines Feature Wertes:
 Beispiel: Sei die Entfernung von Pacman zum nächsten fressbaren Punkt 5 Schritte.
 Am Anfang werden alle Features gleich bewertet. Haben wir also vier Features, werden alle mit 25% bewertet.
 
 TODO: eigenes Vorgehen während Semester, Erkenntnisse (wieso Approx), Abhängigkeiten von Features (nicht!), Suche (Art),
-zweiteilung berechnung + update => Combines Value
+zweiteilung berechnung + update => Combines Value, als nächstes müsste man nur noch an ReinforcementAgent.py arbeiten (außer fancy Extra-Stuff)
 
 #### Links
 * [Unser Git-Repo](https://github.com/Shivon/Pacman_Reinforcement)
 * [UC Berkeley API](http://ai.berkeley.edu/project_overview.html)
 * [Sutton Buch zu Machine Learning](https://webdocs.cs.ualberta.ca/~sutton/book/ebook/node1.html)
-* <a name="Paper_Approx"></a>[Was uns auf lineare Approximation gebracht hat](http://www.jair.org/media/2368/live-2368-3623-jair.pdf)
-* [Paper, ähnlich zu unserer Lösung, leider zu spät gefunden](https://www.cs.cf.ac.uk/PATS2/@archive_file?c=&p=file&p=263&n=final&f=1-FYP.pdf)
+* <a name="Paper_Approx"></a>[Paper1, was uns auf lineare Approximation gebracht hat](http://www.jair.org/media/2368/live-2368-3623-jair.pdf)
+* [Paper2, ähnlich zu unserer Lösung, leider zu spät gefunden](https://www.cs.cf.ac.uk/PATS2/@archive_file?c=&p=file&p=263&n=final&f=1-FYP.pdf)
