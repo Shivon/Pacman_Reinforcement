@@ -355,7 +355,7 @@ class RuleGenerator():
 class ReinforcementRAgent(game.Agent):
     def __init__(self, numTraining = 0):
         self.actionPower = myDict(0.0)
-        self.ruleGenerator = RuleGenerator();
+        self.ruleGenerator = RuleGenerator()
         self.random = random.Random()
         self.lastState = None
         self.lastAction = None
@@ -406,7 +406,7 @@ class ReinforcementRAgent(game.Agent):
         if self.isInTesting():
 #            raw_input("Press Any Key ")
             pass
-        logging.debug("Chosen Acction: " + str(self.lastAction))
+        logging.debug("Chosen Action: " + str(self.lastAction))
         logging.debug("Stop GetAction")
         logging.debug(str(self.lastAction))
         return self.lastAction
