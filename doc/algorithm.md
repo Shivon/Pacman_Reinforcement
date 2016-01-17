@@ -22,42 +22,49 @@ Zu diesem State haben wir je einen Sarsa-Lambda-Agent und einen Q-Learning-Agent
 
 __Zweiter Ansatz__    
 Bei unserem ersten Ansatz gab es das Problem, dass immernoch zu viele Kombinationsmöglichkeiten der verschiedenen Features und somit zu viele Zustände vorhanden waren. Dadurch kam Pacman nicht häufig genug in die verschiedenen Zustände und konnte so kaum lernen.
-Auf der Suche nach anderen oder ergänzenden Ansätzen fanden wir zunächst das unten aufgeführte [Paper1](http://www.jair.org/media/2368/live-2368-3623-jair.pdf). Daraus ergab sich, dass Pacmans Zustandsraum zu groß wird, um ihn zum Lernen zu verwenden und im versuch den Ansatz des Papers umzusetzen, sind wir auch darauf gestoßen, dass lineare Approximation unser Problem lösen könnte. Das Paper selbst verwendet statt Features ein regelbasiertes System, uns erschienen Features in Kombination mit einem Q-Learning-Agent aber passender.    
+Auf der Suche nach anderen oder ergänzenden Ansätzen fanden wir zunächst das unten aufgeführte [Paper1](http://www.jair.org/media/2368/live-2368-3623-jair.pdf). Daraus ergab sich, dass Pacmans Zustandsraum zu groß wird, um ihn zum Lernen zu verwenden. Bei dem Versuch, den Ansatz des Papers umzusetzen, sind wir darauf gestoßen, dass lineare Approximation unser Problem lösen könnte. Das Paper selbst verwendet statt Features ein regelbasiertes System, uns erschienen Features in Kombination mit einem Q-Learning-Agent aber passender.    
 
 #### Wieso Approximation und Features
- Die volle Beschreibung eines States sieht folgender Maßen aus:
- * Jedes Feld auf dem Spielfeld kann folgende Zustände annehmen (je punkt 1bit):
+Die komplette Beschreibung eines States sieht folgendermaßen aus:
+ * Jedes Feld des Spielfeldes kann folgende Zustände annehmen (1 Bit je Punkt):
   1. Enthält eine Mauer
-  1. Enthält ein Fresspunkt
-  1. Enthält ein nichtfressbaren Geist
-  1. Enthält ein Fressbaren Geist
-  1. Enthält Pacman
- * Daraus folgt jedes Feld kann 2⁵ = 32 mögliche Zustände annehmen
- * Angenommen ein Spielfeld besteht aus 20 * 11 = 220 Feldern (also nicht orginal Größe, diese ist 27 * 29 )
- * Daraus folgt es kann 220³² = 9,068298062×10⁷⁴ mögliche Zustände für das Spielfeld geben (Dies entspricht ungefähr der Anzahl der Atom im Universum).
- * Daher ist die Featurebildung unumgänglich
+  2. Enthält einen Fresspunkt
+  3. Enthält einen nichtfressbaren Geist
+  4. Enthält einen fressbaren Geist
+  5. Enthält Pacman    
+ => Jedes Feld kann 2⁵ = 32 mögliche Zustände annehmen
+ * Führt selbst bei Spielfeldern, die kleiner als das Original sind, zu viel zu großen Zustandsräumen
+ * Beispiel:
+    * Ein Spielfeld bestehe aus 20 * 11 = 220 Feldern (Orginalgröße wäre 27 * 29 )
+    * Mögliche Zustände für das Spielfeld: 220³² = 9,068298062×10⁷⁴ (entspricht ungefähr der Anzahl an Atomen im Universum)    
+    => Featurebildung unumgänglich
 
-Aber selbst mit Features dauert das Lernen normale Q-Learning verfahren relativ Lange. Mit den von uns gewählten einfachen Features:
-* Entfernung zum nächsten Geist
-* Entfernung zum nächsten Fresspunkt
+Trotz Vereinfachung des States durch die Features dauert das Training mit dem normalen Q-Learning-Algorithmus immernoch verhältnismäßig lange.
+* Gewählten Features:
+  * Entfernung zum nächsten Geist
+  * Entfernung zum nächsten Fresspunkt
+* Dauer des Trainings: 160 Spiele für ein gutes Ergebnis (steigend je zusätzlichem Feature)
 
-werden bereits 160 Spiele benötigt werden, um ein gutes Ergebnis zu erzielen. Dies wird mit weiteren Features deutlich ansteigen.
+#### Berechnung eines Featurewertes
+Die Featurewerte stellen eine Gewichtung dar, die mit den feature-spezifischen Eigenschaften verrechnet wird, um eine Bewertung des nächsten Schrittes zu erhalten.    
+Die Gewichtung der Features wird am Anfang gleichmäßig verteil, bei 4 Features trägt also jedes Feature anfangs zu 25% zu Gewinn oder Niederlage bei. Diese Gewichtung ist das, was der Agent schlussendlich lernt und immer weiter ausfeilt. Später könnte die Gewichtung dann bei 4 Features zB 10:40:30:20 sein.    
 
-Berechnung eines Feature Wertes:
-Beispiel: Sei die Entfernung von Pacman zum nächsten fressbaren Punkt 5 Schritte.
-Am Anfang werden alle Features gleich bewertet. Haben wir also vier Features, werden alle mit 25% bewertet.
+Beispiel am Feature "Entfernung zum nächsten Fresspunkt":    
+Sei die Entfernung von Pacman beim einem Schritt nach links zum nächsten fressbaren Punkt 5 Schritte und wir sind am Anfang unseres Spiels mit 4 Features. Die Bewertung des nächsten Schrittes in Richtung dieses Fresspunktes verrechnet dann 25% mit 5 (Distanz). Für die anderen möglichen Richtungen wird ebenfalls so eine Berechnung durchgeführt (wie weit wäre der nächste Fresspunkt von da aus entfernt). Die Richung, mit dem besten Wert, wird dann gewählt.
 
-#### Unabhängikeiten von Features
-Feature dürfen nicht voneinander abhängig sein, da sonst das Ergebnis verfälscht wird. Unabhängig bedeutet, dass ein Feature nicht warten muss bis ein anderes Feature einen bestimmten Wert einnimmt. Die Feature "Entfernung zum nächsten Fresspunkt" und "Entfernung zum nächsten Geist" sind unabhängig voneinander. Abhängig wären die Feature "Entfernung zum nächsten Powerpellet" und "Entfernung zum nächsten fressbaren Geist", diese sind aus dem Grund abhänging voneinander, da der Geist erst fressbar wird, wenn Pacman ein Powerpellet gefressen hat. Feature "Powerpellet" muss als erst eintreten bevor Feature "fressbarer Geist" interessant für Pacman wird. Pacman wird dies aber nicht lernen und somit kann passieren das Pacman denkt es sei richtig zum Geist zu laufen, auch wenn er nicht fressbar ist.
+#### Unabhängikeit von Features
+Features müssen ohne Abhängigkeiten voneinander modelliert werden, da sonst das Ergebnis verfälscht wird.    
+Unabhängig bedeutet hierbei, dass es keinen kausalen Zusammenhang zwischen dem einen Feature und einem anderen geben darf. Die Feature "Entfernung zum nächsten Fresspunkt" und "Entfernung zum nächsten Geist" sind beispielsweise unabhängig voneinander.    
+Abhängig hingegen wären die Features "Entfernung zum nächsten Powerpellet" und "Entfernung zum nächsten fressbaren Geist", da die Geister erst fressbar werden, wenn Pacman ein Powerpellet gefressen hat. Feature "Powerpellet" müsste also eintreten, bevor Feature "fressbarer Geist" interessant für Pacman wird. Pacman würde dies aber nicht lernen, da er solche Zusammenhänge nicht erkennt. Somit könnte es passieren, dass er etwas Falsches lernt, wie dass es richtig sei zu einem Geist zu laufen, auch wenn er nicht fressbar ist.
 
 #### Suchalgorithmus
-Wir haben uns für den BFS (Breadth First Search - standard Breitensuche) enschieden, weil es immer optimal ist und es möglich ist mehrer Spielgegenstände (Geister, Fresspunkte) gleichzeitig suchen zu können.
+Wir haben uns für den BFS (Breadth First Search - Standard Breitensuche) entschieden, weil er immer optimal ist und es möglich ist, mehrere Spielgegenstände (Geister, Fresspunkte) gleichzeitig zu suchen.
 
-#### Der Lernalgorythmus
-Wie bereits erwähnt, wird der Q-Learning mit linearer Approximation verwendet. <br />
+#### Lernalgorithmus
+Wie bereits erwähnt, wird der Q-Learning mit linearer Approximation verwendet.    
 Im Prinzip ist dies ein normaler Q-Learning-Agent, hier nochmal in verständlichem Pseudocode:
 
-```Pseudocode
+```
 getQValue(state, action){
   //Get the Q-Value of a State Direction Pair
 }
@@ -88,12 +95,11 @@ qLearning(self){
     state = futureState
   }
 }
-
 ```
 
 und nun der von uns benutzte Algorithmus im Pseudocode, wobei eine Action einer Richtung entspricht, in die Pacman gehen kann:
 
-```Pseudocode
+```
 featurePower = Map<Feature, float>() //default is 0.0
 getQValue(state, direction){
   combinedValue = 0.0
@@ -132,7 +138,6 @@ qLearning(self){
     state = futureState
   }
 }
-
 ```
 Dies ist im Quellcode in den Methoden updater, getCombinedValue, getAction des ReinforcementRAgent zu finden. die Aufteilung ergibt sich aus der API, der Updater wird vor jedem Spiel mit dem neuen State gecallt, getAction danach.
 
@@ -142,8 +147,6 @@ Die Lösung ist, eine ```Map<Set<Feature>, Map<Feature, float>>``` einzuführen,
 
 #### Weiterarbeiten am Projekt
 Wenn an diesem Projekt weitergearbeitet werden soll, dann reicht es aus, wenn man nur Änderungen an der ReinforcementAgent.py vornimmt. In dieser Datei können die Algorithmen und die Features verbessert werden. Möchte man weitere Fancy-Verbesserungen vornehmen, so müssen auch andere Dateien verändert werden.
-
-TODO: eigenes Vorgehen während Semester
 
 #### Links
 * [Unser Git-Repo](https://github.com/Shivon/Pacman_Reinforcement)
