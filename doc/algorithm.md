@@ -28,7 +28,10 @@ Berechnung eines Feature Wertes:
 Beispiel: Sei die Entfernung von Pacman zum nächsten fressbaren Punkt 5 Schritte.
 Am Anfang werden alle Features gleich bewertet. Haben wir also vier Features, werden alle mit 25% bewertet.
 
-TODO: eigenes Vorgehen während Semester, Erkenntnisse (wieso Approx), Abhängigkeiten von Features (nicht!), Suche (Art),
+#### Unabhängikeiten von Features
+Feature dürfen nicht voneinander abhängig sein, da sonst das Ergebnis verfälscht wird. Unabhängig bedeutet, dass ein Feature nicht warten muss bis ein anderes Feature einen bestimmten Wert einnimmt. Die Feature "Entfernung zum nächsten Fresspunkt" und "Entfernung zum nächsten Geist" sind unabhängig voneinander. Abhängig wären die Feature "Entfernung zum nächsten Powerpellet" und "Entfernung zum nächsten fressbaren Geist", diese sind aus dem Grund abhänging voneinander, da der Geist erst fressbar wird, wenn Pacman ein Powerpellet gefressen hat. Feature "Powerpellet" muss als erst eintreten bevor Feature "fressbarer Geist" interessant für Pacman wird. Pacman wird dies aber nicht lernen und somit kann passieren das Pacman denkt es sei richtig zum Geist zu laufen, auch wenn er nicht fressbar ist.
+
+TODO: eigenes Vorgehen während Semester, Erkenntnisse (wieso Approx), Suche (Art),
 zweiteilung berechnung + update => Combines Value, als nächstes müsste man nur noch an ReinforcementAgent.py arbeiten (außer fancy Extra-Stuff)
 
 #### Links
