@@ -34,7 +34,10 @@ Feature dürfen nicht voneinander abhängig sein, da sonst das Ergebnis verfäls
 #### Suchalgorithmus
 Wir haben uns für den BFS (Breadth First Search - standard Breitensuche) enschieden, weil es immer optimal ist und es möglich ist mehrer Spielgegenstände (Geister, Fresspunkte) gleichzeitig suchen zu können.
 
-TODO: eigenes Vorgehen während Semester, Erkenntnisse (wieso Approx), zweiteilung berechnung + update => Combines Value, als nächstes müsste man nur noch an ReinforcementAgent.py arbeiten (außer fancy Extra-Stuff)
+#### Weiterarbeiten am Projekt
+Wenn an diesem Projekt weitergearbeitet werden soll, dann reicht es aus, wenn man nur Änderungen an der ReinforcementAgent.py vornimmt. In dieser Datei können die Algorithmen und die Features verbessert werden. Möchte man weitere Fancy-Verbesserungen vornehmen, so müssen auch andere Datein verändert werden. 
+
+TODO: eigenes Vorgehen während Semester, Erkenntnisse (wieso Approx), zweiteilung berechnung + update => Combines Value.
 
 #### Links
 * [Unser Git-Repo](https://github.com/Shivon/Pacman_Reinforcement)
