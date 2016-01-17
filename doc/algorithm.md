@@ -1,4 +1,4 @@
-### Reinforcement Algorithmus: Lineare Approximation
+### Pacman Reinforcement
 
 #### Vorwort Pacman
 Die Spielfigur Pac-Man muss Punkte in einem Labyrinth fressen, während sie von Gespenstern verfolgt wird. Frisst man eine „Kraftpille“ (im Folgenden "PowerPellet"), kann man für eine gewisse Zeit umgekehrt selbst die (nun weiß eingefärbten) Gespenster verfolgen. [Wikipedia-Artikel dazu](https://de.wikipedia.org/wiki/Pac-Man)
@@ -22,7 +22,7 @@ Zu diesem State haben wir je einen Sarsa-Lambda-Agent und einen Q-Learning-Agent
 
 __Zweiter Ansatz__    
 Bei unserem ersten Ansatz gab es das Problem, dass immernoch zu viele Kombinationsmöglichkeiten der verschiedenen Features und somit zu viele Zustände vorhanden waren. Dadurch kam Pacman nicht häufig genug in die verschiedenen Zustände und konnte so kaum lernen.
-Auf der Suche nach anderen oder ergänzenden Ansätzen fanden wir zunächst das unten aufgeführte [Paper1](http://www.jair.org/media/2368/live-2368-3623-jair.pdf). Daraus ergab sich, dass Pacmans Zustandsraum zu groß wird, um ihn zum Lernen zu verwenden und lineare Approximation unser Problem lösen könnte. Das Paper selbst verwendet statt Features ein regelbasiertes System, uns erschienen Features in Kombination mit einem Q-Learning-Agent aber passender.    
+Auf der Suche nach anderen oder ergänzenden Ansätzen fanden wir zunächst das unten aufgeführte [Paper1](http://www.jair.org/media/2368/live-2368-3623-jair.pdf). Daraus ergab sich, dass Pacmans Zustandsraum zu groß wird, um ihn zum Lernen zu verwenden und im versuch den Ansatz des Papers umzusetzen, sind wir auch darauf gestoßen, dass lineare Approximation unser Problem lösen könnte. Das Paper selbst verwendet statt Features ein regelbasiertes System, uns erschienen Features in Kombination mit einem Q-Learning-Agent aber passender.    
 
 #### Wieso Approximation und Features
  Die volle Beschreibung eines States sieht folgender Maßen aus:
@@ -33,8 +33,8 @@ Auf der Suche nach anderen oder ergänzenden Ansätzen fanden wir zunächst das 
   1. Enthält ein Fressbaren Geist
   1. Enthält Pacman
  * Daraus folgt jedes Feld kann 2⁵ = 32 mögliche Zustände annehmen
- * Angenommen ein Spielfeld besteht aus 20 * 11 = 220
- * Daraus folgt es kann 220³² = 9,068298062×10⁷⁴ mögliche Zustände für das Spielfeld geben. Dies entspricht ungefähr der Anzahl der Atom im Universum
+ * Angenommen ein Spielfeld besteht aus 20 * 11 = 220 Feldern (also nicht orginal Größe, diese ist 27 * 29 )
+ * Daraus folgt es kann 220³² = 9,068298062×10⁷⁴ mögliche Zustände für das Spielfeld geben (Dies entspricht ungefähr der Anzahl der Atom im Universum).
  * Daher ist die Featurebildung unumgänglich
 
 Aber selbst mit Features dauert das Lernen normale Q-Learning verfahren relativ Lange. Mit den von uns gewählten einfachen Features:
@@ -53,10 +53,89 @@ Feature dürfen nicht voneinander abhängig sein, da sonst das Ergebnis verfäls
 #### Suchalgorithmus
 Wir haben uns für den BFS (Breadth First Search - standard Breitensuche) enschieden, weil es immer optimal ist und es möglich ist mehrer Spielgegenstände (Geister, Fresspunkte) gleichzeitig suchen zu können.
 
-#### Weiterarbeiten am Projekt
-Wenn an diesem Projekt weitergearbeitet werden soll, dann reicht es aus, wenn man nur Änderungen an der ReinforcementAgent.py vornimmt. In dieser Datei können die Algorithmen und die Features verbessert werden. Möchte man weitere Fancy-Verbesserungen vornehmen, so müssen auch andere Datein verändert werden.
+#### Der Lernalgorythmus
+Wie bereits erwähnt, wird der Q-Learning mit linearer Approximation verwendet. <br />
+Im Prinzip ist dies ein normaler Q-Learning-Agent, hier nochmal in verständlichem Pseudocode:
 
-TODO: eigenes Vorgehen während Semester, zweiteilung berechnung + update => Combines Value.
+```Pseudocode
+getQValue(state, action){
+  //Get the Q-Value of a State Direction Pair
+}
+setQValue(state, action, value){
+  //Set the Q-Value of a State Direction Pair
+}
+
+getBestAction(state){
+  bestAction = null
+  bestVal = Float.getNeagtiveInfinity()
+  for(Action action: state.getPossibleActions()){
+    tmpVal = getQValue(state, action)
+    if(tmpVal > bestVal){
+      bestAction = action
+      bestVal = tmpVal
+    }
+  }
+  return bestAction, bestVal
+}
+
+qLearning(self){
+  state = getInitialState()
+  while(!game.isEnded){
+    action, qVal = getBestAction(state, direction)
+    reward, futureState = game.execute(action)
+    futureAction, futureQVal = getBestAction(futureState)
+    setQValue(state, action, qVal + alpha * (reward + gamma * futureQVal - qVal) )
+    state = futureState
+  }
+}
+
+```
+
+und nun der von uns benutzte Algorithmus im Pseudocode, wobei eine Action einer Richtung entspricht, in die Pacman gehen kann:
+
+```Pseudocode
+featurePower = Map<Feature, float>() //default is 0.0
+getQValue(state, direction){
+  combinedValue = 0.0
+  for(Feature feature: getFeatures(state, direction)){
+    combinedValue += feature.getValue() * featurePower[feature]
+  }
+  return combinedValue
+}
+
+getBestAction(state){
+  bestAction = null
+  bestVal = Float.getNeagtiveInfinity()
+  for(Action action: state.getPossibleActions()){
+    tmpVal = getQValue(state, action)
+    if(tmpVal > bestVal){
+      bestAction = action
+      bestVal = tmpVal
+    }
+  }
+  return bestAction, bestVal
+}
+
+qLearning(self){
+  state = getInitialState()
+  while(!game.isEnded){
+    action, qVal = getBestAction(state, direction)
+    reward, futureState = game.execute(action)
+    futureAction, futureQVal = getBestAction(futureState)
+    for(Feature feature: getFeatures(state)){
+      featurePower[feature] = featurePower[feature] + alpha * (reward + gamma * futureQVal - qVal) * feature.getValue
+    }
+    state = futureState
+  }
+}
+
+```
+Dies ist im Quellcode in den Methoden updater, getCombinedValue, getAction des ReinforcementRAgent zu finden. die Aufteilung ergibt sich aus der API, der Updater wird vor jedem Spiel mit dem neuen State gecallt, getAction danach.
+
+#### Weiterarbeiten am Projekt
+Wenn an diesem Projekt weitergearbeitet werden soll, dann reicht es aus, wenn man nur Änderungen an der ReinforcementAgent.py vornimmt. In dieser Datei können die Algorithmen und die Features verbessert werden. Möchte man weitere Fancy-Verbesserungen vornehmen, so müssen auch andere Dateien verändert werden.
+
+TODO: eigenes Vorgehen während Semester
 
 #### Links
 * [Unser Git-Repo](https://github.com/Shivon/Pacman_Reinforcement)
