@@ -103,6 +103,10 @@ getQValue(state, direction){
   return combinedValue
 }
 
+getFeatures(state){
+  //returns a List<Features>
+}
+
 getBestAction(state){
   bestAction = null
   bestVal = Float.getNeagtiveInfinity()
@@ -123,7 +127,7 @@ qLearning(self){
     reward, futureState = game.execute(action)
     futureAction, futureQVal = getBestAction(futureState)
     for(Feature feature: getFeatures(state)){
-      featurePower[feature] = featurePower[feature] + alpha * (reward + gamma * futureQVal - qVal) * feature.getValue
+      featurePower[feature] = featurePower[feature] + alpha * (reward + gamma * futureQVal - qVal) * feature.getValue()
     }
     state = futureState
   }
@@ -131,6 +135,10 @@ qLearning(self){
 
 ```
 Dies ist im Quellcode in den Methoden updater, getCombinedValue, getAction des ReinforcementRAgent zu finden. die Aufteilung ergibt sich aus der API, der Updater wird vor jedem Spiel mit dem neuen State gecallt, getAction danach.
+
+##### Was tun, wenn nicht immer alle Features da sind?
+Es ist wichtig, dass eine FeaturePowerMap auch genau die Features enthält, die man mit getFeatures erhält.
+Die Lösung ist, eine ```Map<Set<Feature>, Map<Feature, float>>``` einzuführen, und immer die FeaturePowerMap zu entnehmen, die zu den erhaltenen Features passt.
 
 #### Weiterarbeiten am Projekt
 Wenn an diesem Projekt weitergearbeitet werden soll, dann reicht es aus, wenn man nur Änderungen an der ReinforcementAgent.py vornimmt. In dieser Datei können die Algorithmen und die Features verbessert werden. Möchte man weitere Fancy-Verbesserungen vornehmen, so müssen auch andere Dateien verändert werden.
