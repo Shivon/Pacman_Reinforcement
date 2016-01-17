@@ -28,6 +28,25 @@ Berechnung eines Feature Wertes:
 Beispiel: Sei die Entfernung von Pacman zum nächsten fressbaren Punkt 5 Schritte.
 Am Anfang werden alle Features gleich bewertet. Haben wir also vier Features, werden alle mit 25% bewertet.
 
+#### Wieso Approximation und Features
+ Die volle Beschreibung eines States sieht folgender Maßen aus:
+ * Jedes Feld auf dem Spielfeld kann folgende Zustände annehmen (je punkt 1bit):
+  1. Enthält eine Mauer
+  1. Enthält ein Fresspunkt
+  1. Enthält ein nichtfressbaren Geist
+  1. Enthält ein Fressbaren Geist
+  1. Enthält Pacman
+ * Daraus folgt jedes Feld kann 2⁵ = 32 mögliche Zustände annehmen
+ * Angenommen ein Spielfeld besteht aus 20 * 11 = 220
+ * Daraus folgt es kann 220³² = 9,068298062×10⁷⁴ mögliche Zustände für das Spielfeld geben. Dies entspricht ungefähr der Anzahl der Atom im Universum
+ * Daher ist die Featurebildung unumgänglich
+
+Aber selbst mit Features dauert das Lernen normale Q-Learning verfahren relativ Lange. Mit den von uns gewählten einfachen Features:
+* Entfernung zum nächsten Geist
+* Entfernung zum nächsten Fresspunkt
+
+werden bereits 160 Spiele benötigt werden, um ein gutes Ergebnis zu erzielen. Dies wird mit weiteren Features deutlich ansteigen.
+ 
 TODO: eigenes Vorgehen während Semester, Erkenntnisse (wieso Approx), Abhängigkeiten von Features (nicht!), Suche (Art),
 zweiteilung berechnung + update => Combines Value, als nächstes müsste man nur noch an ReinforcementAgent.py arbeiten (außer fancy Extra-Stuff)
 
