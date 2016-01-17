@@ -24,10 +24,6 @@ __Zweiter Ansatz__
 Bei unserem ersten Ansatz gab es das Problem, dass immernoch zu viele Kombinationsmöglichkeiten der verschiedenen Features und somit zu viele Zustände vorhanden waren. Dadurch kam Pacman nicht häufig genug in die verschiedenen Zustände und konnte so kaum lernen.
 Auf der Suche nach anderen oder ergänzenden Ansätzen fanden wir zunächst das unten aufgeführte [Paper1](#Paper_Approx). Daraus ergab sich, dass Pacmans Zustandsraum zu groß wird, um ihn zum Lernen zu verwenden und lineare Approximation unser Problem lösen könnte. Das Paper selbst verwendet statt Features ein regelbasiertes System, uns erschienen Features in Kombination mit einem Q-Learning-Agent aber passender.    
 
-Berechnung eines Feature Wertes:
-Beispiel: Sei die Entfernung von Pacman zum nächsten fressbaren Punkt 5 Schritte.
-Am Anfang werden alle Features gleich bewertet. Haben wir also vier Features, werden alle mit 25% bewertet.
-
 #### Wieso Approximation und Features
  Die volle Beschreibung eines States sieht folgender Maßen aus:
  * Jedes Feld auf dem Spielfeld kann folgende Zustände annehmen (je punkt 1bit):
@@ -46,9 +42,21 @@ Aber selbst mit Features dauert das Lernen normale Q-Learning verfahren relativ 
 * Entfernung zum nächsten Fresspunkt
 
 werden bereits 160 Spiele benötigt werden, um ein gutes Ergebnis zu erzielen. Dies wird mit weiteren Features deutlich ansteigen.
- 
-TODO: eigenes Vorgehen während Semester, Erkenntnisse (wieso Approx), Abhängigkeiten von Features (nicht!), Suche (Art),
-zweiteilung berechnung + update => Combines Value, als nächstes müsste man nur noch an ReinforcementAgent.py arbeiten (außer fancy Extra-Stuff)
+
+Berechnung eines Feature Wertes:
+Beispiel: Sei die Entfernung von Pacman zum nächsten fressbaren Punkt 5 Schritte.
+Am Anfang werden alle Features gleich bewertet. Haben wir also vier Features, werden alle mit 25% bewertet.
+
+#### Unabhängikeiten von Features
+Feature dürfen nicht voneinander abhängig sein, da sonst das Ergebnis verfälscht wird. Unabhängig bedeutet, dass ein Feature nicht warten muss bis ein anderes Feature einen bestimmten Wert einnimmt. Die Feature "Entfernung zum nächsten Fresspunkt" und "Entfernung zum nächsten Geist" sind unabhängig voneinander. Abhängig wären die Feature "Entfernung zum nächsten Powerpellet" und "Entfernung zum nächsten fressbaren Geist", diese sind aus dem Grund abhänging voneinander, da der Geist erst fressbar wird, wenn Pacman ein Powerpellet gefressen hat. Feature "Powerpellet" muss als erst eintreten bevor Feature "fressbarer Geist" interessant für Pacman wird. Pacman wird dies aber nicht lernen und somit kann passieren das Pacman denkt es sei richtig zum Geist zu laufen, auch wenn er nicht fressbar ist.
+
+#### Suchalgorithmus
+Wir haben uns für den BFS (Breadth First Search - standard Breitensuche) enschieden, weil es immer optimal ist und es möglich ist mehrer Spielgegenstände (Geister, Fresspunkte) gleichzeitig suchen zu können.
+
+#### Weiterarbeiten am Projekt
+Wenn an diesem Projekt weitergearbeitet werden soll, dann reicht es aus, wenn man nur Änderungen an der ReinforcementAgent.py vornimmt. In dieser Datei können die Algorithmen und die Features verbessert werden. Möchte man weitere Fancy-Verbesserungen vornehmen, so müssen auch andere Datein verändert werden. 
+
+TODO: eigenes Vorgehen während Semester, zweiteilung berechnung + update => Combines Value.
 
 #### Links
 * [Unser Git-Repo](https://github.com/Shivon/Pacman_Reinforcement)

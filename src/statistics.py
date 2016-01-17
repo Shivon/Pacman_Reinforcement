@@ -14,6 +14,7 @@ import tkFont
 from statisticsController import LauncherController
 import glob
 import re
+import logging
 
 class LauncherView(Tkinter.Tk):
     def __init__(self,parent):
@@ -248,6 +249,7 @@ class LauncherView(Tkinter.Tk):
         
     def OnStartButtonClick(self):
         if (self.launcherController is not None):
+            logging.basicConfig(level=logging.ERROR)
             self.launcherController.startApplication()
         
     def OnDefaultSettingsButtonClick(self):
