@@ -22,7 +22,7 @@ Zu diesem State haben wir je einen Sarsa-Lambda-Agent und einen Q-Learning-Agent
 
 __Zweiter Ansatz__    
 Bei unserem ersten Ansatz gab es das Problem, dass immernoch zu viele Kombinationsmöglichkeiten der verschiedenen Features und somit zu viele Zustände vorhanden waren. Dadurch kam Pacman nicht häufig genug in die verschiedenen Zustände und konnte so kaum lernen.
-Auf der Suche nach anderen oder ergänzenden Ansätzen fanden wir zunächst das unten aufgeführte [Paper1](#Paper_Approx). Daraus ergab sich, dass Pacmans Zustandsraum zu groß wird, um ihn zum Lernen zu verwenden und lineare Approximation unser Problem lösen könnte. Das Paper selbst verwendet statt Features ein regelbasiertes System, uns erschienen Features in Kombination mit einem Q-Learning-Agent aber passender.    
+Auf der Suche nach anderen oder ergänzenden Ansätzen fanden wir zunächst das unten aufgeführte [Paper1](http://www.jair.org/media/2368/live-2368-3623-jair.pdf). Daraus ergab sich, dass Pacmans Zustandsraum zu groß wird, um ihn zum Lernen zu verwenden und lineare Approximation unser Problem lösen könnte. Das Paper selbst verwendet statt Features ein regelbasiertes System, uns erschienen Features in Kombination mit einem Q-Learning-Agent aber passender.    
 
 #### Wieso Approximation und Features
  Die volle Beschreibung eines States sieht folgender Maßen aus:
@@ -54,7 +54,7 @@ Feature dürfen nicht voneinander abhängig sein, da sonst das Ergebnis verfäls
 Wir haben uns für den BFS (Breadth First Search - standard Breitensuche) enschieden, weil es immer optimal ist und es möglich ist mehrer Spielgegenstände (Geister, Fresspunkte) gleichzeitig suchen zu können.
 
 #### Weiterarbeiten am Projekt
-Wenn an diesem Projekt weitergearbeitet werden soll, dann reicht es aus, wenn man nur Änderungen an der ReinforcementAgent.py vornimmt. In dieser Datei können die Algorithmen und die Features verbessert werden. Möchte man weitere Fancy-Verbesserungen vornehmen, so müssen auch andere Datein verändert werden. 
+Wenn an diesem Projekt weitergearbeitet werden soll, dann reicht es aus, wenn man nur Änderungen an der ReinforcementAgent.py vornimmt. In dieser Datei können die Algorithmen und die Features verbessert werden. Möchte man weitere Fancy-Verbesserungen vornehmen, so müssen auch andere Datein verändert werden.
 
 TODO: eigenes Vorgehen während Semester, zweiteilung berechnung + update => Combines Value.
 
@@ -62,5 +62,5 @@ TODO: eigenes Vorgehen während Semester, zweiteilung berechnung + update => Com
 * [Unser Git-Repo](https://github.com/Shivon/Pacman_Reinforcement)
 * [UC Berkeley API](http://ai.berkeley.edu/project_overview.html)
 * [Sutton Buch zu Machine Learning](https://webdocs.cs.ualberta.ca/~sutton/book/ebook/node1.html)
-* <a name="Paper_Approx"></a>[Paper1, was uns auf lineare Approximation gebracht hat](http://www.jair.org/media/2368/live-2368-3623-jair.pdf)
+* [Paper1, was uns auf lineare Approximation gebracht hat](http://www.jair.org/media/2368/live-2368-3623-jair.pdf)
 * [Paper2, ähnlich zu unserer Lösung, leider zu spät gefunden](https://www.cs.cf.ac.uk/PATS2/@archive_file?c=&p=file&p=263&n=final&f=1-FYP.pdf)
