@@ -1,5 +1,3 @@
-### Pacman Reinforcement
-
 #### Vorwort Pacman
 Die Spielfigur Pac-Man muss Punkte in einem Labyrinth fressen, während sie von Gespenstern verfolgt wird. Frisst man eine „Kraftpille“ (im Folgenden "PowerPellet"), kann man für eine gewisse Zeit umgekehrt selbst die (nun weiß eingefärbten) Gespenster verfolgen. [Wikipedia-Artikel dazu](https://de.wikipedia.org/wiki/Pac-Man)
 
@@ -141,7 +139,7 @@ qLearning(self){
 ```
 Das alles ist im Quellcode in den Methoden updater, getCombinedValue und getAction des Reinforcement__R__Agents zu finden. Die Aufteilung ergibt sich aus der genutzten API, der Updater wird vor jedem Spiel mit dem neuen State gecallt, getAction im Anschluss.
 
-##### Was tun, wenn nicht immer alle Features vorhanden sind?
+#### Was tun, wenn nicht immer alle Features vorhanden sind?
 Es ist wichtig, dass eine FeaturePowerMap auch genau die Features enthält, die man mit getFeatures erhält.
 Die Lösung ist eine ```Map<Set<Feature>, Map<Feature, float>>``` einzuführen und immer die FeaturePowerMap zu entnehmen, die zu den erhaltenen Features passt.
 
