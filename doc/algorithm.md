@@ -34,7 +34,7 @@ Die komplette Beschreibung eines States sieht folgendermaßen aus:
  * Führt selbst bei Spielfeldern, die kleiner als das Original sind, zu viel zu großen Zustandsräumen
  * Beispiel:
     * Ein Spielfeld bestehe aus 20 * 11 = 220 Feldern (Orginalgröße wäre 27 * 29 )
-    * Mögliche Zustände für das Spielfeld: 220³² = 9,068298062×10⁷⁴ (entspricht ungefähr der Anzahl an Atomen im Universum)    
+    * Mögliche Zustände für das Spielfeld: 2⁽⁵*²²⁰⁾ = 2¹¹⁰⁰ = 1,358298529*10³³¹ (zum Vergleich: Anzahl der Atome im Universum ca 10⁸⁰)    
     => Featurebildung unumgänglich
 
 Trotz Vereinfachung des States durch die Features dauert das Training mit dem normalen Q-Learning-Algorithmus immernoch verhältnismäßig lange.
@@ -139,12 +139,20 @@ qLearning(self){
 ```
 Das alles ist im Quellcode in den Methoden updater, getCombinedValue und getAction des Reinforcement__R__Agents zu finden. Die Aufteilung ergibt sich aus der genutzten API, der Updater wird vor jedem Spiel mit dem neuen State gecallt, getAction im Anschluss.
 
-#### Was tun, wenn nicht immer alle Features vorhanden sind?
+##### Was tun, wenn nicht immer alle Features vorhanden sind?
 Es ist wichtig, dass eine FeaturePowerMap auch genau die Features enthält, die man mit getFeatures erhält.
-Die Lösung ist eine ```Map<Set<Feature>, Map<Feature, float>>``` einzuführen und immer die FeaturePowerMap zu entnehmen, die zu den erhaltenen Features passt.
+Die Lösung ist eine ```Map<Set<Feature>, Map<Feature, float>>``` einzuführen und immer die FeaturePowerMap zu entnehmen, die zu den erhaltenen Features passt. Eine FeaturePowerMap ist dabei für jeden Zustandsraum, der sich aus der differierenden Feature-Liste ergibt, unterschiedlich und es wird entsprechend neu gelernt.
 
 #### Weiterarbeiten am Projekt
 Sollte an diesem Projekt weitergearbeitet werden, so müssen nur Änderungen im ReinforcementAgent.py vorgenommen werden. In dieser Datei könnten die Algorithmen und Features verbessert werden. Möchte man weitere Fancy-Verbesserungen vornehmen (zB am Launcher), so müssen auch andere Dateien ggf verändert werden.
+Mögliche Fortsetzungen:
+* Geist Intelligenz
+* Kampf gegen mehrere Geister
+* Geister jagen
+* Andere Lernverfahren z.B.:
+  * Low-Complexity Rule-Based Policies with Cross-Entropy Method
+  * Neuronale Netze
+  * Andere Verfahren, die keine lineare Unabhängigkeit vorraussetzen
 
 #### Links
 * [Unser Git-Repo](https://github.com/Shivon/Pacman_Reinforcement)
