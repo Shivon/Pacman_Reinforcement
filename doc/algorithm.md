@@ -61,8 +61,8 @@ Abhängig hingegen wären die Features "Entfernung zum nächsten Powerpellet" un
 Wir haben uns für den BFS (Breadth First Search - Standard Breitensuche) entschieden, weil er immer optimal ist und es möglich ist, mehrere Spielgegenstände (Geister, Fresspunkte) gleichzeitig zu suchen.
 
 #### Lernalgorithmus
-Wie bereits erwähnt, wird der Q-Learning mit linearer Approximation verwendet.    
-Im Prinzip ist dies ein normaler Q-Learning-Agent, hier nochmal in verständlichem Pseudocode:
+Wie bereits erwähnt, verwenden wir den Q-Learning-Algorithmus mit linearer Approximation.    
+Grundsätzlich entspricht das dem normalen Q-Learning-Algorithmus, im Folgenden der Pseudocode dazu, zunächst vom Agenten:
 
 ```
 getQValue(state, action){
@@ -97,7 +97,7 @@ qLearning(self){
 }
 ```
 
-und nun der von uns benutzte Algorithmus im Pseudocode, wobei eine Action einer Richtung entspricht, in die Pacman gehen kann:
+Hier nun der von uns genutzte Algorithmus als Pseudocode, wobei eine Action einer Richtung entspricht, in die Pacman gehen kann:
 
 ```
 featurePower = Map<Feature, float>() //default is 0.0
@@ -139,14 +139,14 @@ qLearning(self){
   }
 }
 ```
-Dies ist im Quellcode in den Methoden updater, getCombinedValue, getAction des ReinforcementRAgent zu finden. die Aufteilung ergibt sich aus der API, der Updater wird vor jedem Spiel mit dem neuen State gecallt, getAction danach.
+Das alles ist im Quellcode in den Methoden updater, getCombinedValue und getAction des Reinforcement__R__Agents zu finden. Die Aufteilung ergibt sich aus der genutzten API, der Updater wird vor jedem Spiel mit dem neuen State gecallt, getAction im Anschluss.
 
-##### Was tun, wenn nicht immer alle Features da sind?
+##### Was tun, wenn nicht immer alle Features vorhanden sind?
 Es ist wichtig, dass eine FeaturePowerMap auch genau die Features enthält, die man mit getFeatures erhält.
-Die Lösung ist, eine ```Map<Set<Feature>, Map<Feature, float>>``` einzuführen, und immer die FeaturePowerMap zu entnehmen, die zu den erhaltenen Features passt.
+Die Lösung ist eine ```Map<Set<Feature>, Map<Feature, float>>``` einzuführen und immer die FeaturePowerMap zu entnehmen, die zu den erhaltenen Features passt.
 
 #### Weiterarbeiten am Projekt
-Wenn an diesem Projekt weitergearbeitet werden soll, dann reicht es aus, wenn man nur Änderungen an der ReinforcementAgent.py vornimmt. In dieser Datei können die Algorithmen und die Features verbessert werden. Möchte man weitere Fancy-Verbesserungen vornehmen, so müssen auch andere Dateien verändert werden.
+Sollte an diesem Projekt weitergearbeitet werden, so müssen nur Änderungen im ReinforcementAgent.py vorgenommen werden. In dieser Datei könnten die Algorithmen und Features verbessert werden. Möchte man weitere Fancy-Verbesserungen vornehmen (zB am Launcher), so müssen auch andere Dateien ggf verändert werden.
 
 #### Links
 * [Unser Git-Repo](https://github.com/Shivon/Pacman_Reinforcement)
